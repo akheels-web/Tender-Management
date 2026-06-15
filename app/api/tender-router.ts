@@ -1,0 +1,329 @@
+import { z } from "zod";
+import { eq, and, like, gte, lte, desc } from "drizzle-orm";
+import { createRouter, adminQuery, anyRoleQuery, publicQuery } from "./middleware";
+import { getDb } from "./queries/connection";
+import { tenders, bids, barredVendors, tenderAssignments } from "@db/schema";
+
+export const tenderRouter = createRouter({
+  // ── List tenders (public) ──
+  list: publicQuery
+    .input(
+      z
+        .object({
+          status: z.string().optional(),
+          category: z.string().optional(),
+          search: z.string().optional(),
+          dateFrom: z.string().optional(),
+          dateTo: z.string().optional(),
+        })
+        .optional()
+    )
+    .query(async ({ input }) => {
+      const db = getDb();
+      const conditions = [];
+
+      if (input?.status) {
+        conditions.push(eq(tenders.status, input.status as any));
+      }
+      if (input?.category) {
+        conditions.push(eq(tenders.category, input.category));
+      }
+      if (input?.search) {
+        conditions.push(like(tenders.tenderId, `%${input.search}%`));
+      }
+      if (input?.dateFrom) {
+        conditions.push(gte(tenders.closingDate, new Date(input.dateFrom)));
+      }
+      if (input?.dateTo) {
+        conditions.push(lte(tenders.closingDate, new Date(input.dateTo)));
+      }
+
+      const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const results = await db
+        .select()
+        .from(tenders)
+        .where(where)
+        .orderBy(desc(tenders.createdAt));
+
+      return results;
+    }),
+
+  // ── Get tender by ID ──
+  getById: anyRoleQuery
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      const db = getDb();
+      const result = await db
+        .select()
+        .from(tenders)
+        .where(eq(tenders.id, input.id))
+        .limit(1);
+      return result[0] ?? null;
+    }),
+
+  // ── Create tender (admin) ──
+  create: adminQuery
+    .input(
+      z.object({
+        tenderId: z.string().min(3),
+        title: z.string().min(5),
+        description: z.string().min(10),
+        category: z.string().min(1),
+        status: z
+          .enum(["draft", "published", "open", "closed", "awarded", "cancelled"])
+          .default("draft"),
+        budgetEstimate: z.string().optional(),
+        currency: z.string().default("USD"),
+        location: z.string().optional(),
+        department: z.string().optional(),
+        publishDate: z.string().optional(),
+        closingDate: z.string(),
+        openingDate: z.string().optional(),
+        contractPeriod: z.string().optional(),
+        eligibilityCriteria: z.string().optional(),
+        isLocked: z.boolean().default(true),
+        unlockPassword: z.string().optional(),
+        lockReason: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb();
+      const insertData: any = {
+        ...input,
+        createdBy: ctx.user.id,
+        closingDate: new Date(input.closingDate),
+      };
+      if (input.publishDate) insertData.publishDate = new Date(input.publishDate);
+      if (input.openingDate) insertData.openingDate = new Date(input.openingDate);
+
+      const result = await db.insert(tenders).values(insertData);
+      return { id: Number(result[0].insertId), success: true };
+    }),
+
+  // ── Update tender (admin) ──
+  update: adminQuery
+    .input(
+      z.object({
+        id: z.number(),
+        tenderId: z.string().optional(),
+        title: z.string().min(5).optional(),
+        description: z.string().min(10).optional(),
+        category: z.string().optional(),
+        status: z
+          .enum(["draft", "published", "open", "closed", "awarded", "cancelled"])
+          .optional(),
+        budgetEstimate: z.string().optional(),
+        currency: z.string().optional(),
+        location: z.string().optional(),
+        department: z.string().optional(),
+        publishDate: z.string().nullable().optional(),
+        closingDate: z.string().optional(),
+        openingDate: z.string().nullable().optional(),
+        contractPeriod: z.string().optional(),
+        eligibilityCriteria: z.string().optional(),
+        isLocked: z.boolean().optional(),
+        unlockPassword: z.string().nullable().optional(),
+        lockReason: z.string().nullable().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = getDb();
+      const { id, ...data } = input;
+      const updateData: any = { ...data };
+      if (data.closingDate) updateData.closingDate = new Date(data.closingDate);
+      if (data.publishDate) updateData.publishDate = new Date(data.publishDate);
+      if (data.openingDate) updateData.openingDate = new Date(data.openingDate);
+
+      await db.update(tenders).set(updateData).where(eq(tenders.id, id));
+      return { success: true };
+    }),
+
+  // ── Delete tender (admin) ──
+  delete: adminQuery
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = getDb();
+      await db.delete(bids).where(eq(bids.tenderId, input.id));
+      await db.delete(barredVendors).where(eq(barredVendors.tenderId, input.id));
+      await db
+        .delete(tenderAssignments)
+        .where(eq(tenderAssignments.tenderId, input.id));
+      await db.delete(tenders).where(eq(tenders.id, input.id));
+      return { success: true };
+    }),
+
+  // ── Unlock tender ──
+  unlock: adminQuery
+    .input(
+      z.object({
+        id: z.number(),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = getDb();
+      const result = await db
+        .select()
+        .from(tenders)
+        .where(eq(tenders.id, input.id))
+        .limit(1);
+
+      if (!result[0]) {
+        return { success: false, message: "Tender not found" };
+      }
+
+      if (result[0].unlockPassword !== input.password) {
+        return { success: false, message: "Incorrect password" };
+      }
+
+      await db
+        .update(tenders)
+        .set({ isLocked: false })
+        .where(eq(tenders.id, input.id));
+
+      return { success: true, message: "Tender unlocked" };
+    }),
+
+  // ── Lock tender ──
+  lock: adminQuery
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = getDb();
+      await db
+        .update(tenders)
+        .set({ isLocked: true })
+        .where(eq(tenders.id, input.id));
+      return { success: true };
+    }),
+
+  // ── Assign tender to vendor ──
+  assign: adminQuery
+    .input(
+      z.object({
+        tenderId: z.number(),
+        vendorId: z.number(),
+        notes: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb();
+      await db
+        .insert(tenderAssignments)
+        .values({
+          tenderId: input.tenderId,
+          vendorId: input.vendorId,
+          assignedBy: ctx.user.id,
+          notes: input.notes,
+        })
+        .onDuplicateKeyUpdate({
+          set: {
+            vendorId: input.vendorId,
+            assignedBy: ctx.user.id,
+            notes: input.notes,
+          },
+        });
+      return { success: true };
+    }),
+
+  // ── Get tender with bids ──
+  getWithBids: adminQuery
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      const db = getDb();
+      const tender = await db
+        .select()
+        .from(tenders)
+        .where(eq(tenders.id, input.id))
+        .limit(1);
+
+      if (!tender[0]) return null;
+
+      const bidsData = await db
+        .select()
+        .from(bids)
+        .where(eq(bids.tenderId, input.id))
+        .orderBy(desc(bids.submittedAt));
+
+      return { ...tender[0], bids: bidsData };
+    }),
+
+  // ── Get tender stats ──
+  stats: adminQuery.query(async () => {
+    const db = getDb();
+    const allTenders = await db.select().from(tenders);
+
+    const total = allTenders.length;
+    const open = allTenders.filter((t) => t.status === "open").length;
+    const closed = allTenders.filter((t) => t.status === "closed").length;
+    const awarded = allTenders.filter((t) => t.status === "awarded").length;
+    const draft = allTenders.filter((t) => t.status === "draft").length;
+
+    const allBids = await db.select().from(bids);
+    const totalBids = allBids.length;
+
+    return { total, open, closed, awarded, draft, totalBids };
+  }),
+
+  // ── Get categories ──
+  categories: publicQuery.query(async () => {
+    const db = getDb();
+    const results = await db
+      .selectDistinct({ category: tenders.category })
+      .from(tenders);
+    return results.map((r) => r.category);
+  }),
+
+  // ── Bar vendor from tender ──
+  barVendor: adminQuery
+    .input(
+      z.object({
+        vendorId: z.number(),
+        tenderId: z.number(),
+        reason: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb();
+      await db.insert(barredVendors).values({
+        vendorId: input.vendorId,
+        tenderId: input.tenderId,
+        reason: input.reason,
+        barredBy: ctx.user.id,
+      });
+      return { success: true };
+    }),
+
+  // ── Unbar vendor from tender ──
+  unbarVendor: adminQuery
+    .input(
+      z.object({
+        vendorId: z.number(),
+        tenderId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = getDb();
+      await db
+        .delete(barredVendors)
+        .where(
+          and(
+            eq(barredVendors.vendorId, input.vendorId),
+            eq(barredVendors.tenderId, input.tenderId)
+          )
+        );
+      return { success: true };
+    }),
+
+  // ── Get barred vendors for tender ──
+  getBarredVendors: adminQuery
+    .input(z.object({ tenderId: z.number() }))
+    .query(async ({ input }) => {
+      const db = getDb();
+      const results = await db
+        .select()
+        .from(barredVendors)
+        .where(eq(barredVendors.tenderId, input.tenderId));
+      return results;
+    }),
+});
