@@ -2,7 +2,8 @@ import { z } from "zod";
 import { eq, and, desc } from "drizzle-orm";
 import { createRouter, adminQuery, vendorQuery, anyRoleQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { bids, tenders, users, vendorProfiles, barredVendors } from "@db/schema";
+import { bids, tenders, users, vendorProfiles, barredVendors, agentDownloads } from "@db/schema";
+import { sql } from "drizzle-orm";
 
 export const bidRouter = createRouter({
   // ── Place a bid (vendor) ──
@@ -127,6 +128,7 @@ export const bidRouter = createRouter({
           vendorName: users.name,
           vendorEmail: users.email,
           vendorCompany: vendorProfiles.companyName,
+          agentDownloadCount: sql<number>`(SELECT COUNT(*) FROM ${agentDownloads} WHERE ${agentDownloads.bidId} = ${bids.id})`.as("agentDownloadCount"),
         })
         .from(bids)
         .innerJoin(users, eq(bids.vendorId, users.id))

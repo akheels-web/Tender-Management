@@ -6,6 +6,7 @@ import {
   Star,
   Clock,
   FileText,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -146,6 +147,19 @@ export default function BidsPage() {
                         <p className="text-slate-300 text-sm mb-2">
                           {bid.description}
                         </p>
+                        {bid.documentUrl && (
+                          <div className="mb-3">
+                            <a 
+                              href={bid.documentUrl} 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className="text-cyan-400 hover:text-cyan-300 text-sm flex items-center gap-1 inline-flex"
+                            >
+                              <FileText className="w-4 h-4" />
+                              View Bid Document
+                            </a>
+                          </div>
+                        )}
                         <div className="flex flex-wrap gap-4 text-xs text-slate-500">
                           <span className="flex items-center gap-1.5">
                             <FileText className="w-3.5 h-3.5" />
@@ -161,6 +175,12 @@ export default function BidsPage() {
                             <span className="flex items-center gap-1.5">
                               <Star className="w-3.5 h-3.5" />
                               Technical: {bid.technicalScore}
+                            </span>
+                          )}
+                          {(bid.agentDownloadCount ?? 0) > 0 && (
+                            <span className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                              <Download className="w-3.5 h-3.5" />
+                              Downloaded by Agent {bid.agentDownloadCount} time(s)
                             </span>
                           )}
                         </div>

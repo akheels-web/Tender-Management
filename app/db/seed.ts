@@ -2,45 +2,47 @@ import "dotenv/config";
 import { getDb } from "../api/queries/connection";
 import { users, tenders, bids, vendorProfiles, activityLogs } from "./schema";
 import { eq } from "drizzle-orm";
+import { hashPassword } from "../api/lib/auth";
 
 async function seed() {
   const db = getDb();
+  const defaultPassword = hashPassword("password123");
 
   // Create admin user
   await db
     .insert(users)
     .values({
-      unionId: "admin_union_001",
       name: "Admin User",
       email: "admin@protender.com",
       role: "admin",
+      passwordHash: defaultPassword,
     })
     .onDuplicateKeyUpdate({
-      set: { name: "Admin User", email: "admin@protender.com", role: "admin" },
+      set: { name: "Admin User", role: "admin", passwordHash: defaultPassword },
     });
-  console.log("Admin created");
+  console.log("Admin created (admin@protender.com / password123)");
 
   // Create agent user
   await db
     .insert(users)
     .values({
-      unionId: "agent_union_001",
       name: "Agent Smith",
       email: "agent@protender.com",
       role: "agent",
+      passwordHash: defaultPassword,
     })
     .onDuplicateKeyUpdate({
-      set: { name: "Agent Smith", email: "agent@protender.com", role: "agent" },
+      set: { name: "Agent Smith", role: "agent", passwordHash: defaultPassword },
     });
   console.log("Agent created");
 
   // Create vendor users with profiles
   const vendorData = [
     {
-      unionId: "vendor_union_001",
       name: "Acme Corp",
       email: "acme@protender.com",
       role: "vendor" as const,
+      passwordHash: defaultPassword,
       companyName: "Acme Corporation Ltd",
       contactPerson: "John Doe",
       phone: "+1-555-0101",
@@ -48,10 +50,10 @@ async function seed() {
       description: "Leading infrastructure development company",
     },
     {
-      unionId: "vendor_union_002",
       name: "BuildRight Inc",
       email: "buildright@protender.com",
       role: "vendor" as const,
+      passwordHash: defaultPassword,
       companyName: "BuildRight Infrastructure Inc",
       contactPerson: "Jane Smith",
       phone: "+1-555-0102",
@@ -59,10 +61,10 @@ async function seed() {
       description: "Specialized in commercial construction",
     },
     {
-      unionId: "vendor_union_003",
       name: "TechServe",
       email: "techserve@protender.com",
       role: "vendor" as const,
+      passwordHash: defaultPassword,
       companyName: "TechServe Solutions",
       contactPerson: "Mike Johnson",
       phone: "+1-555-0103",
@@ -70,10 +72,10 @@ async function seed() {
       description: "IT services and software development",
     },
     {
-      unionId: "vendor_union_004",
       name: "GreenField Co",
       email: "greenfield@protender.com",
       role: "vendor" as const,
+      passwordHash: defaultPassword,
       companyName: "GreenField Construction Co",
       contactPerson: "Sarah Williams",
       phone: "+1-555-0104",
@@ -88,13 +90,13 @@ async function seed() {
       .insert(users)
       .values(userData)
       .onDuplicateKeyUpdate({
-        set: { name: v.name, email: v.email, role: v.role },
+        set: { name: v.name, role: v.role, passwordHash: defaultPassword },
       });
 
     const vendorUser = await db
       .select()
       .from(users)
-      .where(eq(users.unionId, userData.unionId))
+      .where(eq(users.email, userData.email))
       .limit(1);
 
     if (vendorUser[0]) {
@@ -185,72 +187,6 @@ async function seed() {
       lockReason: "Budget and planning details confidential",
       createdBy: 1,
     },
-    {
-      tenderId: "TDR-2026-004",
-      title: "Smart City IoT Sensor Network Deployment",
-      description:
-        "Deployment of 5000+ IoT sensors across the city for traffic monitoring, air quality measurement, waste management optimization, and public safety.",
-      category: "Technology",
-      status: "open" as const,
-      budgetEstimate: "1850000.00",
-      currency: "USD",
-      location: "City-wide deployment",
-      department: "Smart City Initiative",
-      publishDate: "2026-04-01",
-      closingDate: "2026-10-15",
-      openingDate: "2026-10-20",
-      contractPeriod: "15 Months",
-      eligibilityCriteria:
-        "IoT platform development experience. Must provide 5-year maintenance support.",
-      isLocked: true,
-      unlockPassword: "IoTcity2026!",
-      lockReason: "Contains security-sensitive deployment locations",
-      createdBy: 1,
-    },
-    {
-      tenderId: "TDR-2026-005",
-      title: "Water Treatment Plant Upgrade",
-      description:
-        "Upgrade of the main water treatment plant to increase capacity by 40% and implement advanced filtration systems meeting new EPA standards.",
-      category: "Utilities",
-      status: "closed" as const,
-      budgetEstimate: "5200000.00",
-      currency: "USD",
-      location: "Riverfront Industrial Area",
-      department: "Water Works Department",
-      publishDate: "2026-01-01",
-      closingDate: "2026-05-15",
-      openingDate: "2026-05-20",
-      contractPeriod: "30 Months",
-      eligibilityCriteria:
-        "Water treatment facility construction experience required. EPA compliance certification.",
-      isLocked: true,
-      unlockPassword: "WTRtrt2026!",
-      lockReason: "Environmental impact assessment data sensitive",
-      createdBy: 1,
-    },
-    {
-      tenderId: "TDR-2026-006",
-      title: "Public Transit Electric Bus Fleet Procurement",
-      description:
-        "Procurement of 200 electric buses with charging infrastructure, maintenance depot upgrades, and driver training programs.",
-      category: "Transportation",
-      status: "awarded" as const,
-      budgetEstimate: "8900000.00",
-      currency: "USD",
-      location: "City Transport Depot",
-      department: "Transportation Department",
-      publishDate: "2025-11-01",
-      closingDate: "2026-02-28",
-      openingDate: "2026-03-05",
-      contractPeriod: "36 Months",
-      eligibilityCriteria:
-        "Electric vehicle manufacturing experience. Must provide 10-year battery warranty.",
-      isLocked: true,
-      unlockPassword: "BUSelec2026!",
-      lockReason: "Procurement pricing confidential",
-      createdBy: 1,
-    },
   ];
 
   for (const t of tenderData) {
@@ -262,120 +198,6 @@ async function seed() {
       });
   }
   console.log("Tenders created");
-
-  // Create sample bids
-  const allTenders = await db.select().from(tenders);
-  const allVendors = await db
-    .select()
-    .from(users)
-    .where(eq(users.role, "vendor"));
-
-  const bidData = [
-    {
-      tenderRef: "TDR-2026-001",
-      vendorIdx: 0,
-      amount: "4250000.00",
-      status: "under_review" as const,
-      description: "Comprehensive highway expansion proposal with smart traffic systems",
-    },
-    {
-      tenderRef: "TDR-2026-001",
-      vendorIdx: 3,
-      amount: "4680000.00",
-      status: "submitted" as const,
-      description: "Sustainable highway construction with eco-friendly materials",
-    },
-    {
-      tenderRef: "TDR-2026-002",
-      vendorIdx: 2,
-      amount: "2650000.00",
-      status: "shortlisted" as const,
-      description: "Hybrid cloud architecture with advanced security stack",
-    },
-    {
-      tenderRef: "TDR-2026-002",
-      vendorIdx: 0,
-      amount: "2900000.00",
-      status: "submitted" as const,
-      description: "Enterprise data center modernization proposal",
-    },
-    {
-      tenderRef: "TDR-2026-004",
-      vendorIdx: 2,
-      amount: "1720000.00",
-      status: "under_review" as const,
-      description: "End-to-end IoT sensor network with AI analytics platform",
-    },
-    {
-      tenderRef: "TDR-2026-005",
-      vendorIdx: 0,
-      amount: "5100000.00",
-      status: "accepted" as const,
-      description: "Advanced water treatment facility upgrade proposal",
-    },
-    {
-      tenderRef: "TDR-2026-005",
-      vendorIdx: 3,
-      amount: "4950000.00",
-      status: "rejected" as const,
-      description: "Green water treatment solution",
-    },
-  ];
-
-  for (const b of bidData) {
-    const tender = allTenders.find((t) => t.tenderId === b.tenderRef);
-    const vendor = allVendors[b.vendorIdx];
-    if (tender && vendor) {
-      await db.insert(bids).values({
-        tenderId: tender.id,
-        vendorId: vendor.id,
-        bidAmount: b.amount,
-        status: b.status,
-        description: b.description,
-      });
-    }
-  }
-  console.log("Bids created");
-
-  // Create activity logs
-  await db.insert(activityLogs).values([
-    {
-      userId: 1,
-      action: "Tender Created",
-      entityType: "tender",
-      entityId: 1,
-      details: "Created TDR-2026-001",
-    },
-    {
-      userId: 1,
-      action: "Tender Created",
-      entityType: "tender",
-      entityId: 2,
-      details: "Created TDR-2026-002",
-    },
-    {
-      userId: 1,
-      action: "Vendor Barred",
-      entityType: "vendor",
-      entityId: 3,
-      details: "Barred vendor from TDR-2026-001",
-    },
-    {
-      userId: 1,
-      action: "Tender Assigned",
-      entityType: "tender",
-      entityId: 6,
-      details: "Assigned TDR-2026-006 to vendor",
-    },
-    {
-      userId: 1,
-      action: "Bid Reviewed",
-      entityType: "bid",
-      entityId: 3,
-      details: "Shortlisted bid for TDR-2026-002",
-    },
-  ]);
-  console.log("Activity logs created");
 
   console.log("Seed complete!");
 }

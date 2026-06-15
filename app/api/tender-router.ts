@@ -2,7 +2,8 @@ import { z } from "zod";
 import { eq, and, like, gte, lte, desc } from "drizzle-orm";
 import { createRouter, adminQuery, anyRoleQuery, publicQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { tenders, bids, barredVendors, tenderAssignments } from "@db/schema";
+import { tenders, bids, barredVendors, tenderAssignments, agentDownloads } from "@db/schema";
+import { sql } from "drizzle-orm";
 
 export const tenderRouter = createRouter({
   // ── List tenders (public) ──
@@ -41,7 +42,32 @@ export const tenderRouter = createRouter({
       const where = conditions.length > 0 ? and(...conditions) : undefined;
 
       const results = await db
-        .select()
+        .select({
+          id: tenders.id,
+          tenderId: tenders.tenderId,
+          title: tenders.title,
+          description: tenders.description,
+          category: tenders.category,
+          status: tenders.status,
+          budgetEstimate: tenders.budgetEstimate,
+          currency: tenders.currency,
+          location: tenders.location,
+          department: tenders.department,
+          publishDate: tenders.publishDate,
+          closingDate: tenders.closingDate,
+          openingDate: tenders.openingDate,
+          contractPeriod: tenders.contractPeriod,
+          eligibilityCriteria: tenders.eligibilityCriteria,
+          documentUrl: tenders.documentUrl,
+          documentName: tenders.documentName,
+          isLocked: tenders.isLocked,
+          unlockPassword: tenders.unlockPassword,
+          lockReason: tenders.lockReason,
+          createdBy: tenders.createdBy,
+          createdAt: tenders.createdAt,
+          updatedAt: tenders.updatedAt,
+          agentDownloadCount: sql<number>`(SELECT COUNT(*) FROM ${agentDownloads} WHERE ${agentDownloads.tenderId} = ${tenders.id} AND ${agentDownloads.bidId} IS NULL)`.as("agentDownloadCount"),
+        })
         .from(tenders)
         .where(where)
         .orderBy(desc(tenders.createdAt));
@@ -81,10 +107,11 @@ export const tenderRouter = createRouter({
         closingDate: z.string(),
         openingDate: z.string().optional(),
         contractPeriod: z.string().optional(),
-        eligibilityCriteria: z.string().optional(),
         isLocked: z.boolean().default(true),
         unlockPassword: z.string().optional(),
         lockReason: z.string().optional(),
+        documentUrl: z.string().optional(),
+        documentName: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {

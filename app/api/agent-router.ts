@@ -9,7 +9,20 @@ export const agentRouter = createRouter({
   listTenders: agentQuery.query(async () => {
     const db = getDb();
     return db
-      .select()
+      .select({
+        id: tenders.id,
+        tenderId: tenders.tenderId,
+        title: tenders.title,
+        description: tenders.description,
+        category: tenders.category,
+        status: tenders.status,
+        budgetEstimate: tenders.budgetEstimate,
+        location: tenders.location,
+        closingDate: tenders.closingDate,
+        isLocked: tenders.isLocked,
+        documentUrl: tenders.documentUrl,
+        documentName: tenders.documentName,
+      })
       .from(tenders)
       .orderBy(desc(tenders.createdAt));
   }),
@@ -26,6 +39,8 @@ export const agentRouter = createRouter({
           currency: bids.currency,
           status: bids.status,
           description: bids.description,
+          documentUrl: bids.documentUrl,
+          documentName: bids.documentName,
           submittedAt: bids.submittedAt,
           vendorName: users.name,
           vendorCompany: vendorProfiles.companyName,

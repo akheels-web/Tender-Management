@@ -10,6 +10,7 @@ import {
   Phone,
   Building2,
   AlertTriangle,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -25,6 +26,7 @@ export default function VendorsPage() {
   const [search, setSearch] = useState("");
   const [showBar, setShowBar] = useState(false);
   const [showActivate, setShowActivate] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
   const [barReason, setBarReason] = useState("");
   const [selectedTenderId, setSelectedTenderId] = useState<number | null>(null);
@@ -56,6 +58,24 @@ export default function VendorsPage() {
     },
   });
 
+  const createMutation = trpc.vendor.create.useMutation({
+    onSuccess: () => {
+      utils.vendor.list.invalidate();
+      setShowCreate(false);
+    },
+  });
+
+  const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    createMutation.mutate({
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+      companyName: formData.get("companyName") as string,
+    });
+  };
+
   const openBar = (vendor: any) => {
     setSelectedVendor(vendor);
     setShowBar(true);
@@ -75,6 +95,13 @@ export default function VendorsPage() {
             Manage vendor accounts, activate/deactivate, and bar from tenders.
           </p>
         </div>
+        <Button
+          onClick={() => setShowCreate(true)}
+          className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Create Vendor
+        </Button>
       </div>
 
       <div className="flex gap-3">
@@ -272,6 +299,76 @@ export default function VendorsPage() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Vendor Dialog */}
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-cyan-400" />
+              Register New Vendor
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreate} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Full Name</label>
+              <Input
+                name="name"
+                required
+                placeholder="Vendor Representative Name"
+                className="bg-[#0A1628] border-white/10"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Email Address</label>
+              <Input
+                name="email"
+                type="email"
+                required
+                placeholder="vendor@company.com"
+                className="bg-[#0A1628] border-white/10"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Company Name</label>
+              <Input
+                name="companyName"
+                required
+                placeholder="Company Ltd."
+                className="bg-[#0A1628] border-white/10"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Initial Password</label>
+              <Input
+                name="password"
+                type="password"
+                required
+                minLength={6}
+                placeholder="Min 6 characters"
+                className="bg-[#0A1628] border-white/10"
+              />
+            </div>
+            {createMutation.error && (
+              <div className="text-red-400 text-sm mt-2">
+                {createMutation.error.message}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 pt-4">
+              <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-400">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+                disabled={createMutation.isPending}
+              >
+                {createMutation.isPending ? "Creating..." : "Create Vendor"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

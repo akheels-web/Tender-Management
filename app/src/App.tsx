@@ -1,5 +1,4 @@
-import { Routes, Route } from "react-router";
-import Home from "./pages/Home";
+import { Routes, Route, Navigate } from "react-router";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./components/DashboardLayout";
@@ -17,7 +16,7 @@ import ProfilePage from "./pages/shared/ProfilePage";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
 
       {/* Dashboard Routes */}

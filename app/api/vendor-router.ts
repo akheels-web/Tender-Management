@@ -3,6 +3,8 @@ import { eq, desc } from "drizzle-orm";
 import { createRouter, adminQuery, vendorQuery, anyRoleQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { users, vendorProfiles, barredVendors } from "@db/schema";
+import { hashPassword } from "./lib/auth";
+import { Errors } from "@contracts/errors";
 
 export const vendorRouter = createRouter({
   // ── List all vendors (admin) ──
@@ -59,6 +61,40 @@ export const vendorRouter = createRouter({
         .orderBy(desc(users.createdAt));
 
       return results;
+    }),
+
+  // ── Create vendor (admin) ──
+  create: adminQuery
+    .input(
+      z.object({
+        name: z.string().min(1),
+        email: z.string().email(),
+        password: z.string().min(6),
+        companyName: z.string().min(1),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = getDb();
+      
+      const existing = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
+      if (existing.length > 0) {
+        throw Errors.badRequest("A user with this email already exists.");
+      }
+
+      const [{ insertId: userId }] = await db.insert(users).values({
+        name: input.name,
+        email: input.email,
+        passwordHash: hashPassword(input.password),
+        role: "vendor",
+      });
+
+      await db.insert(vendorProfiles).values({
+        userId: userId,
+        companyName: input.companyName,
+        isActive: true,
+      });
+
+      return { success: true, userId };
     }),
 
   // ── Get vendor by ID ──

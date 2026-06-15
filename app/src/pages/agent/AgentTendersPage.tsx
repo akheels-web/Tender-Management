@@ -228,15 +228,35 @@ export default function AgentTendersPage() {
                 <p className="text-white">{selectedTender?.location || "N/A"}</p>
               </div>
             </div>
-            <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-amber-400">
-                <Lock className="w-4 h-4" />
-                <span className="font-medium text-sm">Tender Details Locked</span>
+            
+            {!selectedTender?.isLocked && selectedTender?.documentUrl && (
+              <div className="bg-[#0A1628] rounded-lg p-3 mt-3 flex items-center justify-between">
+                <div>
+                  <p className="text-slate-500 text-xs mb-1">Tender Document</p>
+                  <a
+                    href={selectedTender.documentUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-cyan-400 hover:text-cyan-300 text-sm flex items-center gap-1.5"
+                  >
+                    <FileText className="w-4 h-4" />
+                    {selectedTender.documentName || "View PDF"}
+                  </a>
+                </div>
               </div>
-              <p className="text-slate-500 text-sm mt-1">
-                Full tender documents and bid details are restricted. Contact an administrator to unlock.
-              </p>
-            </div>
+            )}
+
+            {selectedTender?.isLocked && (
+              <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-amber-400">
+                  <Lock className="w-4 h-4" />
+                  <span className="font-medium text-sm">Tender Details Locked</span>
+                </div>
+                <p className="text-slate-500 text-sm mt-1">
+                  Full tender documents and bid details are restricted. Contact an administrator to unlock.
+                </p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -271,6 +291,19 @@ export default function AgentTendersPage() {
                 <p className="text-slate-600 text-xs mt-2">
                   Submitted: {bid.submittedAt ? new Date(bid.submittedAt).toLocaleDateString() : "N/A"}
                 </p>
+                {bid.status === "accepted" && bid.documentUrl && (
+                  <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                    <a
+                      href={bid.documentUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1.5"
+                    >
+                      <FileText className="w-4 h-4" />
+                      View Bid Document
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
           </div>

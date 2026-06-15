@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { trpc } from "@/providers/trpc";
 import {
   Plus,
@@ -14,6 +14,7 @@ import {
   X,
   AlertTriangle,
   Shield,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -62,6 +63,8 @@ export default function TendersPage() {
       status: statusFilter || undefined,
     }
   );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const createMutation = trpc.tender.create.useMutation({
     onSuccess: () => {
@@ -101,10 +104,47 @@ export default function TendersPage() {
     onSuccess: () => utils.tender.list.invalidate(),
   });
 
-  const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
+    
+    let documentUrl = undefined;
+    let documentName = undefined;
+
+    const file = fileInputRef.current?.files?.[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        alert("Only PDF files are allowed.");
+        return;
+      }
+      setIsUploading(true);
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      
+      try {
+        const res = await fetch("/api/files", {
+          method: "POST",
+          body: uploadData,
+        });
+        const data = await res.json();
+        if (data.success) {
+          documentUrl = data.url;
+          documentName = data.fileName;
+        } else {
+          alert("File upload failed");
+          setIsUploading(false);
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        alert("File upload failed");
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
     createMutation.mutate({
       tenderId: formData.get("tenderId") as string,
       title: formData.get("title") as string,
@@ -119,11 +159,11 @@ export default function TendersPage() {
       closingDate: formData.get("closingDate") as string,
       openingDate: (formData.get("openingDate") as string) || undefined,
       contractPeriod: (formData.get("contractPeriod") as string) || undefined,
-      eligibilityCriteria:
-        (formData.get("eligibilityCriteria") as string) || undefined,
       isLocked: true,
       unlockPassword: (formData.get("unlockPassword") as string) || undefined,
       lockReason: (formData.get("lockReason") as string) || undefined,
+      documentUrl,
+      documentName,
     });
   };
 
@@ -279,6 +319,12 @@ export default function TendersPage() {
                       <FileText className="w-3.5 h-3.5" />
                       {tender.category}
                     </span>
+                    {(tender.agentDownloadCount ?? 0) > 0 && (
+                      <span className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                        <Download className="w-3.5 h-3.5" />
+                        Downloaded by Agent {tender.agentDownloadCount} time(s)
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-1 ml-4">
@@ -376,8 +422,8 @@ export default function TendersPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Eligibility Criteria</Label>
-              <Textarea name="eligibilityCriteria" placeholder="Vendor requirements" rows={2} className="bg-[#0A1628] border-white/10" />
+              <Label>Tender Document (PDF)</Label>
+              <Input type="file" accept=".pdf" ref={fileInputRef} className="bg-[#0A1628] border-white/10" />
             </div>
             <div className="border border-cyan-500/20 rounded-lg p-4 space-y-3 bg-cyan-500/5">
               <div className="flex items-center gap-2 text-cyan-400">
@@ -397,8 +443,8 @@ export default function TendersPage() {
               <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-400">
                 Cancel
               </Button>
-              <Button type="submit" className="bg-cyan-500 hover:bg-cyan-600 text-white" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Tender"}
+              <Button type="submit" className="bg-cyan-500 hover:bg-cyan-600 text-white" disabled={createMutation.isPending || isUploading}>
+                {createMutation.isPending || isUploading ? "Creating..." : "Create Tender"}
               </Button>
             </div>
           </form>
@@ -478,6 +524,19 @@ export default function TendersPage() {
               </span>
             </div>
             <p className="text-slate-300 text-sm">{selectedTender?.description}</p>
+            {selectedTender?.documentUrl && (
+              <div className="mb-2">
+                <a 
+                  href={selectedTender.documentUrl} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-cyan-400 hover:text-cyan-300 text-sm flex items-center gap-1 inline-flex"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Tender Document
+                </a>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="bg-[#0A1628] rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Category</p>

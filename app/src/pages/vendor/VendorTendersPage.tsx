@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { trpc } from "@/providers/trpc";
 import {
   Search,
@@ -48,6 +48,8 @@ export default function VendorTendersPage() {
   const [unlockPassword, setUnlockPassword] = useState("");
   const [unlockError, setUnlockError] = useState("");
   const [bidSuccess, setBidSuccess] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const utils = trpc.useUtils();
   const { data: tenders, isLoading } = trpc.tender.list.useQuery({
@@ -80,17 +82,54 @@ export default function VendorTendersPage() {
     },
   });
 
-  const handlePlaceBid = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlePlaceBid = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedTender) return;
     const form = e.currentTarget;
     const formData = new FormData(form);
+
+    let documentUrl = undefined;
+    let documentName = undefined;
+
+    const file = fileInputRef.current?.files?.[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        alert("Only PDF files are allowed.");
+        return;
+      }
+      setIsUploading(true);
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      
+      try {
+        const res = await fetch("/api/files", {
+          method: "POST",
+          body: uploadData,
+        });
+        const data = await res.json();
+        if (data.success) {
+          documentUrl = data.url;
+          documentName = data.fileName;
+        } else {
+          alert("File upload failed");
+          setIsUploading(false);
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        alert("File upload failed");
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
     placeBidMutation.mutate({
       tenderId: selectedTender.id,
       bidAmount: formData.get("bidAmount") as string,
       description: formData.get("description") as string,
-      documentUrl: (formData.get("documentUrl") as string) || undefined,
-      documentName: (formData.get("documentName") as string) || undefined,
+      documentUrl,
+      documentName,
     });
   };
 
@@ -237,7 +276,7 @@ export default function VendorTendersPage() {
                       <Lock className="w-4 h-4" />
                     </button>
                   ) : (
-                    tender.status === "open" && (
+                    tender.status === "open" && (!tender.closingDate || new Date(tender.closingDate) >= new Date()) ? (
                       <button
                         onClick={() => openBid(tender)}
                         className="p-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition-all"
@@ -245,6 +284,10 @@ export default function VendorTendersPage() {
                       >
                         <Gavel className="w-4 h-4" />
                       </button>
+                    ) : (
+                      <span className="text-xs px-2 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
+                        Closed
+                      </span>
                     )
                   )}
                 </div>
@@ -343,13 +386,14 @@ export default function VendorTendersPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Document URL (PDF)</label>
+                <label className="text-sm text-slate-300">Bid Proposal (PDF)</label>
                 <Input
-                  name="documentUrl"
-                  placeholder="Link to your PDF proposal"
+                  type="file"
+                  accept=".pdf"
+                  ref={fileInputRef}
                   className="bg-[#0A1628] border-white/10"
                 />
-                <p className="text-xs text-slate-500">Upload your proposal PDF and paste the link here</p>
+                <p className="text-xs text-slate-500">Upload your proposal PDF</p>
               </div>
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="ghost" onClick={() => setShowBid(false)} className="text-slate-400">
@@ -358,9 +402,9 @@ export default function VendorTendersPage() {
                 <Button
                   type="submit"
                   className="bg-emerald-500 hover:bg-emerald-600 text-white"
-                  disabled={placeBidMutation.isPending}
+                  disabled={placeBidMutation.isPending || isUploading}
                 >
-                  {placeBidMutation.isPending ? "Submitting..." : "Submit Bid"}
+                  {placeBidMutation.isPending || isUploading ? "Submitting..." : "Submit Bid"}
                 </Button>
               </div>
             </form>
@@ -382,6 +426,19 @@ export default function VendorTendersPage() {
               <span className="text-xs text-slate-500 font-mono">{selectedTender?.tenderId}</span>
             </div>
             <p className="text-slate-300 text-sm">{selectedTender?.description}</p>
+            {selectedTender?.documentUrl && !selectedTender.isLocked && (
+              <div className="mb-2">
+                <a 
+                  href={selectedTender.documentUrl} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-cyan-400 hover:text-cyan-300 text-sm flex items-center gap-1 inline-flex"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Tender Document
+                </a>
+              </div>
+            )}
             {selectedTender?.eligibilityCriteria && (
               <div className="bg-[#0A1628] rounded-lg p-4">
                 <p className="text-slate-500 text-xs mb-1">Eligibility Criteria</p>

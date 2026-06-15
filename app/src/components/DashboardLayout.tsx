@@ -31,6 +31,21 @@ export default function DashboardLayout() {
     if (isAdmin) navigate("/admin/dashboard");
     else if (isAgent) navigate("/agent/dashboard");
     else if (isVendor) navigate("/vendor/dashboard");
+    return null;
+  }
+
+  // Prevent cross-role access
+  if (location.pathname.startsWith("/admin") && !isAdmin) {
+    navigate("/");
+    return null;
+  }
+  if (location.pathname.startsWith("/agent") && !isAgent) {
+    navigate("/");
+    return null;
+  }
+  if (location.pathname.startsWith("/vendor") && !isVendor) {
+    navigate("/");
+    return null;
   }
 
   return (

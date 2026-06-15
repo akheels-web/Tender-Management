@@ -13,9 +13,9 @@ import {
 // ─── Users ───
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  unionId: varchar("unionId", { length: 255 }).notNull().unique(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 320 }),
   avatar: text("avatar"),
   role: mysqlEnum("role", ["user", "admin", "agent", "vendor"])
     .default("user")
@@ -172,3 +172,15 @@ export const activityLogs = mysqlTable("activity_logs", {
 
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = typeof activityLogs.$inferInsert;
+
+// ─── Agent Downloads ───
+export const agentDownloads = mysqlTable("agent_downloads", {
+  id: int("id").autoincrement().primaryKey(),
+  agentId: int("agentId").notNull(),
+  tenderId: int("tenderId").notNull(),
+  bidId: int("bidId"),
+  downloadedAt: timestamp("downloadedAt").defaultNow().notNull(),
+});
+
+export type AgentDownload = typeof agentDownloads.$inferSelect;
+export type InsertAgentDownload = typeof agentDownloads.$inferInsert;
