@@ -1,11 +1,11 @@
-import { Outlet, useNavigate, useLocation, Navigate } from "react-router";
+import { Outlet, useLocation, Navigate } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 
 export default function DashboardLayout() {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
+
   const location = useLocation();
 
   if (isLoading) {

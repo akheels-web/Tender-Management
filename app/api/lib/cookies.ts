@@ -1,11 +1,10 @@
 import type { CookieOptions } from "hono/utils/cookie";
 
-function isLocalhost(headers: Headers): boolean {
-  const host = headers.get("host") || "";
-  return host.startsWith("localhost:") || host.startsWith("127.0.0.1:");
+function isLocalhost(): boolean {
+  return process.env.NODE_ENV !== "production";
 }
 
-export function getSessionCookieOptions(headers: Headers): CookieOptions {
+export function getSessionCookieOptions(): CookieOptions {
   return {
     httpOnly: true,
     path: "/",

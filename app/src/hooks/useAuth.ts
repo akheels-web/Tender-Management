@@ -28,7 +28,6 @@ export function useAuth(options?: UseAuthOptions) {
 
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
-      utils.clear();
       window.location.href = redirectPath;
     },
   });
