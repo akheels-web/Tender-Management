@@ -1,5 +1,6 @@
 import { getDb } from "./queries/connection";
 import { users, vendorProfiles, tenders, bids } from "@db/schema";
+import { eq } from "drizzle-orm";
 import { hashPassword } from "./lib/auth";
 
 async function runSeed() {
@@ -54,7 +55,7 @@ async function runSeed() {
             vatNumber: "OM-VAT-12345",
             occiNumber: "OCCI-8765",
             address: "Ruwi, Muscat, Sultanate of Oman"
-          }).where(require("drizzle-orm").eq(vendorProfiles.userId, vendorId));
+          }).where(eq(vendorProfiles.userId, vendorId));
         }
       }
     } catch (e) {
@@ -132,6 +133,8 @@ async function runSeed() {
           status: "submitted",
           bidAmount: "115000",
           notes: "We have included premium Dell laptops with extended 3-year warranties.",
+          quotationUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+          technicalUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
         }
       ]);
     } else {
