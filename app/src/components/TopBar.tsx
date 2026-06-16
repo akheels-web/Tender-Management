@@ -26,33 +26,33 @@ export default function TopBar({ user }: TopBarProps) {
   };
 
   const breadcrumb = getBreadcrumb();
-  const roleColor = user.role === "admin" ? "bg-cyan-500/10 text-cyan-400" : user.role === "agent" ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400";
+  const roleColor = user.role === "admin" ? "bg-[#F9A01B]/10 text-[#F9A01B]" : user.role === "agent" ? "bg-[#F9A01B]/10 text-[#F9A01B]" : "bg-[#000097]/10 text-[#000097]";
   const roleLabel = user.role === "admin" ? "Administrator" : user.role === "agent" ? "Agent" : "Vendor";
 
   return (
-    <header className="h-[60px] bg-[#0E1925]/80 backdrop-blur-sm border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-40">
+    <header className="h-[60px] bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-40 shadow-sm">
       {/* Breadcrumb */}
       <div className="flex items-center gap-3">
-        <span className="text-slate-400 text-sm">{breadcrumb.main}</span>
-        <span className="text-slate-600">/</span>
-        <span className="text-slate-200 text-sm font-medium">{breadcrumb.sub}</span>
+        <span className="text-slate-500 text-sm">{breadcrumb.main}</span>
+        <span className="text-slate-300">/</span>
+        <span className="text-slate-900 text-sm font-medium">{breadcrumb.sub}</span>
       </div>
 
       {/* Right Actions */}
       <div className="flex items-center gap-4">
-        <button className="relative p-2 text-slate-400 hover:text-slate-200 transition-colors">
+        <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
           <Bell className="w-4.5 h-4.5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-cyan-400 rounded-full" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#F9A01B] rounded-full" />
         </button>
 
-        <div className="flex items-center gap-3 pl-4 border-l border-white/5">
+        <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="text-right hidden sm:block">
-            <p className="text-sm text-slate-200 font-medium">
+            <p className="text-sm text-slate-900 font-medium">
               {user.name || "User"}
             </p>
             <p className="text-xs text-slate-500">{user.email}</p>
           </div>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-sm font-medium">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#000097] to-[#000066] flex items-center justify-center text-white text-sm font-medium">
             {(user.name || "U")[0].toUpperCase()}
           </div>
           <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium", roleColor)}>

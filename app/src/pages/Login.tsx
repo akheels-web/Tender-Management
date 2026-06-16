@@ -78,14 +78,14 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-slate-50 flex">
       {/* Left side: Illustration */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#006F70] items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#000097] items-center justify-center overflow-hidden">
         {/* Abstract background shapes matching National Finance theme */}
         <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('/login_illustration.png')] bg-cover bg-center mix-blend-overlay"></div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#F9A01B] rounded-full blur-3xl opacity-40 translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#004A4B] rounded-full blur-3xl opacity-60 -translate-x-1/2 translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#000066] rounded-full blur-3xl opacity-60 -translate-x-1/2 translate-y-1/2"></div>
         
         <div className="relative z-10 p-12 text-center text-white">
-          <img src="/nf_logo.png" alt="National Finance" className="h-16 mx-auto mb-8 bg-white p-2 rounded-lg object-contain" />
+          <img src="/nfc_logo.svg" alt="National Finance" className="h-16 mx-auto mb-8 bg-white p-2 rounded-lg object-contain" />
           <h1 className="text-4xl font-bold mb-4">Tender Management System</h1>
           <p className="text-xl text-teal-100 mb-8 max-w-md mx-auto leading-relaxed">
             Manage your tenders anywhere.
@@ -103,8 +103,8 @@ export default function Login() {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-8">
-            <img src="/nf_logo.png" alt="National Finance" className="h-12 mb-4" />
-            <h1 className="text-2xl font-bold text-[#006F70]">Tender Portal</h1>
+            <img src="/nfc_logo.svg" alt="National Finance" className="h-12 mb-4" />
+            <h1 className="text-2xl font-bold text-[#000097]">Tender Portal</h1>
             <p className="text-slate-500 text-sm">Manage your tenders anywhere.</p>
           </div>
 
@@ -148,7 +148,7 @@ export default function Login() {
                           <Input 
                             placeholder="name@company.com" 
                             {...field} 
-                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#006F70]"
+                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#000097]"
                           />
                         </div>
                       </FormControl>
@@ -171,7 +171,7 @@ export default function Login() {
                             setErrorMsg("");
                             setSuccessMessage("");
                           }}
-                          className="text-sm font-medium text-[#006F70] hover:text-[#004A4B]"
+                          className="text-sm font-medium text-[#000097] hover:text-[#000066]"
                         >
                           Forgot password?
                         </button>
@@ -183,7 +183,7 @@ export default function Login() {
                             type="password" 
                             placeholder="••••••••" 
                             {...field} 
-                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#006F70]"
+                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#000097]"
                           />
                         </div>
                       </FormControl>
@@ -194,7 +194,7 @@ export default function Login() {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-12 bg-[#006F70] hover:bg-[#004A4B] text-white text-base font-medium rounded-lg shadow-md hover:shadow-lg transition-all"
+                  className="w-full h-12 bg-[#000097] hover:bg-[#000066] text-white text-base font-medium rounded-lg shadow-md hover:shadow-lg transition-all"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
@@ -225,7 +225,7 @@ export default function Login() {
                           <Input 
                             placeholder="name@company.com" 
                             {...field} 
-                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#006F70]"
+                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#000097]"
                           />
                         </div>
                       </FormControl>
@@ -265,6 +265,12 @@ export default function Login() {
               </form>
             </Form>
           )}
+
+          {/* Footer Logo */}
+          <div className="mt-16 flex justify-center items-center">
+            <span className="text-xs text-slate-400 mr-2">Presented by</span>
+            <img src="/tct_logo.png" alt="TCT" className="h-6 opacity-70 grayscale hover:grayscale-0 transition-all" />
+          </div>
         </div>
       </div>
     </div>

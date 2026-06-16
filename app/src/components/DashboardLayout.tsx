@@ -10,8 +10,8 @@ export default function DashboardLayout() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1628] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400" />
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#000097]" />
       </div>
     );
   }
@@ -55,7 +55,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1628] flex">
+    <div className="min-h-screen bg-slate-50 flex">
       <Sidebar role={userRole as string} />
       <div className="flex-1 flex flex-col ml-[260px]">
         <TopBar user={user} />

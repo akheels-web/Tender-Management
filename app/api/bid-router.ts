@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { eq, and, desc } from "drizzle-orm";
-import { createRouter, adminQuery, vendorQuery, anyRoleQuery } from "./middleware";
+import { createRouter, adminQuery, vendorQuery, anyRoleQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { bids, tenders, users, vendorProfiles, barredVendors, agentDownloads } from "@db/schema";
 import { sql } from "drizzle-orm";

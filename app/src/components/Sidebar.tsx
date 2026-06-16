@@ -74,7 +74,7 @@ export default function Sidebar({ role }: SidebarProps) {
         return "Procurement Agent";
       case "vendor":
         return "Vendor Portal";
-      case "auditor":
+      case "superadmin":
         return "Chief Auditor";
       default:
         return "User";
@@ -84,31 +84,29 @@ export default function Sidebar({ role }: SidebarProps) {
   const getRoleColor = () => {
     switch (role) {
       case "admin":
-        return "text-cyan-400";
+        return "text-[#F9A01B]";
       case "agent":
-        return "text-yellow-400";
+        return "text-[#F9A01B]";
       case "vendor":
-        return "text-green-400";
-      case "auditor":
-        return "text-purple-400";
+        return "text-[#000097]";
+      case "superadmin":
+        return "text-[#000097]";
       default:
         return "text-gray-400";
     }
   };
 
   return (
-    <div className="fixed left-0 top-0 h-full w-[260px] bg-[#0E1925] border-r border-white/5 flex flex-col z-50">
+    <div className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-slate-200 flex flex-col z-50 shadow-sm">
       {/* Logo */}
-      <div className="p-6 border-b border-white/5">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-white font-semibold text-lg leading-tight">
-              ProTender
+      <div className="p-6 border-b border-slate-100 flex flex-col items-center justify-center">
+        <Link to="/" className="flex flex-col items-center gap-3">
+          <img src="/nfc_logo.svg" alt="National Finance" className="h-10" />
+          <div className="text-center">
+            <h1 className="text-slate-800 font-semibold text-lg leading-tight mt-2">
+              Tender Portal
             </h1>
-            <p className={cn("text-xs font-medium", getRoleColor())}>
+            <p className={cn("text-xs font-semibold uppercase tracking-wider mt-1", getRoleColor())}>
               {getRoleLabel()}
             </p>
           </div>
@@ -116,7 +114,7 @@ export default function Sidebar({ role }: SidebarProps) {
       </div>
 
       {/* Nav Links */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {links.map((link) => {
           const Icon = link.icon;
           const active = isActive(link.path);
@@ -127,8 +125,8 @@ export default function Sidebar({ role }: SidebarProps) {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                 active
-                  ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-[#000097]/10 text-[#000097] border border-[#000097]/20"
+                  : "text-slate-600 hover:text-[#000097] hover:bg-slate-50"
               )}
             >
               <Icon className="w-4.5 h-4.5" />
@@ -139,14 +137,14 @@ export default function Sidebar({ role }: SidebarProps) {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-3 border-t border-white/5 space-y-1">
+      <div className="p-3 border-t border-slate-100 space-y-1">
         <Link
           to="/profile"
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
             isActive("/profile")
-              ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
-              : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+              ? "bg-[#000097]/10 text-[#000097] border border-[#000097]/20"
+              : "text-slate-600 hover:text-[#000097] hover:bg-slate-50"
           )}
         >
           <UserCircle className="w-4.5 h-4.5" />
@@ -154,11 +152,17 @@ export default function Sidebar({ role }: SidebarProps) {
         </Link>
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
         >
           <LogOut className="w-4.5 h-4.5" />
           Sign Out
         </button>
+      </div>
+      
+      {/* Footer Logo */}
+      <div className="p-4 border-t border-slate-100 flex justify-center items-center">
+        <span className="text-[10px] text-slate-400 mr-2">Presented by</span>
+        <img src="/tct_logo.png" alt="TCT" className="h-6 opacity-70 grayscale hover:grayscale-0 transition-all" />
       </div>
     </div>
   );
