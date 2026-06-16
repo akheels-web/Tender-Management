@@ -36,7 +36,6 @@ export const vendorRouter = createRouter({
             crNumber: vendorProfiles.crNumber,
             vatNumber: vendorProfiles.vatNumber,
             occiNumber: vendorProfiles.occiNumber,
-            businessType: vendorProfiles.businessType,
             address: vendorProfiles.address,
           })
           .from(users)
@@ -61,7 +60,6 @@ export const vendorRouter = createRouter({
           crNumber: vendorProfiles.crNumber,
           vatNumber: vendorProfiles.vatNumber,
           occiNumber: vendorProfiles.occiNumber,
-          businessType: vendorProfiles.businessType,
           address: vendorProfiles.address,
         })
         .from(users)

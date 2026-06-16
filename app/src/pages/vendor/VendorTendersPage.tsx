@@ -5,10 +5,7 @@ import {
   FileText,
   Calendar,
   DollarSign,
-  Lock,
-  Unlock,
   Gavel,
-  AlertTriangle,
   CheckCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,11 +39,8 @@ export default function VendorTendersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("open");
   const [showBid, setShowBid] = useState(false);
-  const [showUnlock, setShowUnlock] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [selectedTender, setSelectedTender] = useState<any>(null);
-  const [unlockPassword, setUnlockPassword] = useState("");
-  const [unlockError, setUnlockError] = useState("");
   const [bidSuccess, setBidSuccess] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const quotationInputRef = useRef<HTMLInputElement>(null);
@@ -69,19 +63,6 @@ export default function VendorTendersPage() {
     },
   });
 
-  const unlockMutation = trpc.tender.unlock.useMutation({
-    onSuccess: (result) => {
-      if (result.success) {
-        setShowUnlock(false);
-        setUnlockPassword("");
-        setUnlockError("");
-        // Refresh to show unlocked tender
-        utils.tender.list.invalidate();
-      } else {
-        setUnlockError(result.message || "Incorrect password");
-      }
-    },
-  });
 
   const handlePlaceBid = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -162,12 +143,6 @@ export default function VendorTendersPage() {
     setShowBid(true);
   };
 
-  const openUnlock = (tender: any) => {
-    setSelectedTender(tender);
-    setUnlockPassword("");
-    setUnlockError("");
-    setShowUnlock(true);
-  };
 
   const openDetail = (tender: any) => {
     setSelectedTender(tender);

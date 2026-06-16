@@ -1,8 +1,5 @@
 import type { CookieOptions } from "hono/utils/cookie";
 
-function isLocalhost(): boolean {
-  return process.env.NODE_ENV !== "production";
-}
 
 export function getSessionCookieOptions(): CookieOptions {
   return {

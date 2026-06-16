@@ -137,7 +137,7 @@ export default function VendorsPage() {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-medium border border-cyan-500/30">
-                    {vendor.name.charAt(0).toUpperCase()}
+                    {(vendor.name || "V").charAt(0).toUpperCase()}
                   </div>
                   <div>
                     <h3 className="text-slate-900 font-medium">{vendor.companyName || vendor.name}</h3>
@@ -396,7 +396,7 @@ export default function VendorsPage() {
             <div className="mt-4 space-y-4">
               <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
                 <div className="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 font-semibold text-xl">
-                  {selectedVendor.name.charAt(0).toUpperCase()}
+                  {(selectedVendor.name || "V").charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <h3 className="text-xl font-medium text-slate-900">{selectedVendor.companyName || selectedVendor.name}</h3>
@@ -420,10 +420,6 @@ export default function VendorsPage() {
                 <div className="space-y-1">
                   <p className="text-slate-500 text-xs">Phone</p>
                   <p className="font-medium">{selectedVendor.phone || "N/A"}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-slate-500 text-xs">Business Type</p>
-                  <p className="font-medium">{selectedVendor.businessType || "N/A"}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-slate-500 text-xs">Joined</p>

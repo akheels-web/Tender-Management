@@ -14,7 +14,6 @@ export function useAuth(options?: UseAuthOptions) {
 
   const navigate = useNavigate();
 
-  const utils = trpc.useUtils();
 
   const {
     data: user,

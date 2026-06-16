@@ -4,7 +4,6 @@ import {
   Plus,
   Search,
   Lock,
-  Unlock,
   Eye,
   Edit,
   Trash2,
@@ -12,8 +11,6 @@ import {
   Calendar,
   DollarSign,
   X,
-  AlertTriangle,
-  Shield,
   Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -50,16 +47,13 @@ export default function TendersPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const [showUnlock, setShowUnlock] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [selectedTender, setSelectedTender] = useState<any>(null);
-  const [unlockPassword, setUnlockPassword] = useState("");
-  const [unlockError, setUnlockError] = useState("");
 
   const utils = trpc.useUtils();
   const { data: tenders, isLoading } = trpc.tender.list.useQuery(
     { search: search || undefined, status: statusFilter && statusFilter !== "all" ? statusFilter : undefined },
-    { enabled: !showDelete && !showUnlock }
+    { enabled: !showDelete }
   );
   const { data: vendorGroups } = trpc.vendorGroup.getAll.useQuery();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,22 +80,7 @@ export default function TendersPage() {
     },
   });
 
-  const unlockMutation = trpc.tender.unlock.useMutation({
-    onSuccess: (result) => {
-      if (result.success) {
-        utils.tender.list.invalidate();
-        setShowUnlock(false);
-        setUnlockPassword("");
-        setUnlockError("");
-      } else {
-        setUnlockError(result.message || "Incorrect password");
-      }
-    },
-  });
 
-  const lockMutation = trpc.tender.lock.useMutation({
-    onSuccess: () => utils.tender.list.invalidate(),
-  });
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -194,12 +173,7 @@ export default function TendersPage() {
     setShowDetail(true);
   };
 
-  const openUnlock = (tender: any) => {
-    setSelectedTender(tender);
-    setUnlockPassword("");
-    setUnlockError("");
-    setShowUnlock(true);
-  };
+
 
   const openDelete = (tender: any) => {
     setSelectedTender(tender);

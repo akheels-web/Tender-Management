@@ -13,7 +13,6 @@ import {
   DollarSign,
   X,
   AlertTriangle,
-  Shield,
   Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
