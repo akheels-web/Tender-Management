@@ -100,7 +100,7 @@ export default function Sidebar({ role }: SidebarProps) {
     <div className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-slate-200 flex flex-col z-50 shadow-sm">
       {/* Logo */}
       <div className="p-6 border-b border-slate-100 flex flex-col items-center justify-center">
-        <Link to="/" className="flex flex-col items-center gap-3">
+        <Link to={links[0]?.path || "/"} className="flex flex-col items-center gap-3">
           <img src="/nfc_logo.svg" alt="National Finance" className="h-10" />
           <div className="text-center">
             <h1 className="text-slate-800 font-semibold text-lg leading-tight mt-2">

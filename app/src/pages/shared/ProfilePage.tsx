@@ -43,8 +43,9 @@ export default function ProfilePage() {
         contactPerson: (formData.get("contactPerson") as string) || undefined,
         phone: (formData.get("phone") as string) || undefined,
         address: (formData.get("address") as string) || undefined,
-        gstNumber: (formData.get("gstNumber") as string) || undefined,
-        panNumber: (formData.get("panNumber") as string) || undefined,
+        crNumber: (formData.get("crNumber") as string) || undefined,
+        vatNumber: (formData.get("vatNumber") as string) || undefined,
+        occiNumber: (formData.get("occiNumber") as string) || undefined,
         website: (formData.get("website") as string) || undefined,
         description: (formData.get("description") as string) || undefined,
         yearsInBusiness: formData.get("yearsInBusiness")
@@ -147,20 +148,29 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>GST Number</Label>
+                <Label>CR Number</Label>
                 <Input
-                  name="gstNumber"
-                  defaultValue={profile?.profile?.gstNumber || ""}
-                  placeholder="GSTIN"
+                  name="crNumber"
+                  defaultValue={profile?.profile?.crNumber || ""}
+                  placeholder="Commercial Registration No."
                   className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
-                <Label>PAN Number</Label>
+                <Label>VAT Number</Label>
                 <Input
-                  name="panNumber"
-                  defaultValue={profile?.profile?.panNumber || ""}
-                  placeholder="PAN"
+                  name="vatNumber"
+                  defaultValue={profile?.profile?.vatNumber || ""}
+                  placeholder="VAT No."
+                  className="bg-slate-50 border-slate-200"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>OCCI Number</Label>
+                <Input
+                  name="occiNumber"
+                  defaultValue={profile?.profile?.occiNumber || ""}
+                  placeholder="Oman Chamber of Commerce No."
                   className="bg-slate-50 border-slate-200"
                 />
               </div>

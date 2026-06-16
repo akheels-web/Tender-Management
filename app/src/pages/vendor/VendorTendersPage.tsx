@@ -250,7 +250,7 @@ export default function VendorTendersPage() {
                         statusColors[tender.status] || ""
                       )}
                     >
-                      {tender.status.toUpperCase()}
+                      {tender.status?.toUpperCase() || "UNKNOWN"}
                     </span>
                     {tender.isLocked && (
                       <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 flex items-center gap-1">
