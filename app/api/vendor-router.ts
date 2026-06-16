@@ -70,8 +70,8 @@ export const vendorRouter = createRouter({
       return results;
     }),
 
-  // ── Create vendor (admin) ──
-  create: adminQuery
+  // ── Create vendor (agent/admin) ──
+  create: agentQuery
     .input(
       z.object({
         name: z.string().min(1),
