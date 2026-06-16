@@ -124,6 +124,11 @@ export const tenderRouter = createRouter({
         createdBy: ctx.user.id,
         closingDate: new Date(input.closingDate),
       };
+      
+      if (!insertData.unlockPassword) {
+        insertData.unlockPassword = Math.random().toString(36).substring(2, 10).toUpperCase();
+      }
+
       if (input.publishDate) insertData.publishDate = new Date(input.publishDate);
       if (input.openingDate) insertData.openingDate = new Date(input.openingDate);
 

@@ -425,20 +425,7 @@ export default function TendersPage() {
               <Label>Tender Document (PDF)</Label>
               <Input type="file" accept=".pdf" ref={fileInputRef} className="bg-slate-50 border-slate-200" />
             </div>
-            <div className="border border-cyan-500/20 rounded-lg p-4 space-y-3 bg-cyan-500/5">
-              <div className="flex items-center gap-2 text-cyan-400">
-                <Shield className="w-4 h-4" />
-                <span className="font-medium text-sm">Auto-Lock Settings</span>
-              </div>
-              <div className="space-y-2">
-                <Label>Unlock Password</Label>
-                <Input name="unlockPassword" type="password" placeholder="Set password for tender access" className="bg-slate-50 border-slate-200" />
-              </div>
-              <div className="space-y-2">
-                <Label>Lock Reason</Label>
-                <Input name="lockReason" placeholder="Why is this tender locked?" className="bg-slate-50 border-slate-200" />
-              </div>
-            </div>
+
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-600">
                 Cancel
@@ -587,7 +574,12 @@ export default function TendersPage() {
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <p className="text-slate-600 text-sm">
-              This tender's bids are password-protected. Enter the admin password to unlock the vault.
+              This tender's bids are password-protected in a vault.
+              {selectedTender?.closingDate && new Date(selectedTender.closingDate) <= new Date() && (
+                <span className="block mt-2">
+                  System Generated Password: <strong className="font-mono bg-slate-100 px-2 py-1 rounded text-slate-900">{selectedTender.unlockPassword}</strong>
+                </span>
+              )}
             </p>
             {selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date() && (
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-amber-500 text-sm flex items-center gap-2">

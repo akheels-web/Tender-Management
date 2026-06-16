@@ -422,20 +422,7 @@ export default function TendersPage() {
               <Label>Tender Document (PDF)</Label>
               <Input type="file" accept=".pdf" ref={fileInputRef} className="bg-slate-50 border-slate-200" />
             </div>
-            <div className="border border-cyan-500/20 rounded-lg p-4 space-y-3 bg-cyan-500/5">
-              <div className="flex items-center gap-2 text-cyan-400">
-                <Shield className="w-4 h-4" />
-                <span className="font-medium text-sm">Auto-Lock Settings</span>
-              </div>
-              <div className="space-y-2">
-                <Label>Unlock Password</Label>
-                <Input name="unlockPassword" type="password" placeholder="Set password for tender access" className="bg-slate-50 border-slate-200" />
-              </div>
-              <div className="space-y-2">
-                <Label>Lock Reason</Label>
-                <Input name="lockReason" placeholder="Why is this tender locked?" className="bg-slate-50 border-slate-200" />
-              </div>
-            </div>
+
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-600">
                 Cancel
