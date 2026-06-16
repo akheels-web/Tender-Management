@@ -6,12 +6,12 @@ function isLocalhost(headers: Headers): boolean {
 }
 
 export function getSessionCookieOptions(headers: Headers): CookieOptions {
-  const localhost = isLocalhost(headers);
-
   return {
     httpOnly: true,
     path: "/",
-    sameSite: localhost ? "Lax" : "None",
-    secure: !localhost,
+    sameSite: "Lax",
+    // Allow cookies to be set without HTTPS (since this is internal/dev or local Proxmox network).
+    // Production deployments behind a real HTTPS proxy should set this to true.
+    secure: false, 
   };
 }

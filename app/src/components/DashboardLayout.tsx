@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useLocation } from "react-router";
+import { Outlet, useNavigate, useLocation, Navigate } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
@@ -17,8 +17,7 @@ export default function DashboardLayout() {
   }
 
   if (!user) {
-    navigate("/login");
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const userRole = user.role;
@@ -29,29 +28,25 @@ export default function DashboardLayout() {
 
   // Redirect to correct dashboard if on root
   if (location.pathname === "/") {
-    if (isAdmin) navigate("/admin/dashboard");
-    else if (isAgent) navigate("/agent/dashboard");
-    else if (isVendor) navigate("/vendor/dashboard");
-    else if (isSuperadmin) navigate("/superadmin/dashboard");
-    return null;
+    if (isAdmin) return <Navigate to="/admin/dashboard" replace />;
+    if (isAgent) return <Navigate to="/agent/dashboard" replace />;
+    if (isVendor) return <Navigate to="/vendor/dashboard" replace />;
+    if (isSuperadmin) return <Navigate to="/superadmin/dashboard" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Prevent cross-role access
   if (location.pathname.startsWith("/admin") && !isAdmin) {
-    navigate("/");
-    return null;
+    return <Navigate to="/" replace />;
   }
   if (location.pathname.startsWith("/agent") && !isAgent) {
-    navigate("/");
-    return null;
+    return <Navigate to="/" replace />;
   }
   if (location.pathname.startsWith("/vendor") && !isVendor) {
-    navigate("/");
-    return null;
+    return <Navigate to="/" replace />;
   }
   if (location.pathname.startsWith("/superadmin") && !isSuperadmin) {
-    navigate("/");
-    return null;
+    return <Navigate to="/" replace />;
   }
 
   return (
