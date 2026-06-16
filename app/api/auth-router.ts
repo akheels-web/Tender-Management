@@ -96,6 +96,30 @@ export const authRouter = createRouter({
       return { success: true };
     }),
 
+  provisionAuditor: publicQuery
+    .input(z.object({ secret: z.string(), email: z.string().email(), password: z.string().min(6) }))
+    .mutation(async ({ input }) => {
+      // Check the secret key against environment variables
+      const validSecret = process.env.AUDITOR_PROVISION_SECRET;
+      if (!validSecret || input.secret !== validSecret) {
+        throw Errors.forbidden("Invalid provision secret.");
+      }
+
+      const existing = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
+      if (existing.length > 0) {
+        throw Errors.badRequest("Auditor account with this email already exists.");
+      }
+
+      await db.insert(users).values({
+        name: "Chief Auditor",
+        email: input.email,
+        passwordHash: hashPassword(input.password),
+        role: "auditor",
+      });
+
+      return { success: true, message: "Auditor account provisioned successfully." };
+    }),
+
   me: authedQuery.query((opts) => opts.ctx.user),
   
   logout: authedQuery.mutation(async ({ ctx }) => {

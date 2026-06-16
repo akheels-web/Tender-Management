@@ -42,6 +42,10 @@ export default function Sidebar({ role }: SidebarProps) {
     { path: "/vendor/my-bids", label: "My Bids", icon: ClipboardList },
   ];
 
+  const auditorLinks = [
+    { path: "/auditor/dashboard", label: "Audit Dashboard", icon: LayoutDashboard },
+  ];
+
   const getLinks = () => {
     switch (role) {
       case "admin":
@@ -50,6 +54,8 @@ export default function Sidebar({ role }: SidebarProps) {
         return agentLinks;
       case "vendor":
         return vendorLinks;
+      case "auditor":
+        return auditorLinks;
       default:
         return [];
     }
@@ -65,6 +71,8 @@ export default function Sidebar({ role }: SidebarProps) {
         return "Procurement Agent";
       case "vendor":
         return "Vendor Portal";
+      case "auditor":
+        return "Chief Auditor";
       default:
         return "User";
     }
@@ -78,6 +86,8 @@ export default function Sidebar({ role }: SidebarProps) {
         return "text-yellow-400";
       case "vendor":
         return "text-green-400";
+      case "auditor":
+        return "text-purple-400";
       default:
         return "text-gray-400";
     }

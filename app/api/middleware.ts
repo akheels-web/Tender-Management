@@ -42,6 +42,7 @@ export const authedQuery = t.procedure.use(requireAuth);
 export const adminQuery = authedQuery.use(requireRole(["admin"]));
 export const agentQuery = authedQuery.use(requireRole(["admin", "agent"]));
 export const vendorQuery = authedQuery.use(requireRole(["admin", "vendor"]));
+export const auditorQuery = authedQuery.use(requireRole(["auditor"]));
 export const anyRoleQuery = authedQuery.use(
-  requireRole(["admin", "agent", "vendor"])
+  requireRole(["admin", "agent", "vendor", "auditor"])
 );

@@ -11,6 +11,7 @@ import AgentTendersPage from "./pages/agent/AgentTendersPage";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
 import VendorTendersPage from "./pages/vendor/VendorTendersPage";
 import MyBidsPage from "./pages/vendor/MyBidsPage";
+import AuditorDashboard from "./pages/auditor/AuditorDashboard";
 import ProfilePage from "./pages/shared/ProfilePage";
 
 export default function App() {
@@ -35,6 +36,9 @@ export default function App() {
         <Route path="/vendor/dashboard" element={<VendorDashboard />} />
         <Route path="/vendor/tenders" element={<VendorTendersPage />} />
         <Route path="/vendor/my-bids" element={<MyBidsPage />} />
+
+        {/* Auditor Routes */}
+        <Route path="/auditor/dashboard" element={<AuditorDashboard />} />
 
         {/* Shared */}
         <Route path="/profile" element={<ProfilePage />} />

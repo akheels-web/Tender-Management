@@ -25,12 +25,14 @@ export default function DashboardLayout() {
   const isAdmin = userRole === "admin";
   const isAgent = userRole === "agent";
   const isVendor = userRole === "vendor";
+  const isAuditor = userRole === "auditor";
 
   // Redirect to correct dashboard if on root
   if (location.pathname === "/") {
     if (isAdmin) navigate("/admin/dashboard");
     else if (isAgent) navigate("/agent/dashboard");
     else if (isVendor) navigate("/vendor/dashboard");
+    else if (isAuditor) navigate("/auditor/dashboard");
     return null;
   }
 
@@ -44,6 +46,10 @@ export default function DashboardLayout() {
     return null;
   }
   if (location.pathname.startsWith("/vendor") && !isVendor) {
+    navigate("/");
+    return null;
+  }
+  if (location.pathname.startsWith("/auditor") && !isAuditor) {
     navigate("/");
     return null;
   }
