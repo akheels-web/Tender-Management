@@ -184,3 +184,16 @@ export const agentDownloads = mysqlTable("agent_downloads", {
 
 export type AgentDownload = typeof agentDownloads.$inferSelect;
 export type InsertAgentDownload = typeof agentDownloads.$inferInsert;
+
+// ─── Password Reset Tokens ───
+export const passwordResetTokens = mysqlTable("password_reset_tokens", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  used: boolean("used").default(false).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = typeof passwordResetTokens.$inferInsert;
