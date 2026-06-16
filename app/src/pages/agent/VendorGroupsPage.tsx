@@ -85,7 +85,7 @@ export default function VendorGroupsPage() {
           {groups?.map((group) => (
             <div
               key={group.id}
-              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-slate-200 transition-colors"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 hover:shadow-sm transition-colors"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
@@ -103,7 +103,7 @@ export default function VendorGroupsPage() {
                 {group.description || "No description provided."}
               </p>
 
-              <div className="pt-4 border-t border-white/[0.06] flex justify-between items-center">
+              <div className="pt-4 border-t border-slate-200 flex justify-between items-center">
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -129,7 +129,7 @@ export default function VendorGroupsPage() {
 
       {/* Create Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900">
+        <DialogContent className="bg-white border-slate-200 text-slate-900">
           <DialogHeader>
             <DialogTitle>Create Vendor Group</DialogTitle>
           </DialogHeader>
@@ -169,7 +169,7 @@ export default function VendorGroupsPage() {
 
       {/* Assign Vendor Dialog */}
       <Dialog open={showAssign} onOpenChange={setShowAssign}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900">
+        <DialogContent className="bg-white border-slate-200 text-slate-900">
           <DialogHeader>
             <DialogTitle>Add Vendor to {selectedGroup?.name}</DialogTitle>
           </DialogHeader>

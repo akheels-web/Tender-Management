@@ -85,7 +85,7 @@ export default function BidsPage() {
       </div>
 
       {/* Tender Selector */}
-      <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+      <div className="bg-white border border-slate-200 rounded-xl p-5">
         <label className="text-sm text-slate-700 mb-2 block">
           Select a Tender to View Bids
         </label>
@@ -96,7 +96,7 @@ export default function BidsPage() {
           <SelectTrigger className="bg-slate-50 border-slate-200 text-slate-900 w-full max-w-lg">
             <SelectValue placeholder="Choose a tender..." />
           </SelectTrigger>
-          <SelectContent className="bg-[#111C2E] border-slate-200 max-h-[300px]">
+          <SelectContent className="bg-white border-slate-200 max-h-[300px]">
             {tenders?.map((t) => (
               <SelectItem key={t.id} value={t.id.toString()}>
                 <span className="font-mono text-xs text-slate-500 mr-2">
@@ -130,7 +130,7 @@ export default function BidsPage() {
                 </div>
               )}
               {!bidsResponse?.locked && bidsResponse?.count === 0 && (
-                <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
+                <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
                   <Gavel className="w-12 h-12 text-slate-600 mx-auto mb-3" />
                   <p className="text-slate-600">No bids for this tender</p>
                 </div>
@@ -140,7 +140,7 @@ export default function BidsPage() {
                   {bidsResponse?.bids?.map((bid) => (
                     <div
                       key={bid.id}
-                      className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-cyan-500/20 transition-all duration-300"
+                      className="bg-white border border-slate-200 rounded-xl p-5 hover:border-cyan-500/50 hover:shadow-sm transition-all duration-300"
                     >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
@@ -232,7 +232,7 @@ export default function BidsPage() {
 
       {/* Update Status Dialog */}
       <Dialog open={showUpdate} onOpenChange={setShowUpdate}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-cyan-400" />
@@ -252,7 +252,7 @@ export default function BidsPage() {
                 <SelectTrigger className="bg-slate-50 border-slate-200">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#111C2E] border-slate-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="submitted">Submitted</SelectItem>
                   <SelectItem value="under_review">Under Review</SelectItem>
                   <SelectItem value="shortlisted">Shortlisted</SelectItem>

@@ -111,7 +111,7 @@ export default function VendorsPage() {
             placeholder="Search vendors..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-[#111C2E] border-slate-200 text-slate-900 placeholder:text-slate-500"
+            className="pl-10 bg-white border-slate-200 text-slate-900 placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function VendorsPage() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {vendors?.length === 0 && (
-            <div className="col-span-2 text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
+            <div className="col-span-2 text-center py-12 bg-white rounded-xl border border-slate-200">
               <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
               <p className="text-slate-600">No vendors found</p>
             </div>
@@ -131,7 +131,7 @@ export default function VendorsPage() {
           {vendors?.map((vendor) => (
             <div
               key={vendor.id}
-              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-cyan-500/20 transition-all duration-300"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:border-cyan-500/50 hover:shadow-sm transition-all duration-300"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -213,7 +213,7 @@ export default function VendorsPage() {
 
       {/* Bar Vendor Dialog */}
       <Dialog open={showBar} onOpenChange={setShowBar}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Ban className="w-5 h-5 text-amber-400" />
@@ -273,7 +273,7 @@ export default function VendorsPage() {
 
       {/* Deactivate Dialog */}
       <Dialog open={showActivate} onOpenChange={setShowActivate}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -304,7 +304,7 @@ export default function VendorsPage() {
 
       {/* Create Vendor Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserCheck className="w-5 h-5 text-cyan-400" />

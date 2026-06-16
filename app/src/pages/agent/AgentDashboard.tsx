@@ -91,7 +91,7 @@ export default function AgentDashboard() {
           return (
             <div
               key={card.label}
-              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-yellow-500/20 transition-all duration-300"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:border-yellow-500/50 hover:shadow-sm transition-all duration-300"
             >
               <div className="flex items-start justify-between">
                 <div className={cn("p-2.5 rounded-lg", card.bg)}>
@@ -111,7 +111,7 @@ export default function AgentDashboard() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <h3 className="text-slate-900 font-medium mb-4">Tender Status Overview</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -133,7 +133,7 @@ export default function AgentDashboard() {
           </div>
         </div>
 
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <h3 className="text-slate-900 font-medium mb-4">Quick Navigation</h3>
           <div className="space-y-3">
             <a

@@ -201,14 +201,14 @@ export default function VendorTendersPage() {
             placeholder="Search by Tender ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-[#111C2E] border-slate-200 text-slate-900 placeholder:text-slate-500"
+            className="pl-10 bg-white border-slate-200 text-slate-900 placeholder:text-slate-500"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px] bg-[#111C2E] border-slate-200 text-slate-900">
+          <SelectTrigger className="w-[160px] bg-white border-slate-200 text-slate-900">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#111C2E] border-slate-200">
+          <SelectContent className="bg-white border-slate-200">
             <SelectItem value="">All</SelectItem>
             <SelectItem value="open">Open</SelectItem>
             <SelectItem value="published">Published</SelectItem>
@@ -226,7 +226,7 @@ export default function VendorTendersPage() {
       ) : (
         <div className="space-y-3">
           {tenders?.length === 0 && (
-            <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
+            <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
               <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
               <p className="text-slate-600">No tenders found</p>
             </div>
@@ -235,10 +235,10 @@ export default function VendorTendersPage() {
             <div
               key={tender.id}
               className={cn(
-                "bg-[#111C2E] border rounded-xl p-5 transition-all duration-300",
+                "bg-white border rounded-xl p-5 transition-all duration-300",
                 tender.isLocked
                   ? "border-amber-500/20 hover:border-amber-500/40"
-                  : "border-white/[0.06] hover:border-cyan-500/20"
+                  : "border-slate-200 hover:border-cyan-500/50 hover:shadow-sm"
               )}
             >
               <div className="flex items-start justify-between">
@@ -323,7 +323,7 @@ export default function VendorTendersPage() {
 
       {/* Unlock Dialog */}
       <Dialog open={showUnlock} onOpenChange={setShowUnlock}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Unlock className="w-5 h-5 text-amber-400" />
@@ -376,7 +376,7 @@ export default function VendorTendersPage() {
 
       {/* Place Bid Dialog */}
       <Dialog open={showBid} onOpenChange={setShowBid}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-lg">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Gavel className="w-5 h-5 text-emerald-400" />
@@ -446,7 +446,7 @@ export default function VendorTendersPage() {
 
       {/* Detail Dialog */}
       <Dialog open={showDetail} onOpenChange={setShowDetail}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-lg">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-lg">
           <DialogHeader>
             <DialogTitle>{selectedTender?.title}</DialogTitle>
           </DialogHeader>

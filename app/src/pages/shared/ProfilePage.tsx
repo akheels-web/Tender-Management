@@ -71,7 +71,7 @@ export default function ProfilePage() {
       )}
 
       {/* User Info Card */}
-      <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-white border border-slate-200 rounded-xl p-6">
         <h3 className="text-slate-900 font-medium mb-4 flex items-center gap-2">
           <UserCircle className="w-5 h-5 text-cyan-400" />
           Account Information
@@ -102,7 +102,7 @@ export default function ProfilePage() {
       {/* Vendor Profile Form */}
       {isVendor && (
         <form onSubmit={handleSubmit}>
-          <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-6 space-y-6">
+          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
             <h3 className="text-slate-900 font-medium flex items-center gap-2">
               <Building2 className="w-5 h-5 text-cyan-400" />
               Company Details

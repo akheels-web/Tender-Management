@@ -88,7 +88,7 @@ export default function VendorDashboard() {
           <p className="text-slate-600 text-sm mt-1">Track your bid history</p>
         </Link>
 
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
               <FileText className="w-5 h-5 text-yellow-400" />
@@ -106,7 +106,7 @@ export default function VendorDashboard() {
           return (
             <div
               key={card.label}
-              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5"
+              className="bg-white border border-slate-200 rounded-xl p-5"
             >
               <div className="flex items-start justify-between">
                 <div className={cn("p-2.5 rounded-lg", card.bg)}>
@@ -125,7 +125,7 @@ export default function VendorDashboard() {
       </div>
 
       {/* Recent Bids */}
-      <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+      <div className="bg-white border border-slate-200 rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-slate-900 font-medium">Recent Bids</h3>
           <Link

@@ -29,7 +29,7 @@ export default function SuperadminDashboard() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
               <FileText className="w-6 h-6 text-blue-400" />
@@ -43,7 +43,7 @@ export default function SuperadminDashboard() {
           </div>
         </div>
 
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center">
               <Gavel className="w-6 h-6 text-emerald-400" />
@@ -57,7 +57,7 @@ export default function SuperadminDashboard() {
           </div>
         </div>
 
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
               <Users className="w-6 h-6 text-purple-400" />
@@ -73,8 +73,8 @@ export default function SuperadminDashboard() {
       </div>
 
       {/* Activity Logs */}
-      <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl overflow-hidden">
-        <div className="px-6 py-5 border-b border-white/[0.06] flex items-center gap-3">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-200 flex items-center gap-3">
           <ShieldAlert className="w-5 h-5 text-amber-400" />
           <h2 className="text-lg font-medium text-slate-900">System Activity Logs</h2>
         </div>

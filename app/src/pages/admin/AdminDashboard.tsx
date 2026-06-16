@@ -100,7 +100,7 @@ export default function AdminDashboard() {
           return (
             <div
               key={card.label}
-              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-cyan-500/20 transition-all duration-300 group"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:border-cyan-500/50 hover:shadow-sm transition-all duration-300 group"
             >
               <div className="flex items-start justify-between">
                 <div className={cn("p-2.5 rounded-lg", card.bg)}>
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bid Status Distribution */}
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <h3 className="text-slate-900 font-medium mb-4">Bid Status Distribution</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tender Overview */}
-        <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <h3 className="text-slate-900 font-medium mb-4">Tender Overview</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
+      <div className="bg-white border border-slate-200 rounded-xl p-5">
         <h3 className="text-slate-900 font-medium mb-4">Recent Activity</h3>
         <div className="space-y-3">
           {stats?.recentActivity?.length === 0 && (

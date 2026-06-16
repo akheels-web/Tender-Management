@@ -73,7 +73,7 @@ export default function MyBidsPage() {
       ) : (
         <div className="space-y-3">
           {bids?.length === 0 && (
-            <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
+            <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
               <Gavel className="w-12 h-12 text-slate-600 mx-auto mb-3" />
               <p className="text-slate-600 mb-3">No bids submitted yet</p>
               <Button
@@ -87,7 +87,7 @@ export default function MyBidsPage() {
           {bids?.map((bid) => (
             <div
               key={bid.id}
-              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-cyan-500/20 transition-all duration-300 cursor-pointer"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:border-cyan-500/50 hover:shadow-sm transition-all duration-300 cursor-pointer"
               onClick={() => openDetail(bid)}
             >
               <div className="flex items-start justify-between">
@@ -142,7 +142,7 @@ export default function MyBidsPage() {
 
       {/* Bid Detail Dialog */}
       <Dialog open={showDetail} onOpenChange={setShowDetail}>
-        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-lg">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Gavel className="w-5 h-5 text-cyan-400" />

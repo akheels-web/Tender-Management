@@ -194,7 +194,7 @@ export default function Home() {
               return (
                 <div
                   key={feature.title}
-                  className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-6 hover:border-cyan-500/20 transition-all duration-300"
+                  className="bg-white border border-slate-200 rounded-xl p-6 hover:border-cyan-500/50 hover:shadow-sm transition-all duration-300"
                 >
                   <div className={feature.bg + " w-12 h-12 rounded-lg flex items-center justify-center mb-4"}>
                     <Icon className={feature.color + " w-6 h-6"} />
