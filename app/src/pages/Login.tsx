@@ -49,7 +49,11 @@ export default function Login() {
       else if (data.role === "superadmin") window.location.href = "/superadmin/dashboard";
     },
     onError: (error) => {
-      setErrorMsg(error.message);
+      if (error.message.includes("JSON") || error.message.includes("Unexpected token") || error.message.includes("network") || error.message.includes("fetch")) {
+        setErrorMsg("Login failed. Please check your network connection or try again later.");
+      } else {
+        setErrorMsg(error.message);
+      }
     },
   });
 
@@ -59,7 +63,11 @@ export default function Login() {
       forgotForm.reset();
     },
     onError: (error) => {
-      setErrorMsg(error.message);
+      if (error.message.includes("JSON") || error.message.includes("Unexpected token") || error.message.includes("network") || error.message.includes("fetch")) {
+        setErrorMsg("Failed to send reset link. Please check your network connection or try again later.");
+      } else {
+        setErrorMsg(error.message);
+      }
     },
   });
 
