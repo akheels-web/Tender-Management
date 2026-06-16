@@ -58,7 +58,7 @@ export default function TendersPage() {
 
   const utils = trpc.useUtils();
   const { data: tenders, isLoading } = trpc.tender.list.useQuery(
-    { search: search || undefined, status: statusFilter || undefined },
+    { search: search || undefined, status: statusFilter && statusFilter !== "all" ? statusFilter : undefined },
     { enabled: !showDelete && !showUnlock }
   );
   const { data: vendorGroups } = trpc.vendorGroup.getAll.useQuery();
@@ -241,7 +241,7 @@ export default function TendersPage() {
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent className="bg-white border-slate-200">
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="published">Published</SelectItem>
             <SelectItem value="open">Open</SelectItem>

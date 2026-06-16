@@ -1,14 +1,13 @@
 import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
-import { createRouter, adminQuery, vendorQuery, anyRoleQuery } from "./middleware";
+import { createRouter, adminQuery, vendorQuery, anyRoleQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { users, vendorProfiles, barredVendors } from "@db/schema";
 import { hashPassword } from "./lib/auth";
 import { Errors } from "@contracts/errors";
 
 export const vendorRouter = createRouter({
-  // ── List all vendors (admin) ──
-  list: adminQuery
+  list: agentQuery
     .input(
       z
         .object({
