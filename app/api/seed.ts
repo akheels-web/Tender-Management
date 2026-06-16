@@ -133,8 +133,8 @@ async function runSeed() {
           status: "submitted",
           bidAmount: "115000",
           notes: "We have included premium Dell laptops with extended 3-year warranties.",
-          quotationUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-          technicalUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+          quotationDocumentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+          technicalDocumentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
         }
       ]);
     } else {

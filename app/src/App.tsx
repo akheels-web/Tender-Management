@@ -14,6 +14,7 @@ import MyBidsPage from "./pages/vendor/MyBidsPage";
 import VendorGroupsPage from "./pages/agent/VendorGroupsPage";
 import SuperadminDashboard from "./pages/superadmin/SuperadminDashboard";
 import ProfilePage from "./pages/shared/ProfilePage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 export default function App() {
   return (
@@ -31,14 +32,14 @@ export default function App() {
 
         {/* Agent Routes */}
         <Route path="/agent/dashboard" element={<AgentDashboard />} />
-        <Route path="/agent/tenders" element={<AgentTendersPage />} />
+        <Route path="/agent/tenders" element={<ErrorBoundary><AgentTendersPage /></ErrorBoundary>} />
         <Route path="/agent/vendors" element={<VendorsPage />} />
         <Route path="/agent/vendor-groups" element={<VendorGroupsPage />} />
         <Route path="/agent/bids" element={<BidsPage />} />
 
         {/* Vendor Routes */}
         <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-        <Route path="/vendor/tenders" element={<VendorTendersPage />} />
+        <Route path="/vendor/tenders" element={<ErrorBoundary><VendorTendersPage /></ErrorBoundary>} />
         <Route path="/vendor/my-bids" element={<MyBidsPage />} />
 
         {/* Superadmin Routes */}

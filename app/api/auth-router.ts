@@ -33,7 +33,7 @@ export const authRouter = createRouter({
       }
 
       const token = await signSessionToken(userId);
-      const opts = getSessionCookieOptions(ctx.req.headers);
+      const opts = getSessionCookieOptions();
       
       ctx.resHeaders.append(
         "set-cookie",
@@ -131,7 +131,7 @@ export const authRouter = createRouter({
   me: authedQuery.query((opts) => opts.ctx.user),
   
   logout: authedQuery.mutation(async ({ ctx }) => {
-    const opts = getSessionCookieOptions(ctx.req.headers);
+    const opts = getSessionCookieOptions();
     ctx.resHeaders.append(
       "set-cookie",
       cookie.serialize(Session.cookieName, "", {
