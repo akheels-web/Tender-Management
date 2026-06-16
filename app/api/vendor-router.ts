@@ -33,6 +33,11 @@ export const vendorRouter = createRouter({
             phone: vendorProfiles.phone,
             isActive: vendorProfiles.isActive,
             isVerified: vendorProfiles.isVerified,
+            crNumber: vendorProfiles.crNumber,
+            vatNumber: vendorProfiles.vatNumber,
+            occiNumber: vendorProfiles.occiNumber,
+            businessType: vendorProfiles.businessType,
+            address: vendorProfiles.address,
           })
           .from(users)
           .leftJoin(vendorProfiles, eq(users.id, vendorProfiles.userId))
@@ -53,6 +58,11 @@ export const vendorRouter = createRouter({
           phone: vendorProfiles.phone,
           isActive: vendorProfiles.isActive,
           isVerified: vendorProfiles.isVerified,
+          crNumber: vendorProfiles.crNumber,
+          vatNumber: vendorProfiles.vatNumber,
+          occiNumber: vendorProfiles.occiNumber,
+          businessType: vendorProfiles.businessType,
+          address: vendorProfiles.address,
         })
         .from(users)
         .leftJoin(vendorProfiles, eq(users.id, vendorProfiles.userId))

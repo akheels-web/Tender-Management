@@ -13,11 +13,16 @@ import {
 export default function VendorGroupsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [showAssign, setShowAssign] = useState(false);
+  const [showMembers, setShowMembers] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<any>(null);
 
   const utils = trpc.useUtils();
   const { data: groups, isLoading } = trpc.vendorGroup.getAll.useQuery();
-  const { data: vendors } = trpc.vendor.list.useQuery({});
+  const { data: vendors } = trpc.vendor.list.useQuery();
+  const { data: groupMembers, isLoading: isLoadingMembers } = trpc.vendorGroup.getGroupVendors.useQuery(
+    { groupId: selectedGroup?.id },
+    { enabled: !!selectedGroup && showMembers }
+  );
 
   const createMutation = trpc.vendorGroup.create.useMutation({
     onSuccess: () => {
@@ -104,16 +109,28 @@ export default function VendorGroupsPage() {
               </p>
 
               <div className="pt-4 border-t border-slate-200 flex justify-between items-center">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setSelectedGroup(group);
-                    setShowAssign(true);
-                  }}
-                  className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 w-full"
-                >
-                  <Plus className="w-4 h-4 mr-2" /> Add Vendor
-                </Button>
+                <div className="flex w-full gap-2">
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setSelectedGroup(group);
+                      setShowMembers(true);
+                    }}
+                    className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 flex-1"
+                  >
+                    View Members
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setSelectedGroup(group);
+                      setShowAssign(true);
+                    }}
+                    className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 flex-1"
+                  >
+                    <Plus className="w-4 h-4 mr-2" /> Add Vendor
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
@@ -200,6 +217,48 @@ export default function VendorGroupsPage() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Members Dialog */}
+      <Dialog open={showMembers} onOpenChange={setShowMembers}>
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{selectedGroup?.name} Members</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 space-y-3">
+            {isLoadingMembers ? (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-400" />
+              </div>
+            ) : groupMembers && groupMembers.length > 0 ? (
+              <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                {groupMembers.map((member: any) => (
+                  <div key={member.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center text-cyan-600 font-medium text-xs">
+                        {member.name.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">{member.name}</p>
+                        <p className="text-xs text-slate-500">{member.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Users className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                <p className="text-slate-500 text-sm">No members in this group yet.</p>
+              </div>
+            )}
+            <div className="flex justify-end pt-2 border-t border-slate-100 mt-4">
+              <Button variant="ghost" onClick={() => setShowMembers(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

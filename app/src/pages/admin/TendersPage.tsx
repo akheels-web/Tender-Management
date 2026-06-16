@@ -476,7 +476,10 @@ export default function TendersPage() {
               <div className="space-y-2">
                 <Label>Budget Estimate ($)</Label>
                 <Input name="budgetEstimate" type="number" step="0.01" defaultValue={selectedTender?.budgetEstimate ?? ""} className="bg-slate-50 border-slate-200" />
-              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Closing Date</Label>
+              <Input name="closingDate" type="date" defaultValue={selectedTender?.closingDate ? new Date(selectedTender.closingDate).toISOString().split('T')[0] : ""} className="bg-slate-50 border-slate-200" />
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={() => setShowEdit(false)} className="text-slate-600">

@@ -27,6 +27,7 @@ export default function VendorsPage() {
   const [showBar, setShowBar] = useState(false);
   const [showActivate, setShowActivate] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
   const [barReason, setBarReason] = useState("");
   const [selectedTenderId, setSelectedTenderId] = useState<number | null>(null);
@@ -135,24 +136,37 @@ export default function VendorsPage() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-900 font-medium">
-                    {(vendor.name || "V")[0].toUpperCase()}
+                  <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-medium border border-cyan-500/30">
+                    {vendor.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="text-slate-900 font-medium">{vendor.name}</h3>
-                    <p className="text-slate-500 text-xs">{vendor.companyName || "No company"}</p>
+                    <h3 className="text-slate-900 font-medium">{vendor.companyName || vendor.name}</h3>
+                    <p className="text-xs text-slate-500">ID: {vendor.id}</p>
                   </div>
                 </div>
-                <span
-                  className={cn(
-                    "text-xs px-2.5 py-1 rounded-full font-medium",
-                    vendor.isActive
-                      ? "bg-emerald-500/10 text-emerald-400"
-                      : "bg-red-500/10 text-red-400"
-                  )}
-                >
-                  {vendor.isActive ? "Active" : "Inactive"}
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                  <span
+                    className={cn(
+                      "text-xs px-2.5 py-1 rounded-full font-medium",
+                      vendor.isActive
+                        ? "bg-emerald-500/10 text-emerald-400"
+                        : "bg-red-500/10 text-red-400"
+                    )}
+                  >
+                    {vendor.isActive ? "Active" : "Inactive"}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-xs text-cyan-500 hover:text-cyan-600 hover:bg-cyan-50"
+                    onClick={() => {
+                      setSelectedVendor(vendor);
+                      setShowProfile(true);
+                    }}
+                  >
+                    View Profile
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2 text-sm">
@@ -369,6 +383,83 @@ export default function VendorsPage() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Vendor Profile Dialog */}
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Vendor Profile</DialogTitle>
+          </DialogHeader>
+          {selectedVendor && (
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
+                <div className="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 font-semibold text-xl">
+                  {selectedVendor.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="text-xl font-medium text-slate-900">{selectedVendor.companyName || selectedVendor.name}</h3>
+                  <p className="text-slate-500 text-sm">{selectedVendor.email}</p>
+                  <div className="mt-1 flex gap-2">
+                    <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", selectedVendor.isActive ? "bg-emerald-100 text-emerald-600" : "bg-red-100 text-red-600")}>
+                      {selectedVendor.isActive ? "Active" : "Inactive"}
+                    </span>
+                    <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", selectedVendor.isVerified ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-600")}>
+                      {selectedVendor.isVerified ? "Verified" : "Unverified"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
+                  <p className="text-slate-500 text-xs">Contact Person</p>
+                  <p className="font-medium">{selectedVendor.contactPerson || "N/A"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-slate-500 text-xs">Phone</p>
+                  <p className="font-medium">{selectedVendor.phone || "N/A"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-slate-500 text-xs">Business Type</p>
+                  <p className="font-medium">{selectedVendor.businessType || "N/A"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-slate-500 text-xs">Joined</p>
+                  <p className="font-medium">{new Date(selectedVendor.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-4 space-y-3 mt-2 border border-slate-100">
+                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Registration Details</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-slate-500 text-xs">CR Number</p>
+                    <p className="font-mono text-slate-700">{selectedVendor.crNumber || "Not provided"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-xs">VAT Number</p>
+                    <p className="font-mono text-slate-700">{selectedVendor.vatNumber || "Not provided"}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-xs">OCCI Number</p>
+                    <p className="font-mono text-slate-700">{selectedVendor.occiNumber || "Not provided"}</p>
+                  </div>
+                </div>
+              </div>
+
+              {selectedVendor.address && (
+                <div className="space-y-1 mt-2">
+                  <p className="text-slate-500 text-xs">Address</p>
+                  <p className="text-sm text-slate-700">{selectedVendor.address}</p>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="flex justify-end mt-6">
+            <Button variant="ghost" onClick={() => setShowProfile(false)}>Close</Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
