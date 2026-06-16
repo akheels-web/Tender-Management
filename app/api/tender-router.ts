@@ -265,9 +265,14 @@ export const tenderRouter = createRouter({
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       const db = getDb();
+      const tender = await db.select().from(tenders).where(eq(tenders.id, input.id)).limit(1).then(res => res[0]);
+      if (!tender) return { success: false };
+
+      const autoPassword = tender.unlockPassword || Math.random().toString(36).slice(-8);
+
       await db
         .update(tenders)
-        .set({ isLocked: true })
+        .set({ isLocked: true, unlockPassword: autoPassword })
         .where(eq(tenders.id, input.id));
       return { success: true };
     }),
