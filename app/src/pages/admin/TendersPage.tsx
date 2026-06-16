@@ -587,9 +587,14 @@ export default function TendersPage() {
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <p className="text-slate-600 text-sm">
-              This tender is password-protected. Enter the admin password to
-              unlock it.
+              This tender's bids are password-protected. Enter the admin password to unlock the vault.
             </p>
+            {selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date() && (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-amber-500 text-sm flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" />
+                This tender is still open. You cannot unlock the vault until the closing date has passed.
+              </div>
+            )}
             {unlockError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
@@ -601,6 +606,7 @@ export default function TendersPage() {
               placeholder="Enter unlock password"
               value={unlockPassword}
               onChange={(e) => setUnlockPassword(e.target.value)}
+              disabled={selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date()}
               className="bg-slate-50 border-slate-200"
             />
             <div className="flex justify-end gap-3">
@@ -615,9 +621,9 @@ export default function TendersPage() {
                   })
                 }
                 className="bg-emerald-500 hover:bg-emerald-600 text-slate-900"
-                disabled={!unlockPassword || unlockMutation.isPending}
+                disabled={!unlockPassword || unlockMutation.isPending || (selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date())}
               >
-                {unlockMutation.isPending ? "Unlocking..." : "Unlock"}
+                {unlockMutation.isPending ? "Unlocking..." : "Unlock Vault"}
               </Button>
             </div>
           </div>

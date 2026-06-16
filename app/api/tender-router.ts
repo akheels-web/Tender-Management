@@ -234,12 +234,17 @@ export const tenderRouter = createRouter({
         .where(eq(tenders.id, input.id))
         .limit(1);
 
-      if (!result[0]) {
+      const tender = result[0];
+      if (!tender) {
         return { success: false, message: "Tender not found" };
       }
 
-      if (result[0].unlockPassword !== input.password) {
+      if (tender.unlockPassword !== input.password) {
         return { success: false, message: "Incorrect password" };
+      }
+
+      if (tender.closingDate && new Date(tender.closingDate) > new Date()) {
+        return { success: false, message: "Cannot unlock tender before closing date" };
       }
 
       await db

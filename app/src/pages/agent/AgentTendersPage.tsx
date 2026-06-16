@@ -342,22 +342,13 @@ export default function TendersPage() {
                   >
                     <Edit className="w-4 h-4" />
                   </button>
-                  {tender.isLocked ? (
-                    <button
-                      onClick={() => openUnlock(tender)}
-                      className="p-2 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-all"
-                      title="Unlock"
-                    >
-                      <Unlock className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => lockMutation.mutate({ id: tender.id })}
-                      className="p-2 text-slate-500 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-all"
-                      title="Lock"
+                  {tender.isLocked && (
+                    <div
+                      className="p-2 text-amber-500 bg-amber-500/10 rounded-lg cursor-not-allowed"
+                      title="Locked (Requires Admin to unlock after closing date)"
                     >
                       <Lock className="w-4 h-4" />
-                    </button>
+                    </div>
                   )}
                   <button
                     onClick={() => openDelete(tender)}
@@ -578,54 +569,6 @@ export default function TendersPage() {
                 </p>
               </div>
             )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Unlock Dialog */}
-      <Dialog open={showUnlock} onOpenChange={setShowUnlock}>
-        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Unlock className="w-5 h-5 text-emerald-400" />
-              Unlock Tender
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <p className="text-slate-600 text-sm">
-              This tender is password-protected. Enter the admin password to
-              unlock it.
-            </p>
-            {unlockError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" />
-                {unlockError}
-              </div>
-            )}
-            <Input
-              type="password"
-              placeholder="Enter unlock password"
-              value={unlockPassword}
-              onChange={(e) => setUnlockPassword(e.target.value)}
-              className="bg-slate-50 border-slate-200"
-            />
-            <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowUnlock(false)} className="text-slate-600">
-                Cancel
-              </Button>
-              <Button
-                onClick={() =>
-                  unlockMutation.mutate({
-                    id: selectedTender?.id,
-                    password: unlockPassword,
-                  })
-                }
-                className="bg-emerald-500 hover:bg-emerald-600 text-slate-900"
-                disabled={!unlockPassword || unlockMutation.isPending}
-              >
-                {unlockMutation.isPending ? "Unlocking..." : "Unlock"}
-              </Button>
-            </div>
           </div>
         </DialogContent>
       </Dialog>

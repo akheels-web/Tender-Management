@@ -252,12 +252,7 @@ export default function VendorTendersPage() {
                     >
                       {tender.status?.toUpperCase() || "UNKNOWN"}
                     </span>
-                    {tender.isLocked && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 flex items-center gap-1">
-                        <Lock className="w-3 h-3" />
-                        Locked
-                      </span>
-                    )}
+
                     <span className="text-xs text-slate-500 font-mono">
                       {tender.tenderId}
                     </span>
@@ -291,28 +286,18 @@ export default function VendorTendersPage() {
                   >
                     <FileText className="w-4 h-4" />
                   </button>
-                  {tender.isLocked ? (
+                  {tender.status === "open" && (!tender.closingDate || new Date(tender.closingDate) >= new Date()) ? (
                     <button
-                      onClick={() => openUnlock(tender)}
-                      className="p-2 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 rounded-lg transition-all"
-                      title="Unlock to Bid"
+                      onClick={() => openBid(tender)}
+                      className="p-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition-all"
+                      title="Place Bid"
                     >
-                      <Lock className="w-4 h-4" />
+                      <Gavel className="w-4 h-4" />
                     </button>
                   ) : (
-                    tender.status === "open" && (!tender.closingDate || new Date(tender.closingDate) >= new Date()) ? (
-                      <button
-                        onClick={() => openBid(tender)}
-                        className="p-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition-all"
-                        title="Place Bid"
-                      >
-                        <Gavel className="w-4 h-4" />
-                      </button>
-                    ) : (
-                      <span className="text-xs px-2 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
-                        Closed
-                      </span>
-                    )
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
+                      Closed
+                    </span>
                   )}
                 </div>
               </div>
@@ -320,59 +305,6 @@ export default function VendorTendersPage() {
           ))}
         </div>
       )}
-
-      {/* Unlock Dialog */}
-      <Dialog open={showUnlock} onOpenChange={setShowUnlock}>
-        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Unlock className="w-5 h-5 text-amber-400" />
-              Unlock Tender
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-amber-400 mb-1">
-                <Lock className="w-4 h-4" />
-                <span className="font-medium text-sm">Password Required</span>
-              </div>
-              <p className="text-slate-600 text-sm">
-                Contact the administrator to get the unlock password for this tender.
-              </p>
-            </div>
-            {unlockError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" />
-                {unlockError}
-              </div>
-            )}
-            <Input
-              type="password"
-              placeholder="Enter unlock password"
-              value={unlockPassword}
-              onChange={(e) => setUnlockPassword(e.target.value)}
-              className="bg-slate-50 border-slate-200"
-            />
-            <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowUnlock(false)} className="text-slate-600">
-                Cancel
-              </Button>
-              <Button
-                onClick={() =>
-                  unlockMutation.mutate({
-                    id: selectedTender?.id,
-                    password: unlockPassword,
-                  })
-                }
-                className="bg-amber-500 hover:bg-amber-600 text-slate-900"
-                disabled={!unlockPassword || unlockMutation.isPending}
-              >
-                {unlockMutation.isPending ? "Unlocking..." : "Unlock"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Place Bid Dialog */}
       <Dialog open={showBid} onOpenChange={setShowBid}>
@@ -458,7 +390,7 @@ export default function VendorTendersPage() {
               <span className="text-xs text-slate-500 font-mono">{selectedTender?.tenderId}</span>
             </div>
             <p className="text-slate-700 text-sm">{selectedTender?.description}</p>
-            {selectedTender?.documentUrl && !selectedTender.isLocked && (
+            {selectedTender?.documentUrl && (
               <div className="mb-2">
                 <a 
                   href={selectedTender.documentUrl} 
