@@ -5,20 +5,26 @@ import {
   FileText, 
   Users, 
   Gavel, 
-  ShieldAlert
+  ShieldAlert,
+  Shield
 } from "lucide-react";
 
-export default function AuditorDashboard() {
-  const { data: stats, isLoading: statsLoading } = trpc.auditor.getStats.useQuery();
-  const { data: logs, isLoading: logsLoading } = trpc.auditor.getActivityLogs.useQuery({ limit: 100 });
+export default function SuperadminDashboard() {
+  const { data: stats, isLoading: statsLoading } = trpc.superadmin.getStats.useQuery();
+  const { data: logs, isLoading: logsLoading } = trpc.superadmin.getActivityLogs.useQuery({ limit: 50 });
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Auditor Dashboard</h1>
+        <h1 className="text-2xl font-semibold text-white">Superadmin Dashboard</h1>
         <p className="text-slate-400 text-sm mt-1">
-          Monitor system activity and oversee administrative actions.
+          System-wide overview and complete audit trail.
         </p>
+      </div>
+
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 text-indigo-400 rounded-full text-xs font-medium border border-indigo-500/20 w-fit">
+        <Shield className="w-3.5 h-3.5" />
+        Superadmin Mode
       </div>
 
       {/* Stats Overview */}

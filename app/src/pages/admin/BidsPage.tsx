@@ -43,7 +43,7 @@ export default function BidsPage() {
 
   const utils = trpc.useUtils();
   const { data: tenders } = trpc.tender.list.useQuery({});
-  const { data: bids, isLoading } = trpc.bid.byTender.useQuery(
+  const { data: bidsResponse, isLoading } = trpc.bid.byTender.useQuery(
     { tenderId: selectedTender! },
     { enabled: !!selectedTender }
   );
@@ -117,18 +117,30 @@ export default function BidsPage() {
             </div>
           ) : (
             <>
-              {bids?.length === 0 && (
+              {bidsResponse?.locked && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-6 text-center">
+                  <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <AlertTriangle className="w-6 h-6 text-amber-400" />
+                  </div>
+                  <h3 className="text-white font-medium mb-1">Tender is Locked</h3>
+                  <p className="text-slate-400 text-sm mb-4">
+                    Vendor details and documents are hidden. Number of applicants: {bidsResponse.count}
+                  </p>
+                </div>
+              )}
+              {!bidsResponse?.locked && bidsResponse?.count === 0 && (
                 <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
                   <Gavel className="w-12 h-12 text-slate-600 mx-auto mb-3" />
                   <p className="text-slate-400">No bids for this tender</p>
                 </div>
               )}
-              <div className="space-y-3">
-                {bids?.map((bid) => (
-                  <div
-                    key={bid.id}
-                    className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-cyan-500/20 transition-all duration-300"
-                  >
+              {!bidsResponse?.locked && (
+                <div className="space-y-3">
+                  {bidsResponse?.bids?.map((bid) => (
+                    <div
+                      key={bid.id}
+                      className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-cyan-500/20 transition-all duration-300"
+                    >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
@@ -147,18 +159,31 @@ export default function BidsPage() {
                         <p className="text-slate-300 text-sm mb-2">
                           {bid.description}
                         </p>
-                        {bid.documentUrl && (
-                          <div className="mb-3">
-                            <a 
-                              href={bid.documentUrl} 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className="text-cyan-400 hover:text-cyan-300 text-sm flex items-center gap-1 inline-flex"
-                            >
-                              <FileText className="w-4 h-4" />
-                              View Bid Document
-                            </a>
-                          </div>
+                        {(bid.quotationDocumentUrl || bid.technicalDocumentUrl) && (
+                          <div className="mb-3 flex flex-wrap gap-2">
+                          {bid.quotationDocumentUrl && (
+                          <a
+                            href={bid.quotationDocumentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            {bid.quotationDocumentName || "Quotation PDF"}
+                          </a>
+                        )}
+                        {bid.technicalDocumentUrl && (
+                          <a
+                            href={bid.technicalDocumentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded-lg text-xs transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            {bid.technicalDocumentName || "Technical PDF"}
+                          </a>
+                        )}
+                        </div>
                         )}
                         <div className="flex flex-wrap gap-4 text-xs text-slate-500">
                           <span className="flex items-center gap-1.5">
@@ -196,8 +221,9 @@ export default function BidsPage() {
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </>

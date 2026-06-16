@@ -17,8 +17,8 @@ export const users = mysqlTable("users", {
   passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }),
   avatar: text("avatar"),
-  role: mysqlEnum("role", ["user", "admin", "agent", "vendor", "auditor"])
-    .default("user")
+  role: mysqlEnum("role", ["superadmin", "admin", "agent", "vendor"])
+    .default("vendor")
     .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt")
@@ -57,6 +57,27 @@ export const vendorProfiles = mysqlTable("vendor_profiles", {
 export type VendorProfile = typeof vendorProfiles.$inferSelect;
 export type InsertVendorProfile = typeof vendorProfiles.$inferInsert;
 
+// ─── Vendor Groups ───
+export const vendorGroups = mysqlTable("vendor_groups", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type VendorGroup = typeof vendorGroups.$inferSelect;
+export type InsertVendorGroup = typeof vendorGroups.$inferInsert;
+
+export const vendorGroupMemberships = mysqlTable("vendor_group_memberships", {
+  groupId: int("groupId").notNull(),
+  vendorId: int("vendorId").notNull(),
+  assignedAt: timestamp("assignedAt").defaultNow().notNull(),
+});
+
+export type VendorGroupMembership = typeof vendorGroupMemberships.$inferSelect;
+export type InsertVendorGroupMembership = typeof vendorGroupMemberships.$inferInsert;
+
 // ─── Tenders ───
 export const tenders = mysqlTable("tenders", {
   id: int("id").autoincrement().primaryKey(),
@@ -86,6 +107,8 @@ export const tenders = mysqlTable("tenders", {
   documentUrl: text("documentUrl"),
   documentName: varchar("documentName", { length: 255 }),
   isLocked: boolean("isLocked").default(true).notNull(),
+  unlockedAt: timestamp("unlockedAt"),
+  vendorGroupId: int("vendorGroupId"),
   unlockPassword: varchar("unlockPassword", { length: 255 }),
   lockReason: text("lockReason"),
   createdBy: int("createdBy").notNull(),
@@ -107,8 +130,12 @@ export const bids = mysqlTable("bids", {
   bidAmount: decimal("bidAmount", { precision: 15, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 10 }).default("USD"),
   description: text("description"),
-  documentUrl: text("documentUrl"),
-  documentName: varchar("documentName", { length: 255 }),
+  documentUrl: text("documentUrl"), // Legacy
+  documentName: varchar("documentName", { length: 255 }), // Legacy
+  quotationDocumentUrl: text("quotationDocumentUrl"),
+  quotationDocumentName: varchar("quotationDocumentName", { length: 255 }),
+  technicalDocumentUrl: text("technicalDocumentUrl"),
+  technicalDocumentName: varchar("technicalDocumentName", { length: 255 }),
   status: mysqlEnum("status", [
     "submitted",
     "under_review",

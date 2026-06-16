@@ -39,10 +39,10 @@ function requireRole(roles: string[]) {
 }
 
 export const authedQuery = t.procedure.use(requireAuth);
-export const adminQuery = authedQuery.use(requireRole(["admin"]));
-export const agentQuery = authedQuery.use(requireRole(["admin", "agent"]));
-export const vendorQuery = authedQuery.use(requireRole(["admin", "vendor"]));
-export const auditorQuery = authedQuery.use(requireRole(["auditor"]));
+export const adminQuery = authedQuery.use(requireRole(["superadmin", "admin"]));
+export const agentQuery = authedQuery.use(requireRole(["superadmin", "admin", "agent"]));
+export const vendorQuery = authedQuery.use(requireRole(["superadmin", "admin", "vendor"]));
+export const superadminQuery = authedQuery.use(requireRole(["superadmin"]));
 export const anyRoleQuery = authedQuery.use(
-  requireRole(["admin", "agent", "vendor", "auditor"])
+  requireRole(["superadmin", "admin", "agent", "vendor"])
 );

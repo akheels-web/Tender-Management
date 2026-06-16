@@ -7,10 +7,13 @@ import { createContext } from "./context";
 import { env } from "./lib/env";
 import { uploadRouter } from "./upload-router";
 import { Paths } from "@contracts/constants";
+import { startBackgroundJobs } from "./lib/jobs";
 
 const app = new Hono<{ Bindings: HttpBindings }>();
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
+
+startBackgroundJobs();
 
 app.route("/api/files", uploadRouter);
 

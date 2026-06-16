@@ -49,7 +49,8 @@ export default function VendorTendersPage() {
   const [unlockError, setUnlockError] = useState("");
   const [bidSuccess, setBidSuccess] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const quotationInputRef = useRef<HTMLInputElement>(null);
+  const technicalInputRef = useRef<HTMLInputElement>(null);
 
   const utils = trpc.useUtils();
   const { data: tenders, isLoading } = trpc.tender.list.useQuery({
@@ -88,16 +89,19 @@ export default function VendorTendersPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    let documentUrl = undefined;
-    let documentName = undefined;
+    let quotationDocumentUrl = undefined;
+    let quotationDocumentName = undefined;
+    let technicalDocumentUrl = undefined;
+    let technicalDocumentName = undefined;
 
-    const file = fileInputRef.current?.files?.[0];
-    if (file) {
+    const qFile = quotationInputRef.current?.files?.[0];
+    const tFile = technicalInputRef.current?.files?.[0];
+
+    const uploadFile = async (file: File) => {
       if (file.type !== "application/pdf") {
         alert("Only PDF files are allowed.");
-        return;
+        return null;
       }
-      setIsUploading(true);
       const uploadData = new FormData();
       uploadData.append("file", file);
       
@@ -108,28 +112,48 @@ export default function VendorTendersPage() {
         });
         const data = await res.json();
         if (data.success) {
-          documentUrl = data.url;
-          documentName = data.fileName;
-        } else {
-          alert("File upload failed");
-          setIsUploading(false);
-          return;
+          return { url: data.url, name: data.fileName };
         }
       } catch (err) {
         console.error(err);
-        alert("File upload failed");
+      }
+      return null;
+    };
+
+    setIsUploading(true);
+    
+    if (qFile) {
+      const result = await uploadFile(qFile);
+      if (result) {
+        quotationDocumentUrl = result.url;
+        quotationDocumentName = result.name;
+      } else {
         setIsUploading(false);
         return;
       }
-      setIsUploading(false);
     }
+
+    if (tFile) {
+      const result = await uploadFile(tFile);
+      if (result) {
+        technicalDocumentUrl = result.url;
+        technicalDocumentName = result.name;
+      } else {
+        setIsUploading(false);
+        return;
+      }
+    }
+    
+    setIsUploading(false);
 
     placeBidMutation.mutate({
       tenderId: selectedTender.id,
       bidAmount: formData.get("bidAmount") as string,
       description: formData.get("description") as string,
-      documentUrl,
-      documentName,
+      quotationDocumentUrl,
+      quotationDocumentName,
+      technicalDocumentUrl,
+      technicalDocumentName,
     });
   };
 
@@ -386,14 +410,22 @@ export default function VendorTendersPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Bid Proposal (PDF)</label>
+                <label className="text-sm text-slate-300">Quotation Document (PDF)</label>
                 <Input
                   type="file"
                   accept=".pdf"
-                  ref={fileInputRef}
+                  ref={quotationInputRef}
                   className="bg-[#0A1628] border-white/10"
                 />
-                <p className="text-xs text-slate-500">Upload your proposal PDF</p>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-slate-300">Technical Document (PDF)</label>
+                <Input
+                  type="file"
+                  accept=".pdf"
+                  ref={technicalInputRef}
+                  className="bg-[#0A1628] border-white/10"
+                />
               </div>
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="ghost" onClick={() => setShowBid(false)} className="text-slate-400">

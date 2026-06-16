@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { eq, and, like, gte, lte, desc } from "drizzle-orm";
-import { createRouter, adminQuery, anyRoleQuery, publicQuery } from "./middleware";
+import { eq, and, like, gte, lte, desc, sql, inArray } from "drizzle-orm";
+import { createRouter, adminQuery, anyRoleQuery, publicQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { tenders, bids, barredVendors, tenderAssignments, agentDownloads } from "@db/schema";
-import { sql } from "drizzle-orm";
+import { tenders, bids, barredVendors, tenderAssignments, agentDownloads, vendorGroupMemberships, users } from "@db/schema";
+import { sendEmail } from "./lib/email";
 
 export const tenderRouter = createRouter({
   // ── List tenders (public) ──
@@ -61,6 +61,8 @@ export const tenderRouter = createRouter({
           documentUrl: tenders.documentUrl,
           documentName: tenders.documentName,
           isLocked: tenders.isLocked,
+          unlockedAt: tenders.unlockedAt,
+          vendorGroupId: tenders.vendorGroupId,
           unlockPassword: tenders.unlockPassword,
           lockReason: tenders.lockReason,
           createdBy: tenders.createdBy,
@@ -88,8 +90,8 @@ export const tenderRouter = createRouter({
       return result[0] ?? null;
     }),
 
-  // ── Create tender (admin) ──
-  create: adminQuery
+  // ── Create tender (agent/admin) ──
+  create: agentQuery
     .input(
       z.object({
         tenderId: z.string().min(3),
@@ -108,6 +110,7 @@ export const tenderRouter = createRouter({
         openingDate: z.string().optional(),
         contractPeriod: z.string().optional(),
         isLocked: z.boolean().default(true),
+        vendorGroupId: z.number().optional(),
         unlockPassword: z.string().optional(),
         lockReason: z.string().optional(),
         documentUrl: z.string().optional(),
@@ -125,11 +128,40 @@ export const tenderRouter = createRouter({
       if (input.openingDate) insertData.openingDate = new Date(input.openingDate);
 
       const result = await db.insert(tenders).values(insertData);
-      return { id: Number(result[0].insertId), success: true };
+      const newTenderId = Number(result[0].insertId);
+
+      // Trigger email if published and assigned to group
+      if (
+        (input.status === "published" || input.status === "open") &&
+        input.vendorGroupId
+      ) {
+        const memberships = await db
+          .select({ vendorId: vendorGroupMemberships.vendorId })
+          .from(vendorGroupMemberships)
+          .where(eq(vendorGroupMemberships.groupId, input.vendorGroupId));
+        
+        if (memberships.length > 0) {
+          const vendors = await db
+            .select({ email: users.email })
+            .from(users)
+            .where(inArray(users.id, memberships.map((m) => m.vendorId)));
+            
+          const emails = vendors.map(v => v.email);
+          if (emails.length > 0) {
+            await sendEmail({
+              to: emails,
+              subject: `New Tender Released: ${input.title}`,
+              text: `A new tender "${input.title}" has been released to your vendor group.\nClosing Date: ${new Date(input.closingDate).toDateString()}\n\nLog in to the portal to view the details and apply.`,
+            });
+          }
+        }
+      }
+
+      return { id: newTenderId, success: true };
     }),
 
-  // ── Update tender (admin) ──
-  update: adminQuery
+  // ── Update tender (agent/admin) ──
+  update: agentQuery
     .input(
       z.object({
         id: z.number(),
@@ -149,6 +181,7 @@ export const tenderRouter = createRouter({
         openingDate: z.string().nullable().optional(),
         contractPeriod: z.string().optional(),
         eligibilityCriteria: z.string().optional(),
+        vendorGroupId: z.number().optional(),
         isLocked: z.boolean().optional(),
         unlockPassword: z.string().nullable().optional(),
         lockReason: z.string().nullable().optional(),
@@ -161,6 +194,11 @@ export const tenderRouter = createRouter({
       if (data.closingDate) updateData.closingDate = new Date(data.closingDate);
       if (data.publishDate) updateData.publishDate = new Date(data.publishDate);
       if (data.openingDate) updateData.openingDate = new Date(data.openingDate);
+
+      // If manually unlocked, set unlockedAt
+      if (data.isLocked === false) {
+        updateData.unlockedAt = new Date();
+      }
 
       await db.update(tenders).set(updateData).where(eq(tenders.id, id));
       return { success: true };

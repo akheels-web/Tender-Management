@@ -13,9 +13,11 @@ export const bidRouter = createRouter({
         tenderId: z.number(),
         bidAmount: z.string(),
         currency: z.string().default("USD"),
-        description: z.string().min(10),
-        documentUrl: z.string().optional(),
-        documentName: z.string().optional(),
+        description: z.string().min(10).optional(),
+        quotationDocumentUrl: z.string().optional(),
+        quotationDocumentName: z.string().optional(),
+        technicalDocumentUrl: z.string().optional(),
+        technicalDocumentName: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -89,8 +91,10 @@ export const bidRouter = createRouter({
         currency: bids.currency,
         status: bids.status,
         description: bids.description,
-        documentUrl: bids.documentUrl,
-        documentName: bids.documentName,
+        quotationDocumentUrl: bids.quotationDocumentUrl,
+        quotationDocumentName: bids.quotationDocumentName,
+        technicalDocumentUrl: bids.technicalDocumentUrl,
+        technicalDocumentName: bids.technicalDocumentName,
         technicalScore: bids.technicalScore,
         financialScore: bids.financialScore,
         notes: bids.notes,
@@ -107,11 +111,23 @@ export const bidRouter = createRouter({
     return results;
   }),
 
-  // ── Get all bids for a tender (admin) ──
-  byTender: adminQuery
+  // ── Get all bids for a tender (admin/agent/superadmin) ──
+  byTender: agentQuery
     .input(z.object({ tenderId: z.number() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const db = getDb();
+
+      const tender = await db
+        .select({ isLocked: tenders.isLocked })
+        .from(tenders)
+        .where(eq(tenders.id, input.tenderId))
+        .limit(1);
+
+      if (!tender[0]) return { locked: true, count: 0, bids: [] };
+
+      const isLocked = tender[0].isLocked;
+      const isSuperAdmin = ctx.user.role === "superadmin";
+
       const results = await db
         .select({
           id: bids.id,
@@ -119,8 +135,10 @@ export const bidRouter = createRouter({
           currency: bids.currency,
           status: bids.status,
           description: bids.description,
-          documentUrl: bids.documentUrl,
-          documentName: bids.documentName,
+          quotationDocumentUrl: bids.quotationDocumentUrl,
+          quotationDocumentName: bids.quotationDocumentName,
+          technicalDocumentUrl: bids.technicalDocumentUrl,
+          technicalDocumentName: bids.technicalDocumentName,
           technicalScore: bids.technicalScore,
           financialScore: bids.financialScore,
           notes: bids.notes,
@@ -136,7 +154,13 @@ export const bidRouter = createRouter({
         .where(eq(bids.tenderId, input.tenderId))
         .orderBy(desc(bids.submittedAt));
 
-      return results;
+      // Access control logic:
+      // If locked and not superadmin, return only the count
+      if (isLocked && !isSuperAdmin) {
+        return { locked: true, count: results.length, bids: [] };
+      }
+
+      return { locked: false, count: results.length, bids: results };
     }),
 
   // ── Update bid status (admin) ──

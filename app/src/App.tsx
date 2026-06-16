@@ -11,7 +11,8 @@ import AgentTendersPage from "./pages/agent/AgentTendersPage";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
 import VendorTendersPage from "./pages/vendor/VendorTendersPage";
 import MyBidsPage from "./pages/vendor/MyBidsPage";
-import AuditorDashboard from "./pages/auditor/AuditorDashboard";
+import VendorGroupsPage from "./pages/agent/VendorGroupsPage";
+import SuperadminDashboard from "./pages/superadmin/SuperadminDashboard";
 import ProfilePage from "./pages/shared/ProfilePage";
 
 export default function App() {
@@ -31,14 +32,17 @@ export default function App() {
         {/* Agent Routes */}
         <Route path="/agent/dashboard" element={<AgentDashboard />} />
         <Route path="/agent/tenders" element={<AgentTendersPage />} />
+        <Route path="/agent/vendors" element={<VendorsPage />} />
+        <Route path="/agent/vendor-groups" element={<VendorGroupsPage />} />
+        <Route path="/agent/bids" element={<BidsPage />} />
 
         {/* Vendor Routes */}
         <Route path="/vendor/dashboard" element={<VendorDashboard />} />
         <Route path="/vendor/tenders" element={<VendorTendersPage />} />
         <Route path="/vendor/my-bids" element={<MyBidsPage />} />
 
-        {/* Auditor Routes */}
-        <Route path="/auditor/dashboard" element={<AuditorDashboard />} />
+        {/* Superadmin Routes */}
+        <Route path="/superadmin/dashboard" element={<SuperadminDashboard />} />
 
         {/* Shared */}
         <Route path="/profile" element={<ProfilePage />} />

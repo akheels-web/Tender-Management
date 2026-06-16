@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, AlertCircle, CheckCircle2, KeyRound } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2, LockKeyhole, Mail } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -24,18 +23,11 @@ const forgotSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
 });
 
-const resetSchema = z.object({
-  token: z.string().min(1, { message: "Token is required." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-});
-
 type LoginForm = z.infer<typeof loginSchema>;
 type ForgotForm = z.infer<typeof forgotSchema>;
-type ResetForm = z.infer<typeof resetSchema>;
 
 export default function Login() {
-  const [view, setView] = useState<"login" | "forgot" | "reset">("login");
-  const [isLoading, setIsLoading] = useState(false);
+  const [view, setView] = useState<"login" | "forgot">("login");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -49,335 +41,230 @@ export default function Login() {
     defaultValues: { email: "" },
   });
 
-  const resetForm = useForm<ResetForm>({
-    resolver: zodResolver(resetSchema),
-    defaultValues: { token: "", password: "" },
-  });
-
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data) => {
       if (data.role === "admin") window.location.href = "/admin/dashboard";
       else if (data.role === "agent") window.location.href = "/agent/dashboard";
-      else window.location.href = "/vendor/dashboard";
+      else if (data.role === "vendor") window.location.href = "/vendor/dashboard";
+      else if (data.role === "superadmin") window.location.href = "/superadmin/dashboard";
     },
     onError: (error) => {
       setErrorMsg(error.message);
-      setIsLoading(false);
     },
   });
 
   const forgotMutation = trpc.auth.forgotPassword.useMutation({
     onSuccess: () => {
-      setIsLoading(false);
-      setSuccessMessage("If that email exists, a reset token has been simulated. Please check the server console.");
-      setTimeout(() => {
-        setView("reset");
-        setSuccessMessage("");
-      }, 3000);
+      setSuccessMessage("If an account exists, a password reset link has been sent to your email.");
+      forgotForm.reset();
     },
     onError: (error) => {
       setErrorMsg(error.message);
-      setIsLoading(false);
     },
   });
 
-  const resetMutation = trpc.auth.resetPassword.useMutation({
-    onSuccess: () => {
-      setIsLoading(false);
-      toast.success("Password reset successful. You can now login.");
-      setView("login");
-      resetForm.reset();
-    },
-    onError: (error) => {
-      setErrorMsg(error.message);
-      setIsLoading(false);
-    },
-  });
-
-  const onLogin = (data: LoginForm) => {
-    setIsLoading(true);
+  const onLoginSubmit = (data: LoginForm) => {
     setErrorMsg("");
+    setSuccessMessage("");
     loginMutation.mutate(data);
   };
 
-  const onForgot = (data: ForgotForm) => {
-    setIsLoading(true);
+  const onForgotSubmit = (data: ForgotForm) => {
     setErrorMsg("");
+    setSuccessMessage("");
     forgotMutation.mutate(data);
   };
 
-  const onReset = (data: ResetForm) => {
-    setIsLoading(true);
-    setErrorMsg("");
-    resetMutation.mutate(data);
-  };
-
   return (
-    <div className="min-h-screen flex font-sans bg-white">
-      {/* Left Pane - Forms */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 md:px-24 xl:px-32 relative">
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Left side: Illustration */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#006F70] items-center justify-center overflow-hidden">
+        {/* Abstract background shapes matching National Finance theme */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('/login_illustration.png')] bg-cover bg-center mix-blend-overlay"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#F9A01B] rounded-full blur-3xl opacity-40 translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#004A4B] rounded-full blur-3xl opacity-60 -translate-x-1/2 translate-y-1/2"></div>
         
-        {/* Branding Logo */}
-        <div className="absolute top-8 left-8 sm:left-16 md:left-24 xl:left-32 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full border-[3px] border-[#1A3E7B] flex items-center justify-center overflow-hidden relative">
-            <div className="absolute top-1/2 -translate-y-1/2 w-8 h-2 bg-[#1A3E7B]" />
+        <div className="relative z-10 p-12 text-center text-white">
+          <img src="/nf_logo.png" alt="National Finance" className="h-16 mx-auto mb-8 bg-white p-2 rounded-lg object-contain" />
+          <h1 className="text-4xl font-bold mb-4">Tender Management System</h1>
+          <p className="text-xl text-teal-100 mb-8 max-w-md mx-auto leading-relaxed">
+            Manage your tenders anywhere.
+          </p>
+          <div className="flex justify-center gap-4">
+            <div className="w-16 h-1 bg-[#F9A01B] rounded-full"></div>
+            <div className="w-4 h-1 bg-teal-400 rounded-full opacity-50"></div>
+            <div className="w-4 h-1 bg-teal-400 rounded-full opacity-50"></div>
           </div>
-          <span className="text-xl font-bold tracking-tight text-[#1A3E7B]">
-            National Finance
-          </span>
         </div>
+      </div>
 
-        <div className="max-w-sm w-full mx-auto">
+      {/* Right side: Form */}
+      <div className="flex-1 flex flex-col justify-center items-center px-6 sm:px-12 lg:px-24 bg-white relative">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex flex-col items-center mb-8">
+            <img src="/nf_logo.png" alt="National Finance" className="h-12 mb-4" />
+            <h1 className="text-2xl font-bold text-[#006F70]">Tender Portal</h1>
+            <p className="text-slate-500 text-sm">Manage your tenders anywhere.</p>
+          </div>
+
+          <div className="mb-10 text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">
+              {view === "login" ? "Welcome Back" : "Reset Password"}
+            </h2>
+            <p className="text-slate-500">
+              {view === "login" 
+                ? "Enter your credentials to access your account." 
+                : "Enter your email and we'll send you a reset link."}
+            </p>
+          </div>
+
           {errorMsg && (
-            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span>{errorMsg}</span>
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{errorMsg}</p>
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-2 text-emerald-600 text-sm">
-              <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-              <span>{successMessage}</span>
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-emerald-700">{successMessage}</p>
             </div>
           )}
 
           {view === "login" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-                Welcome Back!
-              </h1>
-              <p className="mt-2 text-slate-500 text-sm">
-                Please enter log in details below
-              </p>
-
-              <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-5 mt-8">
-                  <FormField
-                    control={loginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="Email"
-                            className="bg-slate-50 border-slate-200 h-12 px-4 focus-visible:ring-[#1A3E7B]"
-                            {...field}
+            <Form {...loginForm}>
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
+                <FormField
+                  control={loginForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <label className="text-sm font-medium text-slate-700">Email Address</label>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input 
+                            placeholder="name@company.com" 
+                            {...field} 
+                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#006F70]"
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Password"
-                            className="bg-slate-50 border-slate-200 h-12 px-4 focus-visible:ring-[#1A3E7B]"
-                            {...field}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={loginForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-slate-700">Password</label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setView("forgot");
+                            setErrorMsg("");
+                            setSuccessMessage("");
+                          }}
+                          className="text-sm font-medium text-[#006F70] hover:text-[#004A4B]"
+                        >
+                          Forgot password?
+                        </button>
+                      </div>
+                      <FormControl>
+                        <div className="relative">
+                          <LockKeyhole className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            {...field} 
+                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#006F70]"
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setErrorMsg("");
-                        setView("forgot");
-                      }}
-                      className="text-sm font-medium text-slate-500 hover:text-[#1A3E7B] transition-colors"
-                    >
-                      Forget password?
-                    </button>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-[#121212] hover:bg-black text-white font-medium rounded-xl transition-all" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Sign in"}
-                  </Button>
-                </form>
-              </Form>
-              
-              <div className="mt-12 text-center text-xs text-slate-400">
-                <p>For demonstration:</p>
-                <p>Admin: admin@protender.com / password123</p>
-              </div>
-            </div>
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 bg-[#006F70] hover:bg-[#004A4B] text-white text-base font-medium rounded-lg shadow-md hover:shadow-lg transition-all"
+                  disabled={loginMutation.isPending}
+                >
+                  {loginMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    "Sign in to Dashboard"
+                  )}
+                </Button>
+              </form>
+            </Form>
           )}
 
           {view === "forgot" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="w-12 h-12 bg-[#1A3E7B]/10 rounded-full flex items-center justify-center mb-6">
-                <KeyRound className="w-6 h-6 text-[#1A3E7B]" />
-              </div>
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-                Forgot Password
-              </h1>
-              <p className="mt-2 text-slate-500 text-sm">
-                Enter your email address to receive a password reset token.
-              </p>
-
-              <Form {...forgotForm}>
-                <form onSubmit={forgotForm.handleSubmit(onForgot)} className="space-y-5 mt-8">
-                  <FormField
-                    control={forgotForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="Email address"
-                            className="bg-slate-50 border-slate-200 h-12 px-4 focus-visible:ring-[#1A3E7B]"
-                            {...field}
+            <Form {...forgotForm}>
+              <form onSubmit={forgotForm.handleSubmit(onForgotSubmit)} className="space-y-5">
+                <FormField
+                  control={forgotForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <label className="text-sm font-medium text-slate-700">Email Address</label>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input 
+                            placeholder="name@company.com" 
+                            {...field} 
+                            className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-[#006F70]"
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-[#1A3E7B] hover:bg-[#122A54] text-white font-medium rounded-xl transition-all" 
-                    disabled={isLoading}
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 bg-[#F9A01B] hover:bg-[#e08e16] text-white text-base font-medium rounded-lg shadow-md transition-all"
+                  disabled={forgotMutation.isPending}
+                >
+                  {forgotMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Reset Link"
+                  )}
+                </Button>
+
+                <div className="text-center mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("login");
+                      setErrorMsg("");
+                      setSuccessMessage("");
+                    }}
+                    className="text-sm font-medium text-slate-500 hover:text-slate-800"
                   >
-                    {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Request Reset"}
-                  </Button>
-                  
-                  <div className="text-center mt-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setErrorMsg("");
-                        setView("login");
-                      }}
-                      className="text-sm font-medium text-slate-500 hover:text-[#1A3E7B] transition-colors"
-                    >
-                      Back to log in
-                    </button>
-                  </div>
-                </form>
-              </Form>
-            </div>
+                    Back to sign in
+                  </button>
+                </div>
+              </form>
+            </Form>
           )}
-
-          {view === "reset" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="w-12 h-12 bg-[#F26522]/10 rounded-full flex items-center justify-center mb-6">
-                <KeyRound className="w-6 h-6 text-[#F26522]" />
-              </div>
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-                Reset Password
-              </h1>
-              <p className="mt-2 text-slate-500 text-sm">
-                Enter the token you received and your new password.
-              </p>
-
-              <Form {...resetForm}>
-                <form onSubmit={resetForm.handleSubmit(onReset)} className="space-y-5 mt-8">
-                  <FormField
-                    control={resetForm.control}
-                    name="token"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder="Reset Token"
-                            className="bg-slate-50 border-slate-200 h-12 px-4 focus-visible:ring-[#F26522]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={resetForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="New Password"
-                            className="bg-slate-50 border-slate-200 h-12 px-4 focus-visible:ring-[#F26522]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-[#F26522] hover:bg-[#D9551A] text-white font-medium rounded-xl transition-all" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Set New Password"}
-                  </Button>
-                  
-                  <div className="text-center mt-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setErrorMsg("");
-                        setView("login");
-                      }}
-                      className="text-sm font-medium text-slate-500 hover:text-[#1A3E7B] transition-colors"
-                    >
-                      Back to log in
-                    </button>
-                  </div>
-                </form>
-              </Form>
-            </div>
-          )}
-
-        </div>
-      </div>
-
-      {/* Right Pane - Visuals */}
-      <div className="hidden lg:flex w-1/2 p-4">
-        <div className="w-full h-full bg-[#111111] rounded-3xl overflow-hidden relative flex flex-col items-center justify-center p-12">
-          {/* Subtle background glow/patterns */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30">
-            <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#1A3E7B] rounded-full mix-blend-screen filter blur-[100px]" />
-            <div className="absolute bottom-20 right-10 w-80 h-80 bg-[#F26522] rounded-full mix-blend-screen filter blur-[100px]" />
-          </div>
-
-          <div className="relative z-10 w-full max-w-md flex justify-center mb-12">
-            <img 
-              src="/login-illustration.png" 
-              alt="Manage Tenders" 
-              className="w-full h-auto object-contain drop-shadow-2xl"
-            />
-          </div>
-
-          <div className="relative z-10 text-center space-y-4">
-            <h2 className="text-3xl font-semibold text-white tracking-wide">
-              Manage your Tenders Anywhere
-            </h2>
-            <p className="text-slate-400 text-sm max-w-sm mx-auto leading-relaxed">
-              You can track your bids, download documents, and manage your vendor profile on the go with our portal.
-            </p>
-          </div>
         </div>
       </div>
     </div>

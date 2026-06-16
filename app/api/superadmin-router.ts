@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
-import { createRouter, auditorQuery } from "./middleware";
+import { createRouter, superadminQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { users, activityLogs, tenders, bids } from "@db/schema";
 
-export const auditorRouter = createRouter({
+export const superadminRouter = createRouter({
   // ── Get all activity logs ──
-  getActivityLogs: auditorQuery
+  getActivityLogs: superadminQuery
     .input(z.object({ limit: z.number().default(100) }).optional())
     .query(async ({ input }) => {
       const db = getDb();
@@ -35,7 +35,7 @@ export const auditorRouter = createRouter({
     }),
 
   // ── Get high level stats ──
-  getStats: auditorQuery.query(async () => {
+  getStats: superadminQuery.query(async () => {
     const db = getDb();
     
     // Quick and dirty stats just checking count lengths

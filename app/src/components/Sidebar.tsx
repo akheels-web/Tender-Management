@@ -33,7 +33,10 @@ export default function Sidebar({ role }: SidebarProps) {
 
   const agentLinks = [
     { path: "/agent/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/agent/tenders", label: "Tenders", icon: Lock },
+    { path: "/agent/tenders", label: "Tenders", icon: FileText },
+    { path: "/agent/vendors", label: "Vendors", icon: Users },
+    { path: "/agent/vendor-groups", label: "Vendor Groups", icon: Users },
+    { path: "/agent/bids", label: "All Bids", icon: Gavel },
   ];
 
   const vendorLinks = [
@@ -42,8 +45,8 @@ export default function Sidebar({ role }: SidebarProps) {
     { path: "/vendor/my-bids", label: "My Bids", icon: ClipboardList },
   ];
 
-  const auditorLinks = [
-    { path: "/auditor/dashboard", label: "Audit Dashboard", icon: LayoutDashboard },
+  const superadminLinks = [
+    { path: "/superadmin/dashboard", label: "Superadmin Dashboard", icon: Shield },
   ];
 
   const getLinks = () => {
@@ -54,8 +57,8 @@ export default function Sidebar({ role }: SidebarProps) {
         return agentLinks;
       case "vendor":
         return vendorLinks;
-      case "auditor":
-        return auditorLinks;
+      case "superadmin":
+        return superadminLinks;
       default:
         return [];
     }
