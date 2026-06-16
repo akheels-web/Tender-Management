@@ -33,10 +33,9 @@ async function runSeed() {
           await db.insert(vendorProfiles).values({
             userId: insertId,
             companyName: "Test Vendor Corp",
-            contactName: "John Doe",
-            contactEmail: acc.email,
-            contactPhone: "1234567890",
-            crNumber: "CR-123456",
+            contactPerson: "John Doe",
+            phone: "1234567890",
+            registrationNumber: "CR-123456",
           });
         }
       } else {

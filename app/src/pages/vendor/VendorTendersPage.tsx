@@ -178,8 +178,8 @@ export default function VendorTendersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Browse Tenders</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Browse Tenders</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Find open tenders and place your bids.
           </p>
         </div>
@@ -201,14 +201,14 @@ export default function VendorTendersPage() {
             placeholder="Search by Tender ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-[#111C2E] border-white/10 text-white placeholder:text-slate-500"
+            className="pl-10 bg-[#111C2E] border-slate-200 text-slate-900 placeholder:text-slate-500"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px] bg-[#111C2E] border-white/10 text-white">
+          <SelectTrigger className="w-[160px] bg-[#111C2E] border-slate-200 text-slate-900">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#111C2E] border-white/10">
+          <SelectContent className="bg-[#111C2E] border-slate-200">
             <SelectItem value="">All</SelectItem>
             <SelectItem value="open">Open</SelectItem>
             <SelectItem value="published">Published</SelectItem>
@@ -228,7 +228,7 @@ export default function VendorTendersPage() {
           {tenders?.length === 0 && (
             <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
               <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-              <p className="text-slate-400">No tenders found</p>
+              <p className="text-slate-600">No tenders found</p>
             </div>
           )}
           {tenders?.map((tender) => (
@@ -262,10 +262,10 @@ export default function VendorTendersPage() {
                       {tender.tenderId}
                     </span>
                   </div>
-                  <h3 className="text-white font-medium text-lg mb-1">
+                  <h3 className="text-slate-900 font-medium text-lg mb-1">
                     {tender.title}
                   </h3>
-                  <p className="text-slate-400 text-sm line-clamp-2 mb-3">
+                  <p className="text-slate-600 text-sm line-clamp-2 mb-3">
                     {tender.description}
                   </p>
                   <div className="flex flex-wrap gap-4 text-xs text-slate-500">
@@ -323,7 +323,7 @@ export default function VendorTendersPage() {
 
       {/* Unlock Dialog */}
       <Dialog open={showUnlock} onOpenChange={setShowUnlock}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Unlock className="w-5 h-5 text-amber-400" />
@@ -336,7 +336,7 @@ export default function VendorTendersPage() {
                 <Lock className="w-4 h-4" />
                 <span className="font-medium text-sm">Password Required</span>
               </div>
-              <p className="text-slate-400 text-sm">
+              <p className="text-slate-600 text-sm">
                 Contact the administrator to get the unlock password for this tender.
               </p>
             </div>
@@ -351,10 +351,10 @@ export default function VendorTendersPage() {
               placeholder="Enter unlock password"
               value={unlockPassword}
               onChange={(e) => setUnlockPassword(e.target.value)}
-              className="bg-[#0A1628] border-white/10"
+              className="bg-slate-50 border-slate-200"
             />
             <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowUnlock(false)} className="text-slate-400">
+              <Button variant="ghost" onClick={() => setShowUnlock(false)} className="text-slate-600">
                 Cancel
               </Button>
               <Button
@@ -364,7 +364,7 @@ export default function VendorTendersPage() {
                     password: unlockPassword,
                   })
                 }
-                className="bg-amber-500 hover:bg-amber-600 text-white"
+                className="bg-amber-500 hover:bg-amber-600 text-slate-900"
                 disabled={!unlockPassword || unlockMutation.isPending}
               >
                 {unlockMutation.isPending ? "Unlocking..." : "Unlock"}
@@ -376,7 +376,7 @@ export default function VendorTendersPage() {
 
       {/* Place Bid Dialog */}
       <Dialog open={showBid} onOpenChange={setShowBid}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-lg">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Gavel className="w-5 h-5 text-emerald-400" />
@@ -384,56 +384,56 @@ export default function VendorTendersPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <p className="text-slate-400 text-sm">
-              Submit your bid for: <span className="text-white font-medium">{selectedTender?.title}</span>
+            <p className="text-slate-600 text-sm">
+              Submit your bid for: <span className="text-slate-900 font-medium">{selectedTender?.title}</span>
             </p>
             <form onSubmit={handlePlaceBid} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Bid Amount ($)</label>
+                <label className="text-sm text-slate-700">Bid Amount ($)</label>
                 <Input
                   name="bidAmount"
                   type="number"
                   step="0.01"
                   placeholder="0.00"
                   required
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Description / Proposal Summary</label>
+                <label className="text-sm text-slate-700">Description / Proposal Summary</label>
                 <Textarea
                   name="description"
                   placeholder="Describe your approach and qualifications..."
                   required
                   rows={3}
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Quotation Document (PDF)</label>
+                <label className="text-sm text-slate-700">Quotation Document (PDF)</label>
                 <Input
                   type="file"
                   accept=".pdf"
                   ref={quotationInputRef}
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Technical Document (PDF)</label>
+                <label className="text-sm text-slate-700">Technical Document (PDF)</label>
                 <Input
                   type="file"
                   accept=".pdf"
                   ref={technicalInputRef}
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <Button type="button" variant="ghost" onClick={() => setShowBid(false)} className="text-slate-400">
+                <Button type="button" variant="ghost" onClick={() => setShowBid(false)} className="text-slate-600">
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-slate-900"
                   disabled={placeBidMutation.isPending || isUploading}
                 >
                   {placeBidMutation.isPending || isUploading ? "Submitting..." : "Submit Bid"}
@@ -446,7 +446,7 @@ export default function VendorTendersPage() {
 
       {/* Detail Dialog */}
       <Dialog open={showDetail} onOpenChange={setShowDetail}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-lg">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-lg">
           <DialogHeader>
             <DialogTitle>{selectedTender?.title}</DialogTitle>
           </DialogHeader>
@@ -457,7 +457,7 @@ export default function VendorTendersPage() {
               </span>
               <span className="text-xs text-slate-500 font-mono">{selectedTender?.tenderId}</span>
             </div>
-            <p className="text-slate-300 text-sm">{selectedTender?.description}</p>
+            <p className="text-slate-700 text-sm">{selectedTender?.description}</p>
             {selectedTender?.documentUrl && !selectedTender.isLocked && (
               <div className="mb-2">
                 <a 
@@ -472,27 +472,27 @@ export default function VendorTendersPage() {
               </div>
             )}
             {selectedTender?.eligibilityCriteria && (
-              <div className="bg-[#0A1628] rounded-lg p-4">
+              <div className="bg-slate-50 rounded-lg p-4">
                 <p className="text-slate-500 text-xs mb-1">Eligibility Criteria</p>
-                <p className="text-slate-300 text-sm">{selectedTender.eligibilityCriteria}</p>
+                <p className="text-slate-700 text-sm">{selectedTender.eligibilityCriteria}</p>
               </div>
             )}
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Category</p>
-                <p className="text-white">{selectedTender?.category}</p>
+                <p className="text-slate-900">{selectedTender?.category}</p>
               </div>
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Budget</p>
-                <p className="text-white font-mono">${Number(selectedTender?.budgetEstimate).toLocaleString()}</p>
+                <p className="text-slate-900 font-mono">${Number(selectedTender?.budgetEstimate).toLocaleString()}</p>
               </div>
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Closing Date</p>
-                <p className="text-white">{selectedTender?.closingDate ? new Date(selectedTender.closingDate).toLocaleDateString() : "N/A"}</p>
+                <p className="text-slate-900">{selectedTender?.closingDate ? new Date(selectedTender.closingDate).toLocaleDateString() : "N/A"}</p>
               </div>
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Location</p>
-                <p className="text-white">{selectedTender?.location || "N/A"}</p>
+                <p className="text-slate-900">{selectedTender?.location || "N/A"}</p>
               </div>
             </div>
           </div>

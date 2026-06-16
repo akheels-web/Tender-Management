@@ -62,14 +62,14 @@ export default function VendorGroupsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Vendor Groups</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Vendor Groups</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Manage vendor categories for targeted tender notifications.
           </p>
         </div>
         <Button
           onClick={() => setShowCreate(true)}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white"
+          className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Group
@@ -85,7 +85,7 @@ export default function VendorGroupsPage() {
           {groups?.map((group) => (
             <div
               key={group.id}
-              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-white/10 transition-colors"
+              className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5 hover:border-slate-200 transition-colors"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
@@ -93,13 +93,13 @@ export default function VendorGroupsPage() {
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-white font-medium">{group.name}</h3>
+                    <h3 className="text-slate-900 font-medium">{group.name}</h3>
                     <p className="text-xs text-slate-500">ID: {group.id}</p>
                   </div>
                 </div>
               </div>
               
-              <p className="text-sm text-slate-400 mb-4 h-10 line-clamp-2">
+              <p className="text-sm text-slate-600 mb-4 h-10 line-clamp-2">
                 {group.description || "No description provided."}
               </p>
 
@@ -118,10 +118,10 @@ export default function VendorGroupsPage() {
             </div>
           ))}
           {groups?.length === 0 && (
-            <div className="col-span-full py-12 text-center border border-dashed border-white/10 rounded-xl">
+            <div className="col-span-full py-12 text-center border border-dashed border-slate-200 rounded-xl">
               <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-white mb-1">No Groups Found</h3>
-              <p className="text-slate-400 text-sm">Create a vendor group to get started.</p>
+              <h3 className="text-lg font-medium text-slate-900 mb-1">No Groups Found</h3>
+              <p className="text-slate-600 text-sm">Create a vendor group to get started.</p>
             </div>
           )}
         </div>
@@ -129,26 +129,26 @@ export default function VendorGroupsPage() {
 
       {/* Create Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900">
           <DialogHeader>
             <DialogTitle>Create Vendor Group</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4 mt-4">
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Group Name</label>
+              <label className="text-sm text-slate-700">Group Name</label>
               <Input
                 name="name"
                 required
                 placeholder="e.g. IT Vendors"
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Description</label>
+              <label className="text-sm text-slate-700">Description</label>
               <Input
                 name="description"
                 placeholder="Hardware and software suppliers"
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             <div className="flex justify-end gap-3 pt-4">
@@ -157,7 +157,7 @@ export default function VendorGroupsPage() {
               </Button>
               <Button
                 type="submit"
-                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
                 disabled={createMutation.isPending}
               >
                 {createMutation.isPending ? "Creating..." : "Create"}
@@ -169,17 +169,17 @@ export default function VendorGroupsPage() {
 
       {/* Assign Vendor Dialog */}
       <Dialog open={showAssign} onOpenChange={setShowAssign}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900">
           <DialogHeader>
             <DialogTitle>Add Vendor to {selectedGroup?.name}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleAssign} className="space-y-4 mt-4">
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Select Vendor</label>
+              <label className="text-sm text-slate-700">Select Vendor</label>
               <select
                 name="vendorId"
                 required
-                className="w-full bg-[#0A1628] border border-white/10 rounded-md h-10 px-3 text-white"
+                className="w-full bg-slate-50 border border-slate-200 rounded-md h-10 px-3 text-slate-900"
               >
                 <option value="">-- Choose Vendor --</option>
                 {vendors?.map(v => (
@@ -193,7 +193,7 @@ export default function VendorGroupsPage() {
               </Button>
               <Button
                 type="submit"
-                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
                 disabled={assignMutation.isPending}
               >
                 {assignMutation.isPending ? "Adding..." : "Add Vendor"}

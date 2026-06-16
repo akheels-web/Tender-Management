@@ -59,8 +59,8 @@ export default function MyBidsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">My Bids</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">My Bids</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Track all your submitted bids and their status.
           </p>
         </div>
@@ -75,10 +75,10 @@ export default function MyBidsPage() {
           {bids?.length === 0 && (
             <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
               <Gavel className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-              <p className="text-slate-400 mb-3">No bids submitted yet</p>
+              <p className="text-slate-600 mb-3">No bids submitted yet</p>
               <Button
                 asChild
-                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
               >
                 <a href="/vendor/tenders">Browse Tenders</a>
               </Button>
@@ -106,10 +106,10 @@ export default function MyBidsPage() {
                       {bid.tenderRefId}
                     </span>
                   </div>
-                  <h3 className="text-white font-medium mb-1">
+                  <h3 className="text-slate-900 font-medium mb-1">
                     {bid.tenderTitle}
                   </h3>
-                  <p className="text-slate-400 text-sm line-clamp-2 mb-3">
+                  <p className="text-slate-600 text-sm line-clamp-2 mb-3">
                     {bid.description}
                   </p>
                   <div className="flex flex-wrap gap-4 text-xs text-slate-500">
@@ -142,7 +142,7 @@ export default function MyBidsPage() {
 
       {/* Bid Detail Dialog */}
       <Dialog open={showDetail} onOpenChange={setShowDetail}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-lg">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Gavel className="w-5 h-5 text-cyan-400" />
@@ -164,46 +164,46 @@ export default function MyBidsPage() {
 
             <div>
               <p className="text-slate-500 text-xs mb-1">Tender</p>
-              <p className="text-white font-medium">{selectedBid?.tenderTitle}</p>
+              <p className="text-slate-900 font-medium">{selectedBid?.tenderTitle}</p>
               <p className="text-slate-500 text-xs font-mono mt-0.5">
                 {selectedBid?.tenderRefId}
               </p>
             </div>
 
-            <div className="bg-[#0A1628] rounded-lg p-4">
+            <div className="bg-slate-50 rounded-lg p-4">
               <p className="text-slate-500 text-xs mb-1">Description</p>
-              <p className="text-slate-300 text-sm">
+              <p className="text-slate-700 text-sm">
                 {selectedBid?.description}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Bid Amount</p>
-                <p className="text-white font-mono text-lg">
+                <p className="text-slate-900 font-mono text-lg">
                   ${Number(selectedBid?.bidAmount).toLocaleString()}
                 </p>
               </div>
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Submitted</p>
-                <p className="text-white">
+                <p className="text-slate-900">
                   {selectedBid?.submittedAt
                     ? new Date(selectedBid.submittedAt).toLocaleDateString()
                     : "N/A"}
                 </p>
               </div>
               {selectedBid?.technicalScore && (
-                <div className="bg-[#0A1628] rounded-lg p-3">
+                <div className="bg-slate-50 rounded-lg p-3">
                   <p className="text-slate-500 text-xs mb-1">Technical Score</p>
-                  <p className="text-white font-mono">
+                  <p className="text-slate-900 font-mono">
                     {selectedBid.technicalScore}
                   </p>
                 </div>
               )}
               {selectedBid?.financialScore && (
-                <div className="bg-[#0A1628] rounded-lg p-3">
+                <div className="bg-slate-50 rounded-lg p-3">
                   <p className="text-slate-500 text-xs mb-1">Financial Score</p>
-                  <p className="text-white font-mono">
+                  <p className="text-slate-900 font-mono">
                     {selectedBid.financialScore}
                   </p>
                 </div>
@@ -211,7 +211,7 @@ export default function MyBidsPage() {
             </div>
 
             {selectedBid?.documentUrl && (
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Proposal Document</p>
                 <a
                   href={selectedBid.documentUrl}
@@ -226,9 +226,9 @@ export default function MyBidsPage() {
             )}
 
             {selectedBid?.notes && (
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Admin Notes</p>
-                <p className="text-slate-300 text-sm">{selectedBid.notes}</p>
+                <p className="text-slate-700 text-sm">{selectedBid.notes}</p>
               </div>
             )}
 

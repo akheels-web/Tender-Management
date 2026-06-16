@@ -82,8 +82,8 @@ export default function AdminDashboard() {
       {/* Welcome */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Welcome back! Here's what's happening with your tenders.
           </p>
         </div>
@@ -108,10 +108,10 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-2xl font-semibold text-white font-mono">
+                <p className="text-2xl font-semibold text-slate-900 font-mono">
                   {card.value}
                 </p>
-                <p className="text-sm text-slate-400 mt-1">{card.label}</p>
+                <p className="text-sm text-slate-600 mt-1">{card.label}</p>
               </div>
             </div>
           );
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bid Status Distribution */}
         <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
-          <h3 className="text-white font-medium mb-4">Bid Status Distribution</h3>
+          <h3 className="text-slate-900 font-medium mb-4">Bid Status Distribution</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -157,7 +157,7 @@ export default function AdminDashboard() {
                   className="w-2.5 h-2.5 rounded-full"
                   style={{ backgroundColor: COLORS[index % COLORS.length] }}
                 />
-                <span className="text-xs text-slate-400">{entry.name}</span>
+                <span className="text-xs text-slate-600">{entry.name}</span>
               </div>
             ))}
           </div>
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
 
         {/* Tender Overview */}
         <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
-          <h3 className="text-white font-medium mb-4">Tender Overview</h3>
+          <h3 className="text-slate-900 font-medium mb-4">Tender Overview</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tenderStatusData}>
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
 
       {/* Recent Activity */}
       <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
-        <h3 className="text-white font-medium mb-4">Recent Activity</h3>
+        <h3 className="text-slate-900 font-medium mb-4">Recent Activity</h3>
         <div className="space-y-3">
           {stats?.recentActivity?.length === 0 && (
             <p className="text-slate-500 text-sm">No recent activity</p>
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                 <Clock className="w-4 h-4 text-cyan-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-200">{activity.action}</p>
+                <p className="text-sm text-slate-800">{activity.action}</p>
                 <p className="text-xs text-slate-500">{activity.details}</p>
               </div>
               <span className="text-xs text-slate-600 flex-shrink-0">

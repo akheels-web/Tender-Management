@@ -47,8 +47,8 @@ export default function VendorDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Vendor Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Vendor Dashboard</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Browse tenders, place bids, and track your proposals.
           </p>
         </div>
@@ -70,8 +70,8 @@ export default function VendorDashboard() {
             </div>
             <ArrowRight className="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
           </div>
-          <p className="text-white font-medium">Browse Tenders</p>
-          <p className="text-slate-400 text-sm mt-1">Find and bid on open tenders</p>
+          <p className="text-slate-900 font-medium">Browse Tenders</p>
+          <p className="text-slate-600 text-sm mt-1">Find and bid on open tenders</p>
         </Link>
 
         <Link
@@ -84,8 +84,8 @@ export default function VendorDashboard() {
             </div>
             <ArrowRight className="w-4 h-4 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
           </div>
-          <p className="text-white font-medium">My Bids</p>
-          <p className="text-slate-400 text-sm mt-1">Track your bid history</p>
+          <p className="text-slate-900 font-medium">My Bids</p>
+          <p className="text-slate-600 text-sm mt-1">Track your bid history</p>
         </Link>
 
         <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
@@ -94,8 +94,8 @@ export default function VendorDashboard() {
               <FileText className="w-5 h-5 text-yellow-400" />
             </div>
           </div>
-          <p className="text-white font-medium">Bid Guide</p>
-          <p className="text-slate-400 text-sm mt-1">All bids must include a PDF proposal</p>
+          <p className="text-slate-900 font-medium">Bid Guide</p>
+          <p className="text-slate-600 text-sm mt-1">All bids must include a PDF proposal</p>
         </div>
       </div>
 
@@ -114,10 +114,10 @@ export default function VendorDashboard() {
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-2xl font-semibold text-white font-mono">
+                <p className="text-2xl font-semibold text-slate-900 font-mono">
                   {card.value}
                 </p>
-                <p className="text-sm text-slate-400 mt-1">{card.label}</p>
+                <p className="text-sm text-slate-600 mt-1">{card.label}</p>
               </div>
             </div>
           );
@@ -127,7 +127,7 @@ export default function VendorDashboard() {
       {/* Recent Bids */}
       <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-medium">Recent Bids</h3>
+          <h3 className="text-slate-900 font-medium">Recent Bids</h3>
           <Link
             to="/vendor/my-bids"
             className="text-cyan-400 text-sm hover:text-cyan-300 transition-colors"
@@ -150,7 +150,7 @@ export default function VendorDashboard() {
                 <Gavel className="w-4 h-4 text-cyan-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-200 truncate">
+                <p className="text-sm text-slate-800 truncate">
                   {bid.tenderTitle}
                 </p>
                 <p className="text-xs text-slate-500">

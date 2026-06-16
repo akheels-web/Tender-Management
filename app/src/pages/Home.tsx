@@ -25,21 +25,21 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A1628]">
+    <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0A1628]/80 backdrop-blur-md border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-50/80 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
+              <Shield className="w-5 h-5 text-slate-900" />
             </div>
-            <span className="text-white font-semibold text-lg">ProTender</span>
+            <span className="text-slate-900 font-semibold text-lg">ProTender</span>
           </div>
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <Button
                 asChild
-                className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2"
+                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
               >
                 <Link to={getDashboardLink()}>
                   Dashboard
@@ -50,13 +50,13 @@ export default function Home() {
               <>
                 <Link
                   to="/login"
-                  className="text-slate-400 hover:text-white text-sm transition-colors"
+                  className="text-slate-600 hover:text-slate-900 text-sm transition-colors"
                 >
                   Sign In
                 </Link>
                 <Button
                   asChild
-                  className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2"
+                  className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
                 >
                   <Link to="/login">
                     Get Started
@@ -76,14 +76,14 @@ export default function Home() {
             <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
             Next-Gen Tender Management
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 leading-tight">
             Secure. Transparent.
             <br />
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Procurement Simplified.
             </span>
           </h1>
-          <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+          <p className="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
             ProTender is an enterprise-grade tender management platform with
             role-based access control, auto-locked documents, and comprehensive
             bid tracking.
@@ -92,7 +92,7 @@ export default function Home() {
             <Button
               asChild
               size="lg"
-              className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2 px-8"
+              className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2 px-8"
             >
               <Link to="/login">
                 {isAuthenticated ? "Go to Dashboard" : "Get Started"}
@@ -104,7 +104,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 border-y border-white/5">
+      <section className="py-16 border-y border-slate-200">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -117,7 +117,7 @@ export default function Home() {
               return (
                 <div key={stat.label} className="text-center">
                   <Icon className="w-6 h-6 text-cyan-400 mx-auto mb-3" />
-                  <p className="text-2xl font-bold text-white font-mono">
+                  <p className="text-2xl font-bold text-slate-900 font-mono">
                     {stat.value}
                   </p>
                   <p className="text-sm text-slate-500 mt-1">{stat.label}</p>
@@ -132,10 +132,10 @@ export default function Home() {
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white">
+            <h2 className="text-3xl font-bold text-slate-900">
               Built for Modern Procurement
             </h2>
-            <p className="text-slate-400 mt-3">
+            <p className="text-slate-600 mt-3">
               Comprehensive features for every stakeholder in the tender process.
             </p>
           </div>
@@ -199,10 +199,10 @@ export default function Home() {
                   <div className={feature.bg + " w-12 h-12 rounded-lg flex items-center justify-center mb-4"}>
                     <Icon className={feature.color + " w-6 h-6"} />
                   </div>
-                  <h3 className="text-white font-semibold text-lg mb-2">
+                  <h3 className="text-slate-900 font-semibold text-lg mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <p className="text-slate-600 text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -213,11 +213,11 @@ export default function Home() {
       </section>
 
       {/* Roles Section */}
-      <section className="py-20 px-6 border-y border-white/5">
+      <section className="py-20 px-6 border-y border-slate-200">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white">Three Roles, One Platform</h2>
-            <p className="text-slate-400 mt-3">
+            <h2 className="text-3xl font-bold text-slate-900">Three Roles, One Platform</h2>
+            <p className="text-slate-600 mt-3">
               Each role is designed with specific capabilities for the procurement workflow.
             </p>
           </div>
@@ -226,8 +226,8 @@ export default function Home() {
               <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-4">
                 <Shield className="w-5 h-5 text-cyan-400" />
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Administrator</h3>
-              <p className="text-slate-400 text-sm mb-4">
+              <h3 className="text-slate-900 font-semibold text-lg mb-2">Administrator</h3>
+              <p className="text-slate-600 text-sm mb-4">
                 Full platform control. Create tenders, manage vendors, review bids, and control access.
               </p>
               <ul className="space-y-2">
@@ -238,7 +238,7 @@ export default function Home() {
                   "Bar vendors from tenders",
                   "Review & score bids",
                 ].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-slate-400">
+                  <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
                     <CheckCircle className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
                     {item}
                   </li>
@@ -250,8 +250,8 @@ export default function Home() {
               <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center mb-4">
                 <Users className="w-5 h-5 text-yellow-400" />
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Procurement Agent</h3>
-              <p className="text-slate-400 text-sm mb-4">
+              <h3 className="text-slate-900 font-semibold text-lg mb-2">Procurement Agent</h3>
+              <p className="text-slate-600 text-sm mb-4">
                 Monitor tender activity and bid participation with read-only access to locked tenders.
               </p>
               <ul className="space-y-2">
@@ -262,7 +262,7 @@ export default function Home() {
                   "View vendor list",
                   "Limited access (locked)",
                 ].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-slate-400">
+                  <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
                     <CheckCircle className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
                     {item}
                   </li>
@@ -274,8 +274,8 @@ export default function Home() {
               <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4">
                 <Gavel className="w-5 h-5 text-emerald-400" />
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Vendor</h3>
-              <p className="text-slate-400 text-sm mb-4">
+              <h3 className="text-slate-900 font-semibold text-lg mb-2">Vendor</h3>
+              <p className="text-slate-600 text-sm mb-4">
                 Browse tenders, place bids with PDF proposals, and track bid status in real-time.
               </p>
               <ul className="space-y-2">
@@ -286,7 +286,7 @@ export default function Home() {
                   "Track bid status",
                   "Manage profile",
                 ].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-slate-400">
+                  <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                     {item}
                   </li>
@@ -298,13 +298,13 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-white/5">
+      <footer className="py-8 px-6 border-t border-slate-200">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 bg-gradient-to-br from-cyan-500 to-blue-600 rounded flex items-center justify-center">
-              <Shield className="w-3.5 h-3.5 text-white" />
+              <Shield className="w-3.5 h-3.5 text-slate-900" />
             </div>
-            <span className="text-slate-400 text-sm">ProTender</span>
+            <span className="text-slate-600 text-sm">ProTender</span>
           </div>
           <p className="text-slate-600 text-sm">
             Enterprise Tender Management Platform

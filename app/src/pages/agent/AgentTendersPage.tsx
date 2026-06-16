@@ -211,14 +211,14 @@ export default function TendersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Tenders</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Tenders</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Manage all tenders, create new ones, and control access.
           </p>
         </div>
         <Button
           onClick={() => setShowCreate(true)}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2"
+          className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
         >
           <Plus className="w-4 h-4" />
           Create Tender
@@ -233,14 +233,14 @@ export default function TendersPage() {
             placeholder="Search by Tender ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-[#111C2E] border-white/10 text-white placeholder:text-slate-500"
+            className="pl-10 bg-[#111C2E] border-slate-200 text-slate-900 placeholder:text-slate-500"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px] bg-[#111C2E] border-white/10 text-white">
+          <SelectTrigger className="w-[160px] bg-[#111C2E] border-slate-200 text-slate-900">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
-          <SelectContent className="bg-[#111C2E] border-white/10">
+          <SelectContent className="bg-[#111C2E] border-slate-200">
             <SelectItem value="">All Statuses</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="published">Published</SelectItem>
@@ -254,7 +254,7 @@ export default function TendersPage() {
           <Button
             variant="ghost"
             onClick={() => setStatusFilter("")}
-            className="text-slate-400 hover:text-white"
+            className="text-slate-600 hover:text-slate-900"
           >
             <X className="w-4 h-4" />
           </Button>
@@ -271,7 +271,7 @@ export default function TendersPage() {
           {tenders?.length === 0 && (
             <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
               <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-              <p className="text-slate-400">No tenders found</p>
+              <p className="text-slate-600">No tenders found</p>
             </div>
           )}
           {tenders?.map((tender) => (
@@ -300,10 +300,10 @@ export default function TendersPage() {
                       {tender.tenderId}
                     </span>
                   </div>
-                  <h3 className="text-white font-medium text-lg mb-1">
+                  <h3 className="text-slate-900 font-medium text-lg mb-1">
                     {tender.title}
                   </h3>
-                  <p className="text-slate-400 text-sm line-clamp-2 mb-3">
+                  <p className="text-slate-600 text-sm line-clamp-2 mb-3">
                     {tender.description}
                   </p>
                   <div className="flex flex-wrap gap-4 text-xs text-slate-500">
@@ -375,7 +375,7 @@ export default function TendersPage() {
 
       {/* Create Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Plus className="w-5 h-5 text-cyan-400" />
@@ -386,35 +386,35 @@ export default function TendersPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Tender ID</Label>
-                <Input name="tenderId" placeholder="TDR-2026-XXX" required className="bg-[#0A1628] border-white/10" />
+                <Input name="tenderId" placeholder="TDR-2026-XXX" required className="bg-slate-50 border-slate-200" />
               </div>
               <div className="space-y-2">
                 <Label>Category</Label>
-                <Input name="category" placeholder="e.g. Infrastructure" required className="bg-[#0A1628] border-white/10" />
+                <Input name="category" placeholder="e.g. Infrastructure" required className="bg-slate-50 border-slate-200" />
               </div>
             </div>
             <div className="space-y-2">
               <Label>Title</Label>
-              <Input name="title" placeholder="Project title" required className="bg-[#0A1628] border-white/10" />
+              <Input name="title" placeholder="Project title" required className="bg-slate-50 border-slate-200" />
             </div>
             <div className="space-y-2">
               <Label>Description</Label>
-              <Textarea name="description" placeholder="Detailed description" required rows={3} className="bg-[#0A1628] border-white/10" />
+              <Textarea name="description" placeholder="Detailed description" required rows={3} className="bg-slate-50 border-slate-200" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Budget Estimate ($)</Label>
-                <Input name="budgetEstimate" type="number" step="0.01" placeholder="0.00" className="bg-[#0A1628] border-white/10" />
+                <Input name="budgetEstimate" type="number" step="0.01" placeholder="0.00" className="bg-slate-50 border-slate-200" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Location</label>
-                <Input name="location" className="bg-[#0A1628] border-white/10" />
+                <label className="text-sm text-slate-700">Location</label>
+                <Input name="location" className="bg-slate-50 border-slate-200" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Vendor Group</label>
-                <select name="vendorGroupId" className="w-full bg-[#0A1628] border border-white/10 rounded-md h-10 px-3 text-white">
+                <label className="text-sm text-slate-700">Vendor Group</label>
+                <select name="vendorGroupId" className="w-full bg-slate-50 border border-slate-200 rounded-md h-10 px-3 text-slate-900">
                   <option value="">-- None --</option>
                   {vendorGroups?.map(g => (
                     <option key={g.id} value={g.id}>{g.name}</option>
@@ -423,13 +423,13 @@ export default function TendersPage() {
                 <p className="text-xs text-slate-500">Select a group to notify them upon publish.</p>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Closing Date *</label>
-                <Input type="date" name="closingDate" required className="bg-[#0A1628] border-white/10" />
+                <label className="text-sm text-slate-700">Closing Date *</label>
+                <Input type="date" name="closingDate" required className="bg-slate-50 border-slate-200" />
               </div>
             </div>
             <div className="space-y-2">
               <Label>Tender Document (PDF)</Label>
-              <Input type="file" accept=".pdf" ref={fileInputRef} className="bg-[#0A1628] border-white/10" />
+              <Input type="file" accept=".pdf" ref={fileInputRef} className="bg-slate-50 border-slate-200" />
             </div>
             <div className="border border-cyan-500/20 rounded-lg p-4 space-y-3 bg-cyan-500/5">
               <div className="flex items-center gap-2 text-cyan-400">
@@ -438,18 +438,18 @@ export default function TendersPage() {
               </div>
               <div className="space-y-2">
                 <Label>Unlock Password</Label>
-                <Input name="unlockPassword" type="password" placeholder="Set password for tender access" className="bg-[#0A1628] border-white/10" />
+                <Input name="unlockPassword" type="password" placeholder="Set password for tender access" className="bg-slate-50 border-slate-200" />
               </div>
               <div className="space-y-2">
                 <Label>Lock Reason</Label>
-                <Input name="lockReason" placeholder="Why is this tender locked?" className="bg-[#0A1628] border-white/10" />
+                <Input name="lockReason" placeholder="Why is this tender locked?" className="bg-slate-50 border-slate-200" />
               </div>
             </div>
             <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-400">
+              <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-600">
                 Cancel
               </Button>
-              <Button type="submit" className="bg-cyan-500 hover:bg-cyan-600 text-white" disabled={createMutation.isPending || isUploading}>
+              <Button type="submit" className="bg-cyan-500 hover:bg-cyan-600 text-slate-900" disabled={createMutation.isPending || isUploading}>
                 {createMutation.isPending || isUploading ? "Creating..." : "Create Tender"}
               </Button>
             </div>
@@ -459,7 +459,7 @@ export default function TendersPage() {
 
       {/* Edit Dialog */}
       <Dialog open={showEdit} onOpenChange={setShowEdit}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Edit className="w-5 h-5 text-yellow-400" />
@@ -469,20 +469,20 @@ export default function TendersPage() {
           <form onSubmit={handleEdit} className="space-y-4 mt-4">
             <div className="space-y-2">
               <Label>Title</Label>
-              <Input name="title" defaultValue={selectedTender?.title} required className="bg-[#0A1628] border-white/10" />
+              <Input name="title" defaultValue={selectedTender?.title} required className="bg-slate-50 border-slate-200" />
             </div>
             <div className="space-y-2">
               <Label>Description</Label>
-              <Textarea name="description" defaultValue={selectedTender?.description} required rows={3} className="bg-[#0A1628] border-white/10" />
+              <Textarea name="description" defaultValue={selectedTender?.description} required rows={3} className="bg-slate-50 border-slate-200" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Status</Label>
                 <Select name="status" defaultValue={selectedTender?.status}>
-                  <SelectTrigger className="bg-[#0A1628] border-white/10">
+                  <SelectTrigger className="bg-slate-50 border-slate-200">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#111C2E] border-white/10">
+                  <SelectContent className="bg-[#111C2E] border-slate-200">
                     <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="published">Published</SelectItem>
                     <SelectItem value="open">Open</SelectItem>
@@ -494,14 +494,14 @@ export default function TendersPage() {
               </div>
               <div className="space-y-2">
                 <Label>Budget Estimate ($)</Label>
-                <Input name="budgetEstimate" type="number" step="0.01" defaultValue={selectedTender?.budgetEstimate ?? ""} className="bg-[#0A1628] border-white/10" />
+                <Input name="budgetEstimate" type="number" step="0.01" defaultValue={selectedTender?.budgetEstimate ?? ""} className="bg-slate-50 border-slate-200" />
               </div>
             </div>
             <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="ghost" onClick={() => setShowEdit(false)} className="text-slate-400">
+              <Button type="button" variant="ghost" onClick={() => setShowEdit(false)} className="text-slate-600">
                 Cancel
               </Button>
-              <Button type="submit" className="bg-yellow-500 hover:bg-yellow-600 text-white" disabled={updateMutation.isPending}>
+              <Button type="submit" className="bg-yellow-500 hover:bg-yellow-600 text-slate-900" disabled={updateMutation.isPending}>
                 {updateMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
@@ -511,7 +511,7 @@ export default function TendersPage() {
 
       {/* Detail Dialog */}
       <Dialog open={showDetail} onOpenChange={setShowDetail}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-2xl">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-2xl">
           <DialogHeader>
             <DialogTitle>{selectedTender?.title}</DialogTitle>
           </DialogHeader>
@@ -529,7 +529,7 @@ export default function TendersPage() {
                 {selectedTender?.tenderId}
               </span>
             </div>
-            <p className="text-slate-300 text-sm">{selectedTender?.description}</p>
+            <p className="text-slate-700 text-sm">{selectedTender?.description}</p>
             {selectedTender?.documentUrl && (
               <div className="mb-2">
                 <a 
@@ -544,27 +544,27 @@ export default function TendersPage() {
               </div>
             )}
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Category</p>
-                <p className="text-white">{selectedTender?.category}</p>
+                <p className="text-slate-900">{selectedTender?.category}</p>
               </div>
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Budget</p>
-                <p className="text-white font-mono">
+                <p className="text-slate-900 font-mono">
                   ${Number(selectedTender?.budgetEstimate).toLocaleString()}
                 </p>
               </div>
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Closing Date</p>
-                <p className="text-white">
+                <p className="text-slate-900">
                   {selectedTender?.closingDate
                     ? new Date(selectedTender.closingDate).toLocaleDateString()
                     : "N/A"}
                 </p>
               </div>
-              <div className="bg-[#0A1628] rounded-lg p-3">
+              <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Location</p>
-                <p className="text-white">{selectedTender?.location || "N/A"}</p>
+                <p className="text-slate-900">{selectedTender?.location || "N/A"}</p>
               </div>
             </div>
             {selectedTender?.isLocked && (
@@ -573,7 +573,7 @@ export default function TendersPage() {
                   <Lock className="w-4 h-4" />
                   <span className="font-medium text-sm">Tender is Locked</span>
                 </div>
-                <p className="text-slate-400 text-sm">
+                <p className="text-slate-600 text-sm">
                   {selectedTender?.lockReason || "No reason provided"}
                 </p>
               </div>
@@ -584,7 +584,7 @@ export default function TendersPage() {
 
       {/* Unlock Dialog */}
       <Dialog open={showUnlock} onOpenChange={setShowUnlock}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Unlock className="w-5 h-5 text-emerald-400" />
@@ -592,7 +592,7 @@ export default function TendersPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-600 text-sm">
               This tender is password-protected. Enter the admin password to
               unlock it.
             </p>
@@ -607,10 +607,10 @@ export default function TendersPage() {
               placeholder="Enter unlock password"
               value={unlockPassword}
               onChange={(e) => setUnlockPassword(e.target.value)}
-              className="bg-[#0A1628] border-white/10"
+              className="bg-slate-50 border-slate-200"
             />
             <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowUnlock(false)} className="text-slate-400">
+              <Button variant="ghost" onClick={() => setShowUnlock(false)} className="text-slate-600">
                 Cancel
               </Button>
               <Button
@@ -620,7 +620,7 @@ export default function TendersPage() {
                     password: unlockPassword,
                   })
                 }
-                className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                className="bg-emerald-500 hover:bg-emerald-600 text-slate-900"
                 disabled={!unlockPassword || unlockMutation.isPending}
               >
                 {unlockMutation.isPending ? "Unlocking..." : "Unlock"}
@@ -632,7 +632,7 @@ export default function TendersPage() {
 
       {/* Delete Dialog */}
       <Dialog open={showDelete} onOpenChange={setShowDelete}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Trash2 className="w-5 h-5 text-red-400" />
@@ -640,21 +640,21 @@ export default function TendersPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-600 text-sm">
               Are you sure you want to delete{" "}
-              <span className="text-white font-medium">
+              <span className="text-slate-900 font-medium">
                 {selectedTender?.title}
               </span>
               ? This action cannot be undone and will also delete all associated
               bids.
             </p>
             <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowDelete(false)} className="text-slate-400">
+              <Button variant="ghost" onClick={() => setShowDelete(false)} className="text-slate-600">
                 Cancel
               </Button>
               <Button
                 onClick={() => deleteMutation.mutate({ id: selectedTender?.id })}
-                className="bg-red-500 hover:bg-red-600 text-white"
+                className="bg-red-500 hover:bg-red-600 text-slate-900"
                 disabled={deleteMutation.isPending}
               >
                 {deleteMutation.isPending ? "Deleting..." : "Delete"}

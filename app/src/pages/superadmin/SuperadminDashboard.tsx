@@ -16,8 +16,8 @@ export default function SuperadminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Superadmin Dashboard</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <h1 className="text-2xl font-semibold text-slate-900">Superadmin Dashboard</h1>
+        <p className="text-slate-600 text-sm mt-1">
           System-wide overview and complete audit trail.
         </p>
       </div>
@@ -35,8 +35,8 @@ export default function SuperadminDashboard() {
               <FileText className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Total Tenders</p>
-              <h3 className="text-2xl font-semibold text-white mt-1">
+              <p className="text-slate-600 text-sm">Total Tenders</p>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-1">
                 {statsLoading ? "..." : stats?.totalTenders || 0}
               </h3>
             </div>
@@ -49,8 +49,8 @@ export default function SuperadminDashboard() {
               <Gavel className="w-6 h-6 text-emerald-400" />
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Total Bids</p>
-              <h3 className="text-2xl font-semibold text-white mt-1">
+              <p className="text-slate-600 text-sm">Total Bids</p>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-1">
                 {statsLoading ? "..." : stats?.totalBids || 0}
               </h3>
             </div>
@@ -63,8 +63,8 @@ export default function SuperadminDashboard() {
               <Users className="w-6 h-6 text-purple-400" />
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Total Users</p>
-              <h3 className="text-2xl font-semibold text-white mt-1">
+              <p className="text-slate-600 text-sm">Total Users</p>
+              <h3 className="text-2xl font-semibold text-slate-900 mt-1">
                 {statsLoading ? "..." : stats?.totalUsers || 0}
               </h3>
             </div>
@@ -76,12 +76,12 @@ export default function SuperadminDashboard() {
       <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl overflow-hidden">
         <div className="px-6 py-5 border-b border-white/[0.06] flex items-center gap-3">
           <ShieldAlert className="w-5 h-5 text-amber-400" />
-          <h2 className="text-lg font-medium text-white">System Activity Logs</h2>
+          <h2 className="text-lg font-medium text-slate-900">System Activity Logs</h2>
         </div>
         
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-white/[0.02] text-slate-400 font-medium">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="bg-white/[0.02] text-slate-600 font-medium">
               <tr>
                 <th className="px-6 py-4">Timestamp</th>
                 <th className="px-6 py-4">Actor</th>
@@ -113,22 +113,22 @@ export default function SuperadminDashboard() {
                     <td className="px-6 py-4">
                       {log.user ? (
                         <div>
-                          <p className="text-white font-medium">{log.user.name}</p>
-                          <p className="text-xs text-slate-500">{log.user.email} <span className="uppercase text-[10px] ml-1 px-1.5 py-0.5 rounded bg-white/10">{log.user.role}</span></p>
+                          <p className="text-slate-900 font-medium">{log.user.name}</p>
+                          <p className="text-xs text-slate-500">{log.user.email} <span className="uppercase text-[10px] ml-1 px-1.5 py-0.5 rounded bg-slate-100">{log.user.role}</span></p>
                         </div>
                       ) : (
                         <span className="text-slate-500">System</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-slate-300">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 border border-slate-200 text-slate-700">
                         {log.action}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       {log.entityType} {log.entityId && `#${log.entityId}`}
                     </td>
-                    <td className="px-6 py-4 max-w-md truncate text-slate-400" title={log.details || ""}>
+                    <td className="px-6 py-4 max-w-md truncate text-slate-600" title={log.details || ""}>
                       {log.details || "-"}
                     </td>
                   </tr>

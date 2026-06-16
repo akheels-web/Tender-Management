@@ -90,14 +90,14 @@ export default function VendorsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Vendors</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Vendors</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Manage vendor accounts, activate/deactivate, and bar from tenders.
           </p>
         </div>
         <Button
           onClick={() => setShowCreate(true)}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2"
+          className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
         >
           <Plus className="w-4 h-4" />
           Create Vendor
@@ -111,7 +111,7 @@ export default function VendorsPage() {
             placeholder="Search vendors..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-[#111C2E] border-white/10 text-white placeholder:text-slate-500"
+            className="pl-10 bg-[#111C2E] border-slate-200 text-slate-900 placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function VendorsPage() {
           {vendors?.length === 0 && (
             <div className="col-span-2 text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
               <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-              <p className="text-slate-400">No vendors found</p>
+              <p className="text-slate-600">No vendors found</p>
             </div>
           )}
           {vendors?.map((vendor) => (
@@ -135,11 +135,11 @@ export default function VendorsPage() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-medium">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-900 font-medium">
                     {(vendor.name || "V")[0].toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="text-white font-medium">{vendor.name}</h3>
+                    <h3 className="text-slate-900 font-medium">{vendor.name}</h3>
                     <p className="text-slate-500 text-xs">{vendor.companyName || "No company"}</p>
                   </div>
                 </div>
@@ -156,18 +156,18 @@ export default function VendorsPage() {
               </div>
 
               <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-slate-400">
+                <div className="flex items-center gap-2 text-slate-600">
                   <Mail className="w-3.5 h-3.5" />
                   <span>{vendor.email}</span>
                 </div>
                 {vendor.phone && (
-                  <div className="flex items-center gap-2 text-slate-400">
+                  <div className="flex items-center gap-2 text-slate-600">
                     <Phone className="w-3.5 h-3.5" />
                     <span>{vendor.phone}</span>
                   </div>
                 )}
                 {vendor.contactPerson && (
-                  <div className="flex items-center gap-2 text-slate-400">
+                  <div className="flex items-center gap-2 text-slate-600">
                     <Building2 className="w-3.5 h-3.5" />
                     <span>Contact: {vendor.contactPerson}</span>
                   </div>
@@ -213,7 +213,7 @@ export default function VendorsPage() {
 
       {/* Bar Vendor Dialog */}
       <Dialog open={showBar} onOpenChange={setShowBar}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Ban className="w-5 h-5 text-amber-400" />
@@ -221,15 +221,15 @@ export default function VendorsPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <p className="text-slate-400 text-sm">
-              Bar <span className="text-white font-medium">{selectedVendor?.name}</span> from participating in a specific tender.
+            <p className="text-slate-600 text-sm">
+              Bar <span className="text-slate-900 font-medium">{selectedVendor?.name}</span> from participating in a specific tender.
             </p>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Select Tender</label>
+              <label className="text-sm text-slate-700">Select Tender</label>
               <select
                 value={selectedTenderId || ""}
                 onChange={(e) => setSelectedTenderId(Number(e.target.value))}
-                className="w-full bg-[#0A1628] border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-900 text-sm"
               >
                 <option value="">Select a tender</option>
                 {tenders?.map((t) => (
@@ -240,16 +240,16 @@ export default function VendorsPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Reason (optional)</label>
+              <label className="text-sm text-slate-700">Reason (optional)</label>
               <Input
                 value={barReason}
                 onChange={(e) => setBarReason(e.target.value)}
                 placeholder="Reason for barring"
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowBar(false)} className="text-slate-400">
+              <Button variant="ghost" onClick={() => setShowBar(false)} className="text-slate-600">
                 Cancel
               </Button>
               <Button
@@ -261,7 +261,7 @@ export default function VendorsPage() {
                     reason: barReason || undefined,
                   })
                 }
-                className="bg-amber-500 hover:bg-amber-600 text-white"
+                className="bg-amber-500 hover:bg-amber-600 text-slate-900"
                 disabled={!selectedTenderId || barMutation.isPending}
               >
                 {barMutation.isPending ? "Barring..." : "Bar Vendor"}
@@ -273,7 +273,7 @@ export default function VendorsPage() {
 
       {/* Deactivate Dialog */}
       <Dialog open={showActivate} onOpenChange={setShowActivate}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -281,18 +281,18 @@ export default function VendorsPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-600 text-sm">
               Are you sure you want to deactivate{" "}
-              <span className="text-white font-medium">{selectedVendor?.name}</span>?
+              <span className="text-slate-900 font-medium">{selectedVendor?.name}</span>?
               They will no longer be able to participate in tenders.
             </p>
             <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowActivate(false)} className="text-slate-400">
+              <Button variant="ghost" onClick={() => setShowActivate(false)} className="text-slate-600">
                 Cancel
               </Button>
               <Button
                 onClick={() => deactivateMutation.mutate({ id: selectedVendor?.id })}
-                className="bg-red-500 hover:bg-red-600 text-white"
+                className="bg-red-500 hover:bg-red-600 text-slate-900"
                 disabled={deactivateMutation.isPending}
               >
                 {deactivateMutation.isPending ? "Deactivating..." : "Deactivate"}
@@ -304,7 +304,7 @@ export default function VendorsPage() {
 
       {/* Create Vendor Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserCheck className="w-5 h-5 text-cyan-400" />
@@ -313,42 +313,42 @@ export default function VendorsPage() {
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4 mt-4">
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Full Name</label>
+              <label className="text-sm text-slate-700">Full Name</label>
               <Input
                 name="name"
                 required
                 placeholder="Vendor Representative Name"
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Email Address</label>
+              <label className="text-sm text-slate-700">Email Address</label>
               <Input
                 name="email"
                 type="email"
                 required
                 placeholder="vendor@company.com"
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Company Name</label>
+              <label className="text-sm text-slate-700">Company Name</label>
               <Input
                 name="companyName"
                 required
                 placeholder="Company Ltd."
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Initial Password</label>
+              <label className="text-sm text-slate-700">Initial Password</label>
               <Input
                 name="password"
                 type="password"
                 required
                 minLength={6}
                 placeholder="Min 6 characters"
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             {createMutation.error && (
@@ -357,12 +357,12 @@ export default function VendorsPage() {
               </div>
             )}
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-400">
+              <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-slate-600">
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
                 disabled={createMutation.isPending}
               >
                 {createMutation.isPending ? "Creating..." : "Create Vendor"}

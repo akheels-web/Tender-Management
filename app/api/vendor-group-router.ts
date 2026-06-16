@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, and } from "drizzle-orm";
 import { createRouter, agentQuery, authedQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { vendorGroups, vendorGroupMemberships, users } from "@db/schema";
-import { Errors } from "@contracts/constants";
+import { Errors } from "@contracts/errors";
 
 export const vendorGroupRouter = createRouter({
   getAll: authedQuery.query(async () => {
@@ -36,8 +36,10 @@ export const vendorGroupRouter = createRouter({
       const existing = await db
         .select()
         .from(vendorGroupMemberships)
-        .where(eq(vendorGroupMemberships.groupId, input.groupId))
-        .where(eq(vendorGroupMemberships.vendorId, input.vendorId));
+        .where(and(
+          eq(vendorGroupMemberships.groupId, input.groupId),
+          eq(vendorGroupMemberships.vendorId, input.vendorId)
+        ));
 
       if (existing.length > 0) {
         throw Errors.badRequest("Vendor already in this group.");

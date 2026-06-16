@@ -7,6 +7,7 @@ import {
   Clock,
   FileText,
   Download,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -76,8 +77,8 @@ export default function BidsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">All Bids</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">All Bids</h1>
+          <p className="text-slate-600 text-sm mt-1">
             View and manage bids across all tenders.
           </p>
         </div>
@@ -85,17 +86,17 @@ export default function BidsPage() {
 
       {/* Tender Selector */}
       <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
-        <label className="text-sm text-slate-300 mb-2 block">
+        <label className="text-sm text-slate-700 mb-2 block">
           Select a Tender to View Bids
         </label>
         <Select
           value={selectedTender?.toString() || ""}
           onValueChange={(v) => setSelectedTender(Number(v))}
         >
-          <SelectTrigger className="bg-[#0A1628] border-white/10 text-white w-full max-w-lg">
+          <SelectTrigger className="bg-slate-50 border-slate-200 text-slate-900 w-full max-w-lg">
             <SelectValue placeholder="Choose a tender..." />
           </SelectTrigger>
-          <SelectContent className="bg-[#111C2E] border-white/10 max-h-[300px]">
+          <SelectContent className="bg-[#111C2E] border-slate-200 max-h-[300px]">
             {tenders?.map((t) => (
               <SelectItem key={t.id} value={t.id.toString()}>
                 <span className="font-mono text-xs text-slate-500 mr-2">
@@ -122,8 +123,8 @@ export default function BidsPage() {
                   <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <AlertTriangle className="w-6 h-6 text-amber-400" />
                   </div>
-                  <h3 className="text-white font-medium mb-1">Tender is Locked</h3>
-                  <p className="text-slate-400 text-sm mb-4">
+                  <h3 className="text-slate-900 font-medium mb-1">Tender is Locked</h3>
+                  <p className="text-slate-600 text-sm mb-4">
                     Vendor details and documents are hidden. Number of applicants: {bidsResponse.count}
                   </p>
                 </div>
@@ -131,7 +132,7 @@ export default function BidsPage() {
               {!bidsResponse?.locked && bidsResponse?.count === 0 && (
                 <div className="text-center py-12 bg-[#111C2E] rounded-xl border border-white/[0.06]">
                   <Gavel className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                  <p className="text-slate-400">No bids for this tender</p>
+                  <p className="text-slate-600">No bids for this tender</p>
                 </div>
               )}
               {!bidsResponse?.locked && (
@@ -156,7 +157,7 @@ export default function BidsPage() {
                             {bid.vendorCompany || bid.vendorName}
                           </span>
                         </div>
-                        <p className="text-slate-300 text-sm mb-2">
+                        <p className="text-slate-700 text-sm mb-2">
                           {bid.description}
                         </p>
                         {(bid.quotationDocumentUrl || bid.technicalDocumentUrl) && (
@@ -231,7 +232,7 @@ export default function BidsPage() {
 
       {/* Update Status Dialog */}
       <Dialog open={showUpdate} onOpenChange={setShowUpdate}>
-        <DialogContent className="bg-[#111C2E] border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#111C2E] border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-cyan-400" />
@@ -239,19 +240,19 @@ export default function BidsPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-600 text-sm">
               Update status for bid from{" "}
-              <span className="text-white font-medium">
+              <span className="text-slate-900 font-medium">
                 {selectedBid?.vendorCompany || selectedBid?.vendorName}
               </span>
             </p>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Status</label>
+              <label className="text-sm text-slate-700">Status</label>
               <Select value={newStatus} onValueChange={setNewStatus}>
-                <SelectTrigger className="bg-[#0A1628] border-white/10">
+                <SelectTrigger className="bg-slate-50 border-slate-200">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#111C2E] border-white/10">
+                <SelectContent className="bg-[#111C2E] border-slate-200">
                   <SelectItem value="submitted">Submitted</SelectItem>
                   <SelectItem value="under_review">Under Review</SelectItem>
                   <SelectItem value="shortlisted">Shortlisted</SelectItem>
@@ -262,21 +263,21 @@ export default function BidsPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Notes</label>
+              <label className="text-sm text-slate-700">Notes</label>
               <Input
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Optional notes"
-                className="bg-[#0A1628] border-white/10"
+                className="bg-slate-50 border-slate-200"
               />
             </div>
             <div className="flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowUpdate(false)} className="text-slate-400">
+              <Button variant="ghost" onClick={() => setShowUpdate(false)} className="text-slate-600">
                 Cancel
               </Button>
               <Button
                 onClick={handleUpdate}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
                 disabled={!newStatus || updateMutation.isPending}
               >
                 {updateMutation.isPending ? "Updating..." : "Update"}

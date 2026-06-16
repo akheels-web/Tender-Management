@@ -57,8 +57,8 @@ export default function ProfilePage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Profile Settings</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <h1 className="text-2xl font-semibold text-slate-900">Profile Settings</h1>
+        <p className="text-slate-600 text-sm mt-1">
           Manage your account information and company details.
         </p>
       </div>
@@ -72,27 +72,27 @@ export default function ProfilePage() {
 
       {/* User Info Card */}
       <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-6">
-        <h3 className="text-white font-medium mb-4 flex items-center gap-2">
+        <h3 className="text-slate-900 font-medium mb-4 flex items-center gap-2">
           <UserCircle className="w-5 h-5 text-cyan-400" />
           Account Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label className="text-slate-400 text-xs">Full Name</Label>
-            <div className="mt-1 p-2.5 bg-[#0A1628] border border-white/10 rounded-lg text-white text-sm">
+            <Label className="text-slate-600 text-xs">Full Name</Label>
+            <div className="mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm">
               {user?.name || "Not set"}
             </div>
           </div>
           <div>
-            <Label className="text-slate-400 text-xs">Email</Label>
-            <div className="mt-1 p-2.5 bg-[#0A1628] border border-white/10 rounded-lg text-white text-sm flex items-center gap-2">
+            <Label className="text-slate-600 text-xs">Email</Label>
+            <div className="mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm flex items-center gap-2">
               <Mail className="w-3.5 h-3.5 text-slate-500" />
               {user?.email || "Not set"}
             </div>
           </div>
           <div>
-            <Label className="text-slate-400 text-xs">Role</Label>
-            <div className="mt-1 p-2.5 bg-[#0A1628] border border-white/10 rounded-lg text-white text-sm capitalize">
+            <Label className="text-slate-600 text-xs">Role</Label>
+            <div className="mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm capitalize">
               {user?.role || "User"}
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function ProfilePage() {
       {isVendor && (
         <form onSubmit={handleSubmit}>
           <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-6 space-y-6">
-            <h3 className="text-white font-medium flex items-center gap-2">
+            <h3 className="text-slate-900 font-medium flex items-center gap-2">
               <Building2 className="w-5 h-5 text-cyan-400" />
               Company Details
             </h3>
@@ -115,7 +115,7 @@ export default function ProfilePage() {
                   name="companyName"
                   defaultValue={profile?.profile?.companyName || ""}
                   placeholder="Your company name"
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
@@ -124,7 +124,7 @@ export default function ProfilePage() {
                   name="contactPerson"
                   defaultValue={profile?.profile?.contactPerson || ""}
                   placeholder="Primary contact"
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
@@ -133,7 +133,7 @@ export default function ProfilePage() {
                   name="phone"
                   defaultValue={profile?.profile?.phone || ""}
                   placeholder="+1-555-0000"
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                   type="number"
                   defaultValue={profile?.profile?.yearsInBusiness || ""}
                   placeholder="0"
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
@@ -152,7 +152,7 @@ export default function ProfilePage() {
                   name="gstNumber"
                   defaultValue={profile?.profile?.gstNumber || ""}
                   placeholder="GSTIN"
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2">
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                   name="panNumber"
                   defaultValue={profile?.profile?.panNumber || ""}
                   placeholder="PAN"
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
@@ -170,7 +170,7 @@ export default function ProfilePage() {
                   name="website"
                   defaultValue={profile?.profile?.website || ""}
                   placeholder="https://example.com"
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
@@ -180,7 +180,7 @@ export default function ProfilePage() {
                   defaultValue={profile?.profile?.address || ""}
                   placeholder="Company address"
                   rows={2}
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
@@ -190,7 +190,7 @@ export default function ProfilePage() {
                   defaultValue={profile?.profile?.description || ""}
                   placeholder="Brief description of your company..."
                   rows={3}
-                  className="bg-[#0A1628] border-white/10"
+                  className="bg-slate-50 border-slate-200"
                 />
               </div>
             </div>
@@ -198,7 +198,7 @@ export default function ProfilePage() {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="bg-cyan-500 hover:bg-cyan-600 text-white gap-2"
+                className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
                 disabled={updateMutation.isPending}
               >
                 <Save className="w-4 h-4" />

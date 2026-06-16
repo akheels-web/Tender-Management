@@ -62,8 +62,8 @@ export default function AgentDashboard() {
       {/* Welcome */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Agent Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Agent Dashboard</h1>
+          <p className="text-slate-600 text-sm mt-1">
             Monitor tenders and bid activity. Tender details are locked for security.
           </p>
         </div>
@@ -78,7 +78,7 @@ export default function AgentDashboard() {
         <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
         <div>
           <p className="text-amber-400 font-medium text-sm">Limited Access Notice</p>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-slate-600 text-sm mt-1">
             As a Procurement Agent, you can view tender summaries and bid counts, but tender documents and detailed bid information are locked. Contact an administrator for full access.
           </p>
         </div>
@@ -99,10 +99,10 @@ export default function AgentDashboard() {
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-2xl font-semibold text-white font-mono">
+                <p className="text-2xl font-semibold text-slate-900 font-mono">
                   {card.value}
                 </p>
-                <p className="text-sm text-slate-400 mt-1">{card.label}</p>
+                <p className="text-sm text-slate-600 mt-1">{card.label}</p>
               </div>
             </div>
           );
@@ -112,7 +112,7 @@ export default function AgentDashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
-          <h3 className="text-white font-medium mb-4">Tender Status Overview</h3>
+          <h3 className="text-slate-900 font-medium mb-4">Tender Status Overview</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tenderOverview}>
@@ -134,28 +134,28 @@ export default function AgentDashboard() {
         </div>
 
         <div className="bg-[#111C2E] border border-white/[0.06] rounded-xl p-5">
-          <h3 className="text-white font-medium mb-4">Quick Navigation</h3>
+          <h3 className="text-slate-900 font-medium mb-4">Quick Navigation</h3>
           <div className="space-y-3">
             <a
               href="/agent/tenders"
-              className="flex items-center gap-3 p-4 bg-[#0A1628] rounded-lg hover:bg-[#0E1925] transition-colors group"
+              className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg hover:bg-white transition-colors group"
             >
               <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
                 <Lock className="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <p className="text-white font-medium">View Tenders</p>
+                <p className="text-slate-900 font-medium">View Tenders</p>
                 <p className="text-slate-500 text-sm">Browse locked tender summaries</p>
               </div>
               <FileText className="w-4 h-4 text-slate-600 ml-auto" />
             </a>
-            <div className="p-4 bg-[#0A1628] rounded-lg opacity-60">
+            <div className="p-4 bg-slate-50 rounded-lg opacity-60">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-slate-500/10 flex items-center justify-center">
                   <Shield className="w-5 h-5 text-slate-500" />
                 </div>
                 <div>
-                  <p className="text-slate-400 font-medium">Bid Details</p>
+                  <p className="text-slate-600 font-medium">Bid Details</p>
                   <p className="text-slate-600 text-sm">Contact admin for access</p>
                 </div>
               </div>

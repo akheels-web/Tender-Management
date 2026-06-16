@@ -16,7 +16,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "seed": "tsx api/seed.ts"
+    "seed": "tsx api/seed.ts",
+    "reset": "tsx api/reset.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.965.0",
