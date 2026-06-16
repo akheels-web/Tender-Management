@@ -5,6 +5,7 @@ import { getDb } from "./queries/connection";
 import { users, vendorProfiles, barredVendors } from "@db/schema";
 import { hashPassword } from "./lib/auth";
 import { Errors } from "@contracts/errors";
+import { sendEmail } from "./lib/email";
 
 export const vendorRouter = createRouter({
   list: agentQuery
@@ -99,6 +100,13 @@ export const vendorRouter = createRouter({
         userId: userId,
         companyName: input.companyName,
         isActive: true,
+      });
+
+      // Send welcome email with credentials
+      await sendEmail({
+        to: input.email,
+        subject: "Welcome to ProTender - Vendor Account Created",
+        text: `Hello ${input.name},\n\nYour vendor account for ProTender has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${input.email}\nPassword: ${input.password}\n\nPlease log in and update your password and company profile.\n\nBest regards,\nThe ProTender Team`,
       });
 
       return { success: true, userId };
