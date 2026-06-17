@@ -10,7 +10,10 @@ export const dashboardRouter = createRouter({
     const db = getDb();
 
     const totalTenders = await db.select({ count: sql<number>`count(*)` }).from(tenders);
-    const totalBids = await db.select({ count: sql<number>`count(*)` }).from(bids);
+    const totalBids = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(bids)
+      .innerJoin(tenders, eq(bids.tenderId, tenders.id));
     const totalVendors = await db
       .select({ count: sql<number>`count(*)` })
       .from(users)
@@ -58,6 +61,7 @@ export const dashboardRouter = createRouter({
     const myBids = await db
       .select({ count: sql<number>`count(*)` })
       .from(bids)
+      .innerJoin(tenders, eq(bids.tenderId, tenders.id))
       .where(eq(bids.vendorId, vendorId));
 
     const myActiveBids = await db
@@ -91,7 +95,10 @@ export const dashboardRouter = createRouter({
       .select({ count: sql<number>`count(*)` })
       .from(tenders)
       .where(eq(tenders.status, "closed"));
-    const totalBids = await db.select({ count: sql<number>`count(*)` }).from(bids);
+    const totalBids = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(bids)
+      .innerJoin(tenders, eq(bids.tenderId, tenders.id));
 
     return {
       totalTenders: totalTenders[0]?.count ?? 0,
