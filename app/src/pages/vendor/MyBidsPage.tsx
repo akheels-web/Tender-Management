@@ -44,10 +44,17 @@ export default function MyBidsPage() {
   const { data: bids, isLoading } = trpc.bid.myBids.useQuery();
 
   const withdrawMutation = trpc.bid.withdraw.useMutation({
-    onSuccess: () => {
-      utils.bid.myBids.invalidate();
-      setShowDetail(false);
+    onSuccess: (result) => {
+      if (result.success) {
+        utils.bid.myBids.invalidate();
+        setShowDetail(false);
+      } else {
+        alert(result.message || "Failed to withdraw bid");
+      }
     },
+    onError: (err) => {
+      alert(err.message || "Failed to withdraw bid");
+    }
   });
 
   const openDetail = (bid: any) => {
@@ -232,7 +239,9 @@ export default function MyBidsPage() {
               </div>
             )}
 
-            {selectedBid?.status === "submitted" && (
+            {selectedBid?.status === "submitted" &&
+              selectedBid.tenderStatus !== "closed" &&
+              (!selectedBid.tenderClosingDate || new Date(selectedBid.tenderClosingDate) >= new Date()) && (
               <div className="flex justify-end pt-2">
                 <Button
                   variant="outline"

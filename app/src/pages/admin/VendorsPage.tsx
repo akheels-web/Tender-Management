@@ -75,6 +75,9 @@ export default function VendorsPage() {
       utils.vendor.list.invalidate();
       setShowCreate(false);
     },
+    onError: (err) => {
+      alert(err.message || "Failed to create user");
+    }
   });
 
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,6 +88,7 @@ export default function VendorsPage() {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       companyName: formData.get("companyName") as string,
+      role: (formData.get("role") as any) || "vendor",
     });
   };
 
@@ -104,16 +108,18 @@ export default function VendorsPage() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Vendors</h1>
           <p className="text-slate-600 text-sm mt-1">
-            Manage vendor accounts, activate/deactivate, and bar from tenders.
+            Manage vendors and agents, create new user accounts, and control access.
           </p>
         </div>
-        <Button
-          onClick={() => setShowCreate(true)}
-          className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Create Vendor
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={() => setShowCreate(true)}
+            className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Create User
+          </Button>
+        </div>
       </div>
 
       <div className="flex gap-3">
@@ -380,6 +386,19 @@ export default function VendorsPage() {
                 className="bg-slate-50 border-slate-200"
               />
             </div>
+            {isAdmin && (
+              <div className="space-y-2">
+                <label className="text-sm text-slate-700">Role</label>
+                <select
+                  name="role"
+                  defaultValue="vendor"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-md h-10 px-3 text-slate-900"
+                >
+                  <option value="vendor">Vendor</option>
+                  <option value="agent">Agent</option>
+                </select>
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm text-slate-700">Initial Password</label>
               <Input
@@ -405,7 +424,7 @@ export default function VendorsPage() {
                 className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
                 disabled={createMutation.isPending}
               >
-                {createMutation.isPending ? "Creating..." : "Create Vendor"}
+                {createMutation.isPending ? "Creating..." : "Create User"}
               </Button>
             </div>
           </form>

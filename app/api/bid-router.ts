@@ -102,6 +102,7 @@ export const bidRouter = createRouter({
         tenderTitle: tenders.title,
         tenderRefId: tenders.tenderId,
         tenderStatus: tenders.status,
+        tenderClosingDate: tenders.closingDate,
       })
       .from(bids)
       .innerJoin(tenders, eq(bids.tenderId, tenders.id))
@@ -206,10 +207,32 @@ export const bidRouter = createRouter({
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const db = getDb();
+      const bidWithTender = await db
+        .select({
+          id: bids.id,
+          tenderStatus: tenders.status,
+          tenderClosingDate: tenders.closingDate,
+        })
+        .from(bids)
+        .innerJoin(tenders, eq(bids.tenderId, tenders.id))
+        .where(and(eq(bids.id, input.id), eq(bids.vendorId, ctx.user.id)))
+        .limit(1);
+
+      if (!bidWithTender[0]) {
+        return { success: false, message: "Bid not found" };
+      }
+
+      if (
+        bidWithTender[0].tenderStatus === "closed" ||
+        (bidWithTender[0].tenderClosingDate && new Date(bidWithTender[0].tenderClosingDate) < new Date())
+      ) {
+        return { success: false, message: "Cannot withdraw bid after tender has closed" };
+      }
+
       await db
         .update(bids)
         .set({ status: "withdrawn" })
-        .where(and(eq(bids.id, input.id), eq(bids.vendorId, ctx.user.id)));
+        .where(eq(bids.id, input.id));
       return { success: true };
     }),
 });

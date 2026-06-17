@@ -75,38 +75,49 @@ export const vendorRouter = createRouter({
   create: agentQuery
     .input(
       z.object({
-        name: z.string().min(1),
+        name: z.string().min(2),
         email: z.string().email(),
         password: z.string().min(6),
-        companyName: z.string().min(1),
+        companyName: z.string().min(2),
+        role: z.enum(["vendor", "agent"]).default("vendor"),
       })
     )
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      if (input.role === "agent" && ctx.user.role !== "admin" && ctx.user.role !== "superadmin") {
+        throw Errors.forbidden("Only admins can create agents.");
+      }
       
-      const existing = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
-      if (existing.length > 0) {
-        throw Errors.badRequest("A user with this email already exists.");
+      const db = getDb();
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, input.email))
+        .limit(1);
+
+      if (existingUser[0]) {
+        throw Errors.badRequest("Email already registered");
       }
 
       const [{ insertId: userId }] = await db.insert(users).values({
         name: input.name,
         email: input.email,
         passwordHash: hashPassword(input.password),
-        role: "vendor",
+        role: input.role,
       });
 
-      await db.insert(vendorProfiles).values({
-        userId: userId,
-        companyName: input.companyName,
-        isActive: true,
-      });
+      if (input.role === "vendor") {
+        await db.insert(vendorProfiles).values({
+          userId: userId,
+          companyName: input.companyName,
+          isActive: true,
+        });
+      }
 
       // Send welcome email with credentials
       await sendEmail({
         to: input.email,
-        subject: "Welcome to ProTender - Vendor Account Created",
-        text: `Hello ${input.name},\n\nYour vendor account for ProTender has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${input.email}\nPassword: ${input.password}\n\nPlease log in and update your password and company profile.\n\nBest regards,\nThe ProTender Team`,
+        subject: `Welcome to ProTender - ${input.role === "agent" ? "Agent" : "Vendor"} Account Created`,
+        text: `Hello ${input.name},\n\nYour ${input.role} account for ProTender has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${input.email}\nPassword: ${input.password}\n\nPlease log in and update your password.\n\nBest regards,\nThe ProTender Team`,
       });
 
       return { success: true, userId };

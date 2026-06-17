@@ -77,6 +77,9 @@ export default function TendersPage() {
       utils.tender.list.invalidate();
       setShowEdit(false);
     },
+    onError: (err) => {
+      alert(err.message || "Failed to update tender");
+    }
   });
 
   const deleteMutation = trpc.tender.delete.useMutation({
@@ -182,7 +185,7 @@ export default function TendersPage() {
       status: (formData.get("status") as any) || undefined,
       location: (formData.get("location") as string) || undefined,
       openingDate: (formData.get("openingDate") as string) || undefined,
-      vendorGroupId: formData.get("vendorGroupId") ? parseInt(formData.get("vendorGroupId") as string) : null as any,
+      vendorGroupId: formData.get("vendorGroupId") ? parseInt(formData.get("vendorGroupId") as string) : undefined,
     });
   };
 

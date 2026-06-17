@@ -422,6 +422,26 @@ export default function VendorTendersPage() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Success Dialog */}
+      <Dialog open={bidSuccess} onOpenChange={setBidSuccess}>
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-sm text-center p-6">
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-2 shadow-inner">
+              <CheckCircle className="w-8 h-8 text-emerald-500" />
+            </div>
+            <DialogTitle className="text-xl font-bold text-slate-900">Bid Submitted!</DialogTitle>
+            <p className="text-sm text-slate-600">
+              Your bid has been successfully placed. You can view its status in the "My Bids" section.
+            </p>
+            <Button
+              className="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+              onClick={() => setBidSuccess(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
