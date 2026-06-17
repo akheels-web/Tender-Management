@@ -225,8 +225,13 @@ export default function VendorTendersPage() {
                         statusColors[tender.status] || ""
                       )}
                     >
-                      {tender.status?.toUpperCase() || "UNKNOWN"}
+                      {tender.status.charAt(0).toUpperCase() + tender.status.slice(1)}
                     </span>
+                    {new Date().getTime() - new Date(tender.createdAt).getTime() < 3 * 24 * 60 * 60 * 1000 && (
+                      <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-purple-500 text-white animate-pulse">
+                        NEW
+                      </span>
+                    )}
 
                     <span className="text-xs text-slate-500 font-mono">
                       {tender.tenderId}
@@ -244,8 +249,8 @@ export default function VendorTendersPage() {
                       Closes: {tender.closingDate ? new Date(tender.closingDate).toLocaleDateString() : "N/A"}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5" />
-                      Budget: ${Number(tender.budgetEstimate).toLocaleString()}
+                      <Calendar className="w-3.5 h-3.5" />
+                      Opens: {tender.openingDate ? new Date(tender.openingDate).toLocaleDateString() : "N/A"}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5" />
@@ -296,7 +301,7 @@ export default function VendorTendersPage() {
             </p>
             <form onSubmit={handlePlaceBid} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm text-slate-700">Bid Amount ($)</label>
+                <label className="text-sm text-slate-700">Bid Amount (OMR)</label>
                 <Input
                   name="bidAmount"
                   type="number"
@@ -390,12 +395,12 @@ export default function VendorTendersPage() {
                 <p className="text-slate-900">{selectedTender?.category}</p>
               </div>
               <div className="bg-slate-50 rounded-lg p-3">
-                <p className="text-slate-500 text-xs mb-1">Budget</p>
-                <p className="text-slate-900 font-mono">${Number(selectedTender?.budgetEstimate).toLocaleString()}</p>
+                <p className="text-slate-500 text-xs mb-1">Opening Date</p>
+                <p className="text-slate-900">{selectedTender?.openingDate ? new Date(selectedTender.openingDate).toLocaleString() : "Not set"}</p>
               </div>
               <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Closing Date</p>
-                <p className="text-slate-900">{selectedTender?.closingDate ? new Date(selectedTender.closingDate).toLocaleDateString() : "N/A"}</p>
+                <p className="text-slate-900">{selectedTender?.closingDate ? new Date(selectedTender.closingDate).toLocaleString() : "N/A"}</p>
               </div>
               <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Location</p>

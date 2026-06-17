@@ -115,7 +115,7 @@ export default function MyBidsPage() {
                   <div className="flex flex-wrap gap-4 text-xs text-slate-500">
                     <span className="flex items-center gap-1.5">
                       <DollarSign className="w-3.5 h-3.5" />
-                      ${Number(bid.bidAmount).toLocaleString()}
+                      {Number(bid.bidAmount).toLocaleString()} OMR
                     </span>
                     <span className="flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
@@ -181,7 +181,7 @@ export default function MyBidsPage() {
               <div className="bg-slate-50 rounded-lg p-3">
                 <p className="text-slate-500 text-xs mb-1">Bid Amount</p>
                 <p className="text-slate-900 font-mono text-lg">
-                  ${Number(selectedBid?.bidAmount).toLocaleString()}
+                  {Number(selectedBid?.bidAmount).toLocaleString()} OMR
                 </p>
               </div>
               <div className="bg-slate-50 rounded-lg p-3">

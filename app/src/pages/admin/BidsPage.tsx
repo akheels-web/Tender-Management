@@ -189,7 +189,7 @@ export default function BidsPage() {
                         <div className="flex flex-wrap gap-4 text-xs text-slate-500">
                           <span className="flex items-center gap-1.5">
                             <FileText className="w-3.5 h-3.5" />
-                            Bid Amount: ${Number(bid.bidAmount).toLocaleString()}
+                            Bid Amount: {Number(bid.bidAmount).toLocaleString()} OMR
                           </span>
                           <span className="flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5" />

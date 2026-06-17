@@ -151,8 +151,7 @@ export default function TendersPage() {
       description: formData.get("description") as string,
       category: formData.get("category") as string,
       status: (formData.get("status") as any) || "draft",
-      budgetEstimate: (formData.get("budgetEstimate") as string) || undefined,
-      currency: "USD",
+      currency: "OMR",
       location: (formData.get("location") as string) || undefined,
       department: (formData.get("department") as string) || undefined,
       publishDate: (formData.get("publishDate") as string) || undefined,
@@ -178,9 +177,8 @@ export default function TendersPage() {
       description: (formData.get("description") as string) || undefined,
       category: (formData.get("category") as string) || undefined,
       status: (formData.get("status") as any) || undefined,
-      budgetEstimate: (formData.get("budgetEstimate") as string) || undefined,
       location: (formData.get("location") as string) || undefined,
-      closingDate: (formData.get("closingDate") as string) || undefined,
+      openingDate: (formData.get("openingDate") as string) || undefined,
       vendorGroupId: formData.get("vendorGroupId") ? parseInt(formData.get("vendorGroupId") as string) : null as any,
     });
   };
@@ -286,11 +284,16 @@ export default function TendersPage() {
                     <span
                       className={cn(
                         "text-xs px-2.5 py-1 rounded-full font-medium",
-                        statusColors[tender.status] || "bg-gray-500/10 text-gray-400"
+                        statusColors[tender.status] || ""
                       )}
                     >
-                      {tender.status?.toUpperCase() || "UNKNOWN"}
+                      {tender.status.charAt(0).toUpperCase() + tender.status.slice(1)}
                     </span>
+                    {new Date().getTime() - new Date(tender.createdAt).getTime() < 3 * 24 * 60 * 60 * 1000 && (
+                      <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-purple-500 text-white animate-pulse">
+                        NEW
+                      </span>
+                    )}
                     {tender.isLocked && (
                       <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 flex items-center gap-1">
                         <Lock className="w-3 h-3" />
@@ -313,8 +316,8 @@ export default function TendersPage() {
                       Closes: {tender.closingDate ? new Date(tender.closingDate).toLocaleDateString() : "N/A"}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5" />
-                      Budget: ${Number(tender.budgetEstimate).toLocaleString()}
+                      <Calendar className="w-3.5 h-3.5" />
+                      Opens: {tender.openingDate ? new Date(tender.openingDate).toLocaleDateString() : "N/A"}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5" />
@@ -404,12 +407,12 @@ export default function TendersPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Budget Estimate ($)</Label>
-                <Input name="budgetEstimate" type="number" step="0.01" placeholder="0.00" className="bg-slate-50 border-slate-200" />
+                <label className="text-sm text-slate-700">Opening Date & Time</label>
+                <Input type="datetime-local" name="openingDate" required className="bg-slate-50 border-slate-200" />
               </div>
               <div className="space-y-2">
-                <Label>Closing Date</Label>
-                <Input name="closingDate" type="date" required className="bg-slate-50 border-slate-200" />
+                <label className="text-sm text-slate-700">Closing Date & Time</label>
+                <Input name="closingDate" type="datetime-local" required className="bg-slate-50 border-slate-200" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -475,8 +478,8 @@ export default function TendersPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Budget Estimate ($)</Label>
-                <Input name="budgetEstimate" type="number" step="0.01" defaultValue={selectedTender?.budgetEstimate ?? ""} className="bg-slate-50 border-slate-200" />
+                <Label>Opening Date & Time</Label>
+                <Input type="datetime-local" name="openingDate" defaultValue={selectedTender?.openingDate ? new Date(selectedTender.openingDate).toISOString().slice(0, 16) : ""} className="bg-slate-50 border-slate-200" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -490,8 +493,8 @@ export default function TendersPage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label>Closing Date</Label>
-                <Input name="closingDate" type="date" defaultValue={selectedTender?.closingDate ? new Date(selectedTender.closingDate).toISOString().split('T')[0] : ""} className="bg-slate-50 border-slate-200" />
+                <Label>Closing Date & Time</Label>
+                <Input name="closingDate" type="datetime-local" defaultValue={selectedTender?.closingDate ? new Date(selectedTender.closingDate).toISOString().slice(0, 16) : ""} disabled className="bg-slate-50 border-slate-200 cursor-not-allowed opacity-75" />
               </div>
             </div>
             <div className="flex justify-end gap-3 pt-2">
@@ -546,9 +549,9 @@ export default function TendersPage() {
                 <p className="text-slate-900">{selectedTender?.category}</p>
               </div>
               <div className="bg-slate-50 rounded-lg p-3">
-                <p className="text-slate-500 text-xs mb-1">Budget</p>
-                <p className="text-slate-900 font-mono">
-                  ${Number(selectedTender?.budgetEstimate).toLocaleString()}
+                <p className="text-slate-500 text-xs mb-1">Opening Date</p>
+                <p className="text-slate-900">
+                  {selectedTender?.openingDate ? new Date(selectedTender.openingDate).toLocaleString() : "Not set"}
                 </p>
               </div>
               <div className="bg-slate-50 rounded-lg p-3">

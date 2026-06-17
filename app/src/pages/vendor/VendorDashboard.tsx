@@ -154,7 +154,7 @@ export default function VendorDashboard() {
                   {bid.tenderTitle}
                 </p>
                 <p className="text-xs text-slate-500">
-                  ${Number(bid.bidAmount).toLocaleString()} -{" "}
+                  {Number(bid.bidAmount).toLocaleString()} OMR -{" "}
                   {bid.submittedAt
                     ? new Date(bid.submittedAt).toLocaleDateString()
                     : ""}
