@@ -9,7 +9,6 @@ import {
   Trash2,
   FileText,
   Calendar,
-  DollarSign,
   X,
   Download,
 } from "lucide-react";
@@ -94,6 +93,10 @@ export default function TendersPage() {
     if (file) {
       if (file.type !== "application/pdf") {
         alert("Only PDF files are allowed.");
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File exceeds 10 MB limit.");
         return;
       }
       setIsUploading(true);

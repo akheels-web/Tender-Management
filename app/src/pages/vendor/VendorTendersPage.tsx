@@ -4,7 +4,6 @@ import {
   Search,
   FileText,
   Calendar,
-  DollarSign,
   Gavel,
   CheckCircle,
 } from "lucide-react";
@@ -59,8 +58,13 @@ export default function VendorTendersPage() {
         setBidSuccess(true);
         utils.bid.myBids.invalidate();
         setTimeout(() => setBidSuccess(false), 3000);
+      } else {
+        alert(result.message || "Failed to place bid");
       }
     },
+    onError: (err) => {
+      alert(err.message || "An error occurred during submission");
+    }
   });
 
 
@@ -83,6 +87,10 @@ export default function VendorTendersPage() {
         alert("Only PDF files are allowed.");
         return null;
       }
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File exceeds 10 MB limit.");
+        return null;
+      }
       const uploadData = new FormData();
       uploadData.append("file", file);
       
@@ -94,9 +102,12 @@ export default function VendorTendersPage() {
         const data = await res.json();
         if (data.success) {
           return { url: data.url, name: data.fileName };
+        } else {
+          alert(data.message || "File upload failed.");
         }
       } catch (err) {
         console.error(err);
+        alert("File upload error occurred.");
       }
       return null;
     };
@@ -130,7 +141,8 @@ export default function VendorTendersPage() {
     placeBidMutation.mutate({
       tenderId: selectedTender.id,
       bidAmount: formData.get("bidAmount") as string,
-      description: formData.get("description") as string,
+      currency: "OMR",
+      description: (formData.get("description") as string) || undefined,
       quotationDocumentUrl,
       quotationDocumentName,
       technicalDocumentUrl,

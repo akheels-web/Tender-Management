@@ -40,6 +40,10 @@ uploadRouter.post("/", async (c) => {
     throw Errors.badRequest("Only PDF files are allowed.");
   }
 
+  if (file.size > 10 * 1024 * 1024) {
+    throw Errors.badRequest("File exceeds 10 MB limit.");
+  }
+
   const fileExt = path.extname(file.name) || ".pdf";
   const fileName = `${nanoid()}${fileExt}`;
   const filePath = path.join(UPLOADS_DIR, fileName);

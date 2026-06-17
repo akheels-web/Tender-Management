@@ -6,7 +6,6 @@ import {
   timestamp,
   decimal,
   int,
-  date,
   boolean,
 } from "drizzle-orm/mysql-core";
 
