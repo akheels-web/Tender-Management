@@ -56,6 +56,7 @@ export default function TendersPage() {
   const [unlockError, setUnlockError] = useState("");
 
   const utils = trpc.useUtils();
+  const { data: vendorGroups } = trpc.vendorGroup.getAll.useQuery();
   const { data: tenders, isLoading } = trpc.tender.list.useQuery(
     {
       search: search || undefined,
@@ -180,6 +181,7 @@ export default function TendersPage() {
       budgetEstimate: (formData.get("budgetEstimate") as string) || undefined,
       location: (formData.get("location") as string) || undefined,
       closingDate: (formData.get("closingDate") as string) || undefined,
+      vendorGroupId: formData.get("vendorGroupId") ? parseInt(formData.get("vendorGroupId") as string) : null as any,
     });
   };
 
@@ -477,9 +479,20 @@ export default function TendersPage() {
                 <Input name="budgetEstimate" type="number" step="0.01" defaultValue={selectedTender?.budgetEstimate ?? ""} className="bg-slate-50 border-slate-200" />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Closing Date</Label>
-              <Input name="closingDate" type="date" defaultValue={selectedTender?.closingDate ? new Date(selectedTender.closingDate).toISOString().split('T')[0] : ""} className="bg-slate-50 border-slate-200" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm text-slate-700">Vendor Group</label>
+                <select name="vendorGroupId" defaultValue={selectedTender?.vendorGroupId || ""} className="w-full bg-slate-50 border border-slate-200 rounded-md h-10 px-3 text-slate-900">
+                  <option value="">-- All Vendors --</option>
+                  {vendorGroups?.map((g: any) => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Closing Date</Label>
+                <Input name="closingDate" type="date" defaultValue={selectedTender?.closingDate ? new Date(selectedTender.closingDate).toISOString().split('T')[0] : ""} className="bg-slate-50 border-slate-200" />
+              </div>
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={() => setShowEdit(false)} className="text-slate-600">

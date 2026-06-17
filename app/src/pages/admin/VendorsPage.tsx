@@ -10,8 +10,10 @@ import {
   Phone,
   Building2,
   AlertTriangle,
+  Trash2,
   Plus,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -31,6 +33,9 @@ export default function VendorsPage() {
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
   const [barReason, setBarReason] = useState("");
   const [selectedTenderId, setSelectedTenderId] = useState<number | null>(null);
+
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
   const utils = trpc.useUtils();
   const { data: vendors, isLoading } = trpc.vendor.list.useQuery({ search: search || undefined });
@@ -56,6 +61,12 @@ export default function VendorsPage() {
       setShowBar(false);
       setBarReason("");
       setSelectedTenderId(null);
+    },
+  });
+
+  const deleteMutation = trpc.vendor.delete.useMutation({
+    onSuccess: () => {
+      utils.vendor.list.invalidate();
     },
   });
 
@@ -219,6 +230,21 @@ export default function VendorsPage() {
                   <Ban className="w-3.5 h-3.5" />
                   Bar from Tender
                 </Button>
+                {isAdmin && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to permanently delete this vendor and all their data?")) {
+                        deleteMutation.mutate({ id: vendor.id });
+                      }
+                    }}
+                    className="border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 gap-1.5 ml-auto"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete
+                  </Button>
+                )}
               </div>
             </div>
           ))}

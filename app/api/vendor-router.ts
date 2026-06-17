@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
 import { createRouter, adminQuery, vendorQuery, anyRoleQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { users, vendorProfiles, barredVendors } from "@db/schema";
+import { users, vendorProfiles, barredVendors, bids, tenderAssignments, vendorGroupMemberships } from "@db/schema";
 import { hashPassword } from "./lib/auth";
 import { Errors } from "@contracts/errors";
 import { sendEmail } from "./lib/email";
@@ -177,8 +177,8 @@ export const vendorRouter = createRouter({
       return { success: true };
     }),
 
-  // ── Deactivate vendor (admin) ──
-  deactivate: adminQuery
+  // ── Deactivate vendor (agent/admin) ──
+  deactivate: agentQuery
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       const db = getDb();
@@ -189,8 +189,8 @@ export const vendorRouter = createRouter({
       return { success: true };
     }),
 
-  // ── Activate vendor (admin) ──
-  activate: adminQuery
+  // ── Activate vendor (agent/admin) ──
+  activate: agentQuery
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       const db = getDb();
@@ -198,6 +198,20 @@ export const vendorRouter = createRouter({
         .update(vendorProfiles)
         .set({ isActive: true })
         .where(eq(vendorProfiles.userId, input.id));
+      return { success: true };
+    }),
+
+  // ── Delete vendor (admin) ──
+  delete: adminQuery
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = getDb();
+      await db.delete(bids).where(eq(bids.vendorId, input.id));
+      await db.delete(barredVendors).where(eq(barredVendors.vendorId, input.id));
+      await db.delete(tenderAssignments).where(eq(tenderAssignments.vendorId, input.id));
+      await db.delete(vendorGroupMemberships).where(eq(vendorGroupMemberships.vendorId, input.id));
+      await db.delete(vendorProfiles).where(eq(vendorProfiles.userId, input.id));
+      await db.delete(users).where(eq(users.id, input.id));
       return { success: true };
     }),
 
