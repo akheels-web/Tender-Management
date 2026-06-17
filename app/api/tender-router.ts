@@ -200,12 +200,46 @@ export const tenderRouter = createRouter({
       if (data.publishDate) updateData.publishDate = new Date(data.publishDate);
       if (data.openingDate) updateData.openingDate = new Date(data.openingDate);
 
+      const existingTender = await db.select().from(tenders).where(eq(tenders.id, id)).limit(1).then(res => res[0]);
+      if (!existingTender) return { success: false, message: "Tender not found" };
+
       // If manually unlocked, set unlockedAt
       if (data.isLocked === false) {
         updateData.unlockedAt = new Date();
       }
 
       await db.update(tenders).set(updateData).where(eq(tenders.id, id));
+
+      // Trigger email if newly published or newly assigned to a vendor group while published
+      const isNowPublished = data.status === "published" || data.status === "open" || (data.status === undefined && (existingTender.status === "published" || existingTender.status === "open"));
+      const isNewlyPublished = (data.status === "published" || data.status === "open") && (existingTender.status !== "published" && existingTender.status !== "open");
+      
+      const newGroupId = data.vendorGroupId !== undefined ? data.vendorGroupId : existingTender.vendorGroupId;
+      const isNewGroup = data.vendorGroupId !== undefined && data.vendorGroupId !== existingTender.vendorGroupId;
+
+      if (isNowPublished && newGroupId && (isNewlyPublished || isNewGroup)) {
+        const memberships = await db
+          .select({ vendorId: vendorGroupMemberships.vendorId })
+          .from(vendorGroupMemberships)
+          .where(eq(vendorGroupMemberships.groupId, newGroupId));
+        
+        if (memberships.length > 0) {
+          const vendorsList = await db
+            .select({ email: users.email })
+            .from(users)
+            .where(inArray(users.id, memberships.map((m) => m.vendorId)));
+            
+          const emails = vendorsList.map(v => v.email);
+          if (emails.length > 0) {
+            await sendEmail({
+              to: emails,
+              subject: `Tender Update: ${data.title || existingTender.title}`,
+              text: `A tender "${data.title || existingTender.title}" has been published and released to your vendor group.\nClosing Date: ${new Date(updateData.closingDate || existingTender.closingDate).toDateString()}\n\nLog in to the portal to view the details and apply.`,
+            });
+          }
+        }
+      }
+
       return { success: true };
     }),
 
