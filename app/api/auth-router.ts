@@ -1,4 +1,6 @@
 import * as cookie from "cookie";
+import crypto from "crypto";
+import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@db/index";
@@ -9,29 +11,25 @@ import { getSessionCookieOptions } from "./lib/cookies";
 import { createRouter, authedQuery, publicQuery } from "./middleware";
 import { verifyPassword, signSessionToken, hashPassword } from "./lib/auth";
 import { sendEmail, buildHtmlEmail } from "./lib/email";
+import { rateLimit } from "./lib/rate-limit";
 
 export const authRouter = createRouter({
   login: publicQuery
-    .input(z.object({ email: z.string().email(), password: z.string() }))
+    .input(z.object({ email: z.string().email().max(255), password: z.string().max(100) }))
     .mutation(async ({ input, ctx }) => {
-      let role = "";
-      let userId: number;
-
-      // Hardcoded CEO account
-      if (input.email === "ceo@nationalfinance.co.om" && input.password === "Nf_SuperAdmin@2026") {
-        role = "superadmin";
-        userId = 999999;
-      } else {
-        const userList = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
-        const user = userList[0];
-        
-        if (!user || !verifyPassword(input.password, user.passwordHash)) {
-          throw Errors.badRequest("Invalid email or password.");
-        }
-        
-        role = user.role;
-        userId = user.id;
+      if (!rateLimit(ctx.ip)) {
+        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Too many login attempts. Please try again later." });
       }
+
+      const userList = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
+      const user = userList[0];
+      
+      if (!user || !verifyPassword(input.password, user.passwordHash)) {
+        throw Errors.badRequest("Invalid email or password.");
+      }
+      
+      const role = user.role;
+      const userId = user.id;
 
       const token = await signSessionToken(userId);
       const opts = getSessionCookieOptions();
@@ -51,8 +49,12 @@ export const authRouter = createRouter({
     }),
 
   forgotPassword: publicQuery
-    .input(z.object({ email: z.string().email() }))
-    .mutation(async ({ input }) => {
+    .input(z.object({ email: z.string().email().max(255) }))
+    .mutation(async ({ input, ctx }) => {
+      if (!rateLimit(ctx.ip)) {
+        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Too many requests. Please try again later." });
+      }
+
       const userList = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
       const user = userList[0];
       
@@ -61,8 +63,8 @@ export const authRouter = createRouter({
         return { success: true };
       }
 
-      // Generate a simple token (in a real app, use crypto.randomBytes)
-      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      // Generate a secure token
+      const token = crypto.randomBytes(32).toString("hex");
       const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
 
       await db.insert(passwordResetTokens).values({
@@ -94,7 +96,7 @@ export const authRouter = createRouter({
     }),
 
   resetPassword: publicQuery
-    .input(z.object({ token: z.string(), password: z.string().min(6) }))
+    .input(z.object({ token: z.string(), password: z.string().min(6).max(100) }))
     .mutation(async ({ input }) => {
       const tokenList = await db
         .select()
@@ -120,7 +122,7 @@ export const authRouter = createRouter({
     }),
 
   provisionSuperadmin: publicQuery
-    .input(z.object({ secret: z.string(), email: z.string().email(), password: z.string().min(6) }))
+    .input(z.object({ secret: z.string().max(100), email: z.string().email().max(255), password: z.string().min(6).max(100) }))
     .mutation(async ({ input }) => {
       // Check the secret key against environment variables
       const validSecret = process.env.SUPERADMIN_PROVISION_SECRET;

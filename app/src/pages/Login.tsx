@@ -15,12 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(1, { message: "Password is required." }),
+  email: z.string().email({ message: "Please enter a valid email address." }).max(255, { message: "Email is too long." }),
+  password: z.string().min(1, { message: "Password is required." }).max(100, { message: "Password is too long." }),
 });
 
 const forgotSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  email: z.string().email({ message: "Please enter a valid email address." }).max(255, { message: "Email is too long." }),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
