@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/providers/trpc";
-import { Search, Lock, Eye, FileText, Calendar } from "lucide-react";
+import { Search, Lock, Eye, FileText, Calendar, Gavel } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -25,6 +25,11 @@ export default function SuperadminTendersPage() {
   const [selectedTender, setSelectedTender] = useState<any>(null);
 
   const { data: tenders, isLoading } = trpc.superadmin.getTenders.useQuery();
+
+  const { data: bidsResponse, isLoading: isLoadingBids } = trpc.superadmin.getTenderBids.useQuery(
+    { tenderId: selectedTender?.id },
+    { enabled: !!selectedTender?.id }
+  );
 
   const filteredTenders = tenders?.filter(
     (t) =>
@@ -189,17 +194,77 @@ export default function SuperadminTendersPage() {
                 <p className="text-slate-900">{selectedTender?.location || "N/A"}</p>
               </div>
             </div>
-            {selectedTender?.isLocked && (
-              <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-amber-400 mb-2">
-                  <Lock className="w-4 h-4" />
-                  <span className="font-medium text-sm">Tender is Locked</span>
-                </div>
-                <p className="text-slate-600 text-sm">
-                  Superadmin view restricts access to tender documents and passwords for compliance.
-                </p>
+            {selectedTender?.documentUrl && (
+              <div className="mb-2">
+                <a 
+                  href={selectedTender.documentUrl} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-purple-600 hover:text-purple-500 text-sm flex items-center gap-1 inline-flex font-medium"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Tender Document (Superadmin Bypass)
+                </a>
               </div>
             )}
+
+            <div className="mt-6 border-t border-slate-100 pt-6">
+              <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <Gavel className="w-4 h-4 text-purple-500" />
+                Submitted Bids ({bidsResponse?.count || 0})
+              </h4>
+              
+              {isLoadingBids ? (
+                <div className="text-center py-4 text-slate-500 text-sm">Loading bids...</div>
+              ) : bidsResponse?.count === 0 ? (
+                <div className="text-center py-4 text-slate-500 text-sm">No bids have been submitted yet.</div>
+              ) : (
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                  {bidsResponse?.bids.map((bid: any) => (
+                    <div key={bid.id} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-slate-900 text-sm">{bid.vendorName}</span>
+                        <span className={cn(
+                          "text-[10px] px-2 py-0.5 rounded-full font-medium uppercase",
+                          statusColors[bid.status] || "bg-slate-200 text-slate-600"
+                        )}>
+                          {bid.status.replace("_", " ")}
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-600 mb-3 flex flex-wrap gap-4">
+                        <span>Amount: <strong className="text-slate-900">{Number(bid.bidAmount).toLocaleString()} OMR</strong></span>
+                        <span>Submitted: {new Date(bid.submittedAt!).toLocaleDateString()}</span>
+                      </div>
+                      
+                      <div className="flex gap-3">
+                        {bid.quotationDocumentUrl && (
+                          <a
+                            href={bid.quotationDocumentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-500 text-xs font-medium"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            Quotation
+                          </a>
+                        )}
+                        {bid.technicalDocumentUrl && (
+                          <a
+                            href={bid.technicalDocumentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-500 text-xs font-medium"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            Technical
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

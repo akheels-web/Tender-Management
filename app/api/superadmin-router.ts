@@ -148,6 +148,8 @@ export const superadminRouter = createRouter({
         openingDate: tenders.openingDate,
         location: tenders.location,
         department: tenders.department,
+        documentUrl: tenders.documentUrl,
+        documentName: tenders.documentName,
         isLocked: tenders.isLocked,
         firstUnlockBy: tenders.firstUnlockBy,
         createdAt: tenders.createdAt,
@@ -156,6 +158,36 @@ export const superadminRouter = createRouter({
       .where(inArray(tenders.status, ["open", "published", "closed", "awarded", "cancelled"]))
       .orderBy(desc(tenders.createdAt));
   }),
+
+  // ── Get Tender Bids (Read Only, Bypasses Lock) ──
+  getTenderBids: superadminQuery
+    .input(z.object({ tenderId: z.number() }))
+    .query(async ({ input }) => {
+      const db = getDb();
+      const bidsList = await db
+        .select({
+          id: bids.id,
+          status: bids.status,
+          bidAmount: bids.bidAmount,
+          notes: bids.notes,
+          quotationDocumentUrl: bids.quotationDocumentUrl,
+          quotationDocumentName: bids.quotationDocumentName,
+          technicalDocumentUrl: bids.technicalDocumentUrl,
+          technicalDocumentName: bids.technicalDocumentName,
+          submittedAt: bids.submittedAt,
+          technicalScore: bids.technicalScore,
+          vendorName: users.name,
+        })
+        .from(bids)
+        .leftJoin(users, eq(bids.vendorId, users.id))
+        .where(eq(bids.tenderId, input.tenderId));
+
+      return {
+        locked: false,
+        count: bidsList.length,
+        bids: bidsList,
+      };
+    }),
 
   // ── Get high level stats ──
   getStats: superadminQuery.query(async () => {
