@@ -70,8 +70,10 @@ export const tenderRouter = createRouter({
           createdAt: tenders.createdAt,
           updatedAt: tenders.updatedAt,
           agentDownloadCount: sql<number>`(SELECT COUNT(*) FROM ${agentDownloads} WHERE ${agentDownloads.tenderId} = ${tenders.id} AND ${agentDownloads.bidId} IS NULL)`.as("agentDownloadCount"),
+          firstUnlockByName: users.name,
         })
         .from(tenders)
+        .leftJoin(users, eq(tenders.firstUnlockBy, users.id))
         .where(where)
         .orderBy(desc(tenders.createdAt));
 
@@ -249,12 +251,20 @@ export const tenderRouter = createRouter({
         }
       }
 
+      let updateDetails = "Updated tender details";
+      if (updateData.closingDate && existingTender.closingDate && updateData.closingDate.getTime() !== new Date(existingTender.closingDate).getTime()) {
+        updateDetails += `. Changed closing date to ${updateData.closingDate.toLocaleString()}`;
+      }
+      if (updateData.openingDate && existingTender.openingDate && updateData.openingDate.getTime() !== new Date(existingTender.openingDate).getTime()) {
+        updateDetails += `. Changed opening date to ${updateData.openingDate.toLocaleString()}`;
+      }
+
       await db.insert(activityLogs).values({
         userId: ctx.user?.id,
         action: "tender_updated",
         entityType: "tender",
         entityId: id,
-        details: `Updated tender details`,
+        details: updateDetails,
       });
 
       return { success: true };

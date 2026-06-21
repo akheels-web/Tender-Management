@@ -621,7 +621,7 @@ export default function TendersPage() {
               This tender's bids are secured by a dual-admin lock. Each admin must request a PIN and enter it.
               {selectedTender?.firstUnlockBy && (
                 <span className="block mt-2 text-purple-600 font-medium">
-                  Status: Waiting for second admin to authorize unlock.
+                  Status: Waiting for second admin to authorize unlock. First authorization by: {selectedTender.firstUnlockByName || 'Admin'}
                 </span>
               )}
             </p>
