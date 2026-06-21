@@ -10,6 +10,7 @@ TCT OptiBid is a modern, high-performance Tender Management System designed to s
 - **Automated Email Notifications:** Vendors are instantly notified of new tenders, bid status updates, and password resets via integrated SMTP.
 - **Real-Time Notification Bell:** In-app dropdown notifications keep users informed of the latest updates seamlessly.
 - **Comprehensive Audit Logging:** System-wide activity tracking ensures strict compliance with procurement regulations.
+- **Robust Security:** Built-in rate limiting to prevent brute force attacks, strict input length validation to mitigate DoS, and cryptographically secure token generation for password resets.
 
 ## Technology Stack
 
