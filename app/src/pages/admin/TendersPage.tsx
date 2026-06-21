@@ -51,7 +51,7 @@ export default function TendersPage() {
   const [showUnlock, setShowUnlock] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [selectedTender, setSelectedTender] = useState<any>(null);
-  const [unlockPassword, setUnlockPassword] = useState("");
+  const [unlockPin, setUnlockPin] = useState("");
   const [unlockError, setUnlockError] = useState("");
 
   const utils = trpc.useUtils();
@@ -89,15 +89,28 @@ export default function TendersPage() {
     },
   });
 
+  const requestPinMutation = trpc.tender.requestUnlockPin.useMutation({
+    onSuccess: (result) => {
+      if (result.success) {
+        alert("PIN sent to your email!");
+      } else {
+        setUnlockError(result.message || "Failed to send PIN");
+      }
+    }
+  });
+
   const unlockMutation = trpc.tender.unlock.useMutation({
     onSuccess: (result) => {
       if (result.success) {
         utils.tender.list.invalidate();
         setShowUnlock(false);
-        setUnlockPassword("");
+        setUnlockPin("");
         setUnlockError("");
+        if (result.message?.includes("Waiting")) {
+          alert("First step complete. " + result.message);
+        }
       } else {
-        setUnlockError(result.message || "Incorrect password");
+        setUnlockError(result.message || "Incorrect PIN");
       }
     },
   });
@@ -201,7 +214,7 @@ export default function TendersPage() {
 
   const openUnlock = (tender: any) => {
     setSelectedTender(tender);
-    setUnlockPassword("");
+    setUnlockPin("");
     setUnlockError("");
     setShowUnlock(true);
   };
@@ -300,10 +313,16 @@ export default function TendersPage() {
                         NEW
                       </span>
                     )}
-                    {tender.isLocked && (
+                    {tender.isLocked && !tender.firstUnlockBy && (
                       <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 flex items-center gap-1">
                         <Lock className="w-3 h-3" />
                         Locked
+                      </span>
+                    )}
+                    {tender.isLocked && tender.firstUnlockBy && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-purple-500/10 text-purple-400 flex items-center gap-1">
+                        <Lock className="w-3 h-3" />
+                        Pending 2nd Admin
                       </span>
                     )}
                     <span className="text-xs text-slate-500 font-mono">
@@ -599,10 +618,10 @@ export default function TendersPage() {
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <p className="text-slate-600 text-sm">
-              This tender's bids are password-protected in a vault.
-              {selectedTender?.closingDate && new Date(selectedTender.closingDate) <= new Date() && (
-                <span className="block mt-2">
-                  System Generated Password: <strong className="font-mono bg-slate-100 px-2 py-1 rounded text-slate-900">{selectedTender.unlockPassword}</strong>
+              This tender's bids are secured by a dual-admin lock. Each admin must request a PIN and enter it.
+              {selectedTender?.firstUnlockBy && (
+                <span className="block mt-2 text-purple-600 font-medium">
+                  Status: Waiting for second admin to authorize unlock.
                 </span>
               )}
             </p>
@@ -618,15 +637,28 @@ export default function TendersPage() {
                 {unlockError}
               </div>
             )}
-            <Input
-              type="password"
-              placeholder="Enter unlock password"
-              value={unlockPassword}
-              onChange={(e) => setUnlockPassword(e.target.value)}
-              disabled={selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date()}
-              className="bg-slate-50 border-slate-200"
-            />
-            <div className="flex justify-end gap-3">
+            
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Enter 4-digit PIN"
+                value={unlockPin}
+                onChange={(e) => setUnlockPin(e.target.value)}
+                maxLength={4}
+                disabled={selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date()}
+                className="bg-slate-50 border-slate-200 flex-1 font-mono tracking-widest text-center"
+              />
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => requestPinMutation.mutate({ id: selectedTender?.id })}
+                disabled={requestPinMutation.isPending || (selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date())}
+              >
+                {requestPinMutation.isPending ? "Sending..." : "Request PIN"}
+              </Button>
+            </div>
+            
+            <div className="flex justify-end gap-3 mt-4">
               <Button variant="ghost" onClick={() => setShowUnlock(false)} className="text-slate-600">
                 Cancel
               </Button>
@@ -634,13 +666,13 @@ export default function TendersPage() {
                 onClick={() =>
                   unlockMutation.mutate({
                     id: selectedTender?.id,
-                    password: unlockPassword,
+                    pin: unlockPin,
                   })
                 }
                 className="bg-emerald-500 hover:bg-emerald-600 text-slate-900"
-                disabled={!unlockPassword || unlockMutation.isPending || (selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date())}
+                disabled={unlockPin.length !== 4 || unlockMutation.isPending || (selectedTender?.closingDate && new Date(selectedTender.closingDate) > new Date())}
               >
-                {unlockMutation.isPending ? "Unlocking..." : "Unlock Vault"}
+                {unlockMutation.isPending ? "Processing..." : "Authorize Unlock"}
               </Button>
             </div>
           </div>

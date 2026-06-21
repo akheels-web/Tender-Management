@@ -20,6 +20,8 @@ export const users = mysqlTable("users", {
     .default("vendor")
     .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  unlockOtp: varchar("unlockOtp", { length: 4 }),
+  unlockOtpExpiry: timestamp("unlockOtpExpiry"),
   updatedAt: timestamp("updatedAt")
     .defaultNow()
     .notNull()
@@ -111,6 +113,7 @@ export const tenders = mysqlTable("tenders", {
   vendorGroupId: int("vendorGroupId"),
   unlockPassword: varchar("unlockPassword", { length: 255 }),
   lockReason: text("lockReason"),
+  firstUnlockBy: int("firstUnlockBy"),
   createdBy: int("createdBy").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt")

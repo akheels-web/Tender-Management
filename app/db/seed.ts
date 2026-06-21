@@ -22,6 +22,20 @@ async function seed() {
     });
   console.log("Admin created (admin@protender.com / password123)");
 
+  // Create superadmin user
+  await db
+    .insert(users)
+    .values({
+      name: "Super Admin",
+      email: "superadmin@protender.com",
+      role: "superadmin",
+      passwordHash: defaultPassword,
+    })
+    .onDuplicateKeyUpdate({
+      set: { name: "Super Admin", role: "superadmin", passwordHash: defaultPassword },
+    });
+  console.log("Super Admin created (superadmin@protender.com / password123)");
+
   // Create agent user
   await db
     .insert(users)

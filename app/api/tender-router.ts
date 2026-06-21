@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq, and, like, gte, lte, desc, sql, inArray } from "drizzle-orm";
 import { createRouter, adminQuery, anyRoleQuery, publicQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { tenders, bids, barredVendors, tenderAssignments, agentDownloads, vendorGroupMemberships, users } from "@db/schema";
+import { tenders, bids, barredVendors, tenderAssignments, agentDownloads, vendorGroupMemberships, users, activityLogs } from "@db/schema";
 import { sendEmail } from "./lib/email";
 
 export const tenderRouter = createRouter({
@@ -65,6 +65,7 @@ export const tenderRouter = createRouter({
           vendorGroupId: tenders.vendorGroupId,
           unlockPassword: tenders.unlockPassword,
           lockReason: tenders.lockReason,
+          firstUnlockBy: tenders.firstUnlockBy,
           createdBy: tenders.createdBy,
           createdAt: tenders.createdAt,
           updatedAt: tenders.updatedAt,
@@ -162,6 +163,14 @@ export const tenderRouter = createRouter({
         }
       }
 
+      await db.insert(activityLogs).values({
+        userId: ctx.user.id,
+        action: "tender_created",
+        entityType: "tender",
+        entityId: newTenderId,
+        details: `Created tender: ${input.title}`,
+      });
+
       return { id: newTenderId, success: true };
     }),
 
@@ -240,6 +249,14 @@ export const tenderRouter = createRouter({
         }
       }
 
+      await db.insert(activityLogs).values({
+        userId: ctx.user?.id,
+        action: "tender_updated",
+        entityType: "tender",
+        entityId: id,
+        details: `Updated tender details`,
+      });
+
       return { success: true };
     }),
 
@@ -254,7 +271,43 @@ export const tenderRouter = createRouter({
         .delete(tenderAssignments)
         .where(eq(tenderAssignments.tenderId, input.id));
       await db.delete(tenders).where(eq(tenders.id, input.id));
+      
+      await db.insert(activityLogs).values({
+        userId: ctx.user.id,
+        action: "tender_deleted",
+        entityType: "tender",
+        entityId: input.id,
+        details: `Deleted tender`,
+      });
+      
       return { success: true };
+    }),
+
+  // ── Request Unlock PIN ──
+  requestUnlockPin: adminQuery
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb();
+      const tender = await db.select().from(tenders).where(eq(tenders.id, input.id)).limit(1).then(res => res[0]);
+      if (!tender) return { success: false, message: "Tender not found" };
+
+      if (!tender.isLocked) return { success: false, message: "Tender is already unlocked" };
+
+      const pin = Math.floor(1000 + Math.random() * 9000).toString(); // 4 digit PIN
+      const expiry = new Date();
+      expiry.setMinutes(expiry.getMinutes() + 15);
+
+      await db.update(users).set({ unlockOtp: pin, unlockOtpExpiry: expiry }).where(eq(users.id, ctx.user.id));
+
+      if (ctx.user.email) {
+        await sendEmail({
+          to: ctx.user.email,
+          subject: "Tender Unlock PIN",
+          text: `Your one-time PIN to unlock tender "${tender.title}" is: ${pin}\n\nThis PIN expires in 15 minutes.`,
+        });
+      }
+
+      return { success: true, message: "PIN sent to your email" };
     }),
 
   // ── Unlock tender ──
@@ -262,10 +315,10 @@ export const tenderRouter = createRouter({
     .input(
       z.object({
         id: z.number(),
-        password: z.string(),
+        pin: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = getDb();
       const result = await db
         .select()
@@ -278,18 +331,39 @@ export const tenderRouter = createRouter({
         return { success: false, message: "Tender not found" };
       }
 
-      if (tender.unlockPassword !== input.password) {
-        return { success: false, message: "Incorrect password" };
+      const currentUser = await db.select().from(users).where(eq(users.id, ctx.user.id)).limit(1).then(res => res[0]);
+
+      if (!currentUser?.unlockOtp || currentUser.unlockOtp !== input.pin) {
+        return { success: false, message: "Incorrect or expired PIN" };
+      }
+
+      if (currentUser.unlockOtpExpiry && new Date() > new Date(currentUser.unlockOtpExpiry)) {
+        return { success: false, message: "PIN has expired" };
       }
 
       if (tender.closingDate && new Date(tender.closingDate) > new Date()) {
         return { success: false, message: "Cannot unlock tender before closing date" };
       }
 
+      // Clear the OTP
+      await db.update(users).set({ unlockOtp: null, unlockOtpExpiry: null }).where(eq(users.id, ctx.user.id));
+
+      if (!tender.firstUnlockBy) {
+        await db.update(tenders).set({ firstUnlockBy: ctx.user.id }).where(eq(tenders.id, input.id));
+        await db.insert(activityLogs).values({ userId: ctx.user.id, action: "tender_first_unlock", entityType: "tender", entityId: tender.id, details: `First unlock authorization by ${currentUser.name || currentUser.email}` });
+        return { success: true, message: "Waiting for second admin" };
+      }
+
+      if (tender.firstUnlockBy === ctx.user.id) {
+        return { success: false, message: "You have already authorized the unlock. Waiting for another admin." };
+      }
+
       await db
         .update(tenders)
-        .set({ isLocked: false })
+        .set({ isLocked: false, unlockedAt: new Date(), firstUnlockBy: null })
         .where(eq(tenders.id, input.id));
+
+      await db.insert(activityLogs).values({ userId: ctx.user.id, action: "tender_unlocked", entityType: "tender", entityId: tender.id, details: `Tender fully unlocked by ${currentUser.name || currentUser.email}` });
 
       return { success: true, message: "Tender unlocked" };
     }),
@@ -306,8 +380,17 @@ export const tenderRouter = createRouter({
 
       await db
         .update(tenders)
-        .set({ isLocked: true, unlockPassword: autoPassword })
+        .set({ isLocked: true, unlockPassword: autoPassword, firstUnlockBy: null })
         .where(eq(tenders.id, input.id));
+        
+      await db.insert(activityLogs).values({
+        userId: ctx.user.id,
+        action: "tender_locked",
+        entityType: "tender",
+        entityId: input.id,
+        details: `Tender locked manually`,
+      });
+        
       return { success: true };
     }),
 
