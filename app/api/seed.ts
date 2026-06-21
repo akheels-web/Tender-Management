@@ -10,6 +10,7 @@ async function runSeed() {
   const testAccounts = [
     { email: "admin@example.com", name: "Admin Test", role: "admin", password: "password123" },
     { email: "superadmin@example.com", name: "Superadmin Test", role: "superadmin", password: "password123" },
+    { email: "superadmin2@example.com", name: "Superadmin Two", role: "superadmin", password: "password123" },
     { email: "agent@example.com", name: "Agent Test", role: "agent", password: "password123" },
     { email: "vendor@example.com", name: "Vendor Test", role: "vendor", password: "password123" },
   ];

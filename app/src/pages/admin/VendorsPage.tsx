@@ -8,10 +8,10 @@ import {
   Ban,
   Mail,
   Phone,
-  Building2,
   AlertTriangle,
   Trash2,
   Plus,
+  UploadCloud,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,9 @@ export default function VendorsPage() {
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
   const [barReason, setBarReason] = useState("");
   const [selectedTenderId, setSelectedTenderId] = useState<number | null>(null);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [csvPreview, setCsvPreview] = useState<any[]>([]);
+  const [csvError, setCsvError] = useState("");
 
   const { user } = useAuth();
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
@@ -69,6 +72,55 @@ export default function VendorsPage() {
       utils.vendor.list.invalidate();
     },
   });
+
+  const bulkCreateMutation = trpc.vendor.bulkCreate.useMutation({
+    onSuccess: (data) => {
+      utils.vendor.list.invalidate();
+      setShowBulkUpload(false);
+      setCsvPreview([]);
+      alert(`Successfully imported ${data.createdCount} vendors. Skipped ${data.skippedCount} duplicates.`);
+    },
+    onError: (err) => {
+      alert(err.message || "Bulk import failed");
+    }
+  });
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const rows = text.split("\n").map((r) => r.trim()).filter((r) => r.length > 0);
+        
+        const header = rows[0].toLowerCase().replace(/\s/g, '');
+        if (!header.includes("name") || !header.includes("email") || !header.includes("companyname") || !header.includes("password")) {
+          setCsvError("Invalid CSV format. Please ensure Name, Email, CompanyName, and Password columns exist.");
+          return;
+        }
+
+        const parsed: any[] = [];
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(",");
+          if (cols.length >= 4) {
+            parsed.push({
+              name: cols[0].trim(),
+              email: cols[1].trim(),
+              companyName: cols[2].trim(),
+              password: cols[3].trim()
+            });
+          }
+        }
+        setCsvPreview(parsed);
+        setCsvError("");
+      } catch (err) {
+        setCsvError("Failed to parse CSV file.");
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const createMutation = trpc.vendor.create.useMutation({
     onSuccess: () => {
@@ -112,6 +164,18 @@ export default function VendorsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Button
+            onClick={() => {
+              setShowBulkUpload(true);
+              setCsvPreview([]);
+              setCsvError("");
+            }}
+            variant="outline"
+            className="gap-2 border-slate-200"
+          >
+            <UploadCloud className="w-4 h-4" />
+            Import CSV
+          </Button>
           <Button
             onClick={() => setShowCreate(true)}
             className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 gap-2"
@@ -344,6 +408,73 @@ export default function VendorsPage() {
                 {deactivateMutation.isPending ? "Deactivating..." : "Deactivate"}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Upload Dialog */}
+      <Dialog open={showBulkUpload} onOpenChange={setShowBulkUpload}>
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-2xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UploadCloud className="w-5 h-5 text-cyan-400" />
+              Bulk Import Vendors
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4 overflow-y-auto">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <h4 className="font-medium text-sm text-slate-900 mb-2">CSV Format Requirements</h4>
+              <p className="text-xs text-slate-600 mb-2">Your CSV file must include exactly these column headers in the first row:</p>
+              <code className="bg-slate-200 text-slate-800 px-2 py-1 rounded text-xs">Name, Email, CompanyName, Password</code>
+            </div>
+
+            <div className="space-y-2">
+              <Input
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                className="file:bg-cyan-50 file:text-cyan-600 file:border-0 file:rounded-md file:px-3 file:py-1 file:mr-3 hover:file:bg-cyan-100 cursor-pointer"
+              />
+              {csvError && <p className="text-red-500 text-xs mt-1">{csvError}</p>}
+            </div>
+
+            {csvPreview.length > 0 && (
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 flex justify-between items-center">
+                  <span className="text-sm font-medium text-slate-700">Preview ({csvPreview.length} vendors)</span>
+                </div>
+                <div className="max-h-60 overflow-y-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-white border-b border-slate-100 sticky top-0">
+                      <tr>
+                        <th className="py-2 px-3 font-medium text-slate-500">Name</th>
+                        <th className="py-2 px-3 font-medium text-slate-500">Email</th>
+                        <th className="py-2 px-3 font-medium text-slate-500">Company</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50 bg-white">
+                      {csvPreview.map((v, i) => (
+                        <tr key={i}>
+                          <td className="py-2 px-3 text-slate-900">{v.name}</td>
+                          <td className="py-2 px-3 text-slate-600">{v.email}</td>
+                          <td className="py-2 px-3 text-slate-600">{v.companyName}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100">
+            <Button variant="ghost" onClick={() => setShowBulkUpload(false)}>Cancel</Button>
+            <Button
+              onClick={() => bulkCreateMutation.mutate(csvPreview)}
+              disabled={csvPreview.length === 0 || bulkCreateMutation.isPending}
+              className="bg-cyan-500 hover:bg-cyan-600 text-slate-900"
+            >
+              {bulkCreateMutation.isPending ? "Importing..." : "Confirm Import"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -123,6 +123,64 @@ export const vendorRouter = createRouter({
       return { success: true, userId };
     }),
 
+  // ── Bulk Create vendors (agent/admin) ──
+  bulkCreate: agentQuery
+    .input(
+      z.array(
+        z.object({
+          name: z.string().min(2),
+          email: z.string().email(),
+          password: z.string().min(6),
+          companyName: z.string().min(2),
+        })
+      )
+    )
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb();
+      let createdCount = 0;
+      let skippedCount = 0;
+
+      for (const vendor of input) {
+        const existing = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, vendor.email))
+          .limit(1);
+
+        if (existing.length > 0) {
+          skippedCount++;
+          continue;
+        }
+
+        const [{ insertId: userId }] = await db.insert(users).values({
+          name: vendor.name,
+          email: vendor.email,
+          passwordHash: hashPassword(vendor.password),
+          role: "vendor",
+        });
+
+        await db.insert(vendorProfiles).values({
+          userId: userId,
+          companyName: vendor.companyName,
+          isActive: true,
+        });
+
+        try {
+          await sendEmail({
+            to: vendor.email,
+            subject: `Welcome to ProTender - Vendor Account Created`,
+            text: `Hello ${vendor.name},\n\nYour vendor account for ProTender has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${vendor.email}\nPassword: ${vendor.password}\n\nPlease log in and update your password.\n\nBest regards,\nThe ProTender Team`,
+          });
+        } catch (e) {
+          console.error("Failed to send email to", vendor.email, e);
+        }
+
+        createdCount++;
+      }
+
+      return { success: true, createdCount, skippedCount };
+    }),
+
   // ── Get vendor by ID ──
   getById: anyRoleQuery
     .input(z.object({ id: z.number() }))
