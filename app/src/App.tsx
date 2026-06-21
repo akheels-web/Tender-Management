@@ -14,6 +14,7 @@ import MyBidsPage from "./pages/vendor/MyBidsPage";
 import VendorGroupsPage from "./pages/agent/VendorGroupsPage";
 import SuperadminDashboard from "./pages/superadmin/SuperadminDashboard";
 import SuperadminUsersPage from "./pages/superadmin/SuperadminUsersPage";
+import SuperadminTendersPage from "./pages/superadmin/SuperadminTendersPage";
 import ProfilePage from "./pages/shared/ProfilePage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -46,6 +47,7 @@ export default function App() {
         {/* Superadmin Routes */}
         <Route path="/superadmin/dashboard" element={<SuperadminDashboard />} />
         <Route path="/superadmin/users" element={<SuperadminUsersPage />} />
+        <Route path="/superadmin/tenders" element={<SuperadminTendersPage />} />
 
         {/* Shared */}
         <Route path="/profile" element={<ProfilePage />} />

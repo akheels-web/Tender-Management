@@ -133,6 +133,30 @@ export const superadminRouter = createRouter({
       return { success: true, message: "User deleted" };
     }),
 
+  // ── Get Tenders (Read Only, No Passwords) ──
+  getTenders: superadminQuery.query(async () => {
+    const db = getDb();
+    return await db
+      .select({
+        id: tenders.id,
+        tenderId: tenders.tenderId,
+        title: tenders.title,
+        description: tenders.description,
+        category: tenders.category,
+        status: tenders.status,
+        closingDate: tenders.closingDate,
+        openingDate: tenders.openingDate,
+        location: tenders.location,
+        department: tenders.department,
+        isLocked: tenders.isLocked,
+        firstUnlockBy: tenders.firstUnlockBy,
+        createdAt: tenders.createdAt,
+      })
+      .from(tenders)
+      .where(inArray(tenders.status, ["open", "published", "closed", "awarded", "cancelled"]))
+      .orderBy(desc(tenders.createdAt));
+  }),
+
   // ── Get high level stats ──
   getStats: superadminQuery.query(async () => {
     const db = getDb();

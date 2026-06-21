@@ -46,6 +46,7 @@ export default function Sidebar({ role }: SidebarProps) {
 
   const superadminLinks = [
     { path: "/superadmin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { path: "/superadmin/tenders", label: "Tenders", icon: FileText },
     { path: "/superadmin/users", label: "User Management", icon: Users },
   ];
 
