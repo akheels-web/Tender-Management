@@ -2,8 +2,9 @@ import { z } from "zod";
 import { eq, and, desc } from "drizzle-orm";
 import { createRouter, adminQuery, vendorQuery, anyRoleQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { bids, tenders, users, vendorProfiles, barredVendors, agentDownloads } from "@db/schema";
+import { bids, tenders, users, vendorProfiles, barredVendors, agentDownloads, notifications } from "@db/schema";
 import { sql } from "drizzle-orm";
+import { sendEmail, buildHtmlEmail } from "./lib/email";
 
 export const bidRouter = createRouter({
   // ── Place a bid (vendor) ──
@@ -186,6 +187,52 @@ export const bidRouter = createRouter({
       const db = getDb();
       const { id, ...data } = input;
       await db.update(bids).set(data).where(eq(bids.id, id));
+
+      if (data.status) {
+        // Find the bid and vendor email
+        const updatedBid = await db
+          .select({
+            vendorId: bids.vendorId,
+            vendorEmail: users.email,
+            tenderTitle: tenders.title,
+          })
+          .from(bids)
+          .innerJoin(users, eq(bids.vendorId, users.id))
+          .innerJoin(tenders, eq(bids.tenderId, tenders.id))
+          .where(eq(bids.id, id))
+          .limit(1);
+
+        if (updatedBid[0]) {
+          const { vendorId, vendorEmail, tenderTitle } = updatedBid[0];
+          const statusText = data.status.replace("_", " ").toUpperCase();
+          
+          await db.insert(notifications).values({
+            userId: vendorId,
+            title: "Bid Status Updated",
+            message: `Your bid for "${tenderTitle}" has been marked as ${statusText}.`,
+            type: "bid",
+            link: "/vendor/my-bids",
+          });
+
+          await sendEmail({
+            to: vendorEmail,
+            subject: `TCT OptiBid - Bid Status Updated`,
+            text: `Your bid for "${tenderTitle}" has been marked as ${statusText}.\n\nLog in to the portal to view details.`,
+            html: buildHtmlEmail(
+              "Bid Status Updated",
+              `<h2>Bid Status Update</h2>
+              <p>The status of your recent bid has been updated by the administration team.</p>
+              <div class="highlight-box">
+                <p style="margin-top:0;"><strong>Bid Details:</strong></p>
+                <p style="margin-bottom:0;"><strong>Tender:</strong> ${tenderTitle}<br/><strong>New Status:</strong> ${statusText}</p>
+              </div>
+              <p>Log in to the portal to view your bids and check for any additional notes or scores.</p>
+              <a href="https://tctoptibid.local/login" class="button">Log In to Portal</a>`
+            ),
+          });
+        }
+      }
+
       return { success: true };
     }),
 

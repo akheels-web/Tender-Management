@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useLocation } from "react-router";
-import { Bell } from "lucide-react";
+import { Bell, Check, ExternalLink } from "lucide-react";
+import { trpc } from "@/providers/trpc";
 import type { User } from "@db/schema";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +11,23 @@ interface TopBarProps {
 
 export default function TopBar({ user }: TopBarProps) {
   const location = useLocation();
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const { data: notifications, refetch: refetchNotifications } = trpc.notification.getUnread.useQuery(undefined, {
+    refetchInterval: 30000, // Poll every 30 seconds
+  });
+
+  const markAsReadMutation = trpc.notification.markAsRead.useMutation({
+    onSuccess: () => refetchNotifications(),
+  });
+
+  const markAllAsReadMutation = trpc.notification.markAllAsRead.useMutation({
+    onSuccess: () => refetchNotifications(),
+  });
+
+  const handleMarkAsRead = (id: number) => {
+    markAsReadMutation.mutate({ id });
+  };
 
   const getBreadcrumb = () => {
     const path = location.pathname;
@@ -40,10 +59,67 @@ export default function TopBar({ user }: TopBarProps) {
 
       {/* Right Actions */}
       <div className="flex items-center gap-4">
-        <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
-          <Bell className="w-4.5 h-4.5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#F9A01B] rounded-full" />
-        </button>
+        <div className="relative">
+          <button 
+            className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <Bell className="w-4.5 h-4.5" />
+            {notifications && notifications.length > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#F9A01B] rounded-full" />
+            )}
+          </button>
+
+          {/* Notification Dropdown */}
+          {showNotifications && (
+            <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+              <div className="p-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 className="font-semibold text-slate-900 text-sm">Notifications</h3>
+                {notifications && notifications.length > 0 && (
+                  <button 
+                    onClick={() => markAllAsReadMutation.mutate()}
+                    className="text-xs text-purple-600 hover:text-purple-700 font-medium"
+                  >
+                    Mark all as read
+                  </button>
+                )}
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {(!notifications || notifications.length === 0) ? (
+                  <div className="p-4 text-center text-slate-500 text-sm">
+                    No new notifications
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div key={notif.id} className="p-3 border-b border-slate-100 hover:bg-slate-50 transition-colors group">
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className="text-sm font-medium text-slate-900 pr-2">{notif.title}</h4>
+                        <button 
+                          onClick={() => handleMarkAsRead(notif.id)}
+                          className="text-slate-400 hover:text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Mark as read"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-600 mb-2">{notif.message}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-slate-400">
+                          {new Date(notif.createdAt).toLocaleDateString()}
+                        </span>
+                        {notif.link && (
+                          <a href={notif.link} className="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1 font-medium">
+                            View <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="text-right hidden sm:block">

@@ -8,6 +8,7 @@ import { Errors } from "@contracts/errors";
 import { getSessionCookieOptions } from "./lib/cookies";
 import { createRouter, authedQuery, publicQuery } from "./middleware";
 import { verifyPassword, signSessionToken, hashPassword } from "./lib/auth";
+import { sendEmail, buildHtmlEmail } from "./lib/email";
 
 export const authRouter = createRouter({
   login: publicQuery
@@ -70,10 +71,24 @@ export const authRouter = createRouter({
         expiresAt,
       });
 
-      console.log(`\n\n==============================================`);
-      console.log(`PASSWORD RESET SIMULATION FOR: ${input.email}`);
-      console.log(`RESET TOKEN: ${token}`);
-      console.log(`==============================================\n\n`);
+      const resetLink = `https://tctoptibid.local/reset-password?token=${token}`;
+
+      const plainText = `We received a request to reset your TCT OptiBid password.\n\nPlease click the link below to reset your password:\n${resetLink}\n\nIf you did not request this, please ignore this email.\n\nThis link will expire in 1 hour.`;
+      const htmlText = buildHtmlEmail(
+        "Password Reset",
+        `<h2>Password Reset Request</h2>
+        <p>We received a request to reset your password for your TCT OptiBid account.</p>
+        <p>Click the button below to securely set a new password. This link will expire in 1 hour.</p>
+        <a href="${resetLink}" class="button">Reset Password</a>
+        <p style="margin-top: 24px;">If you did not request a password reset, you can safely ignore this email.</p>`
+      );
+
+      await sendEmail({
+        to: user.email,
+        subject: "TCT OptiBid - Password Reset Request",
+        text: plainText,
+        html: htmlText,
+      });
 
       return { success: true };
     }),

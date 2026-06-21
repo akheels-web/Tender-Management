@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq, and, like, gte, lte, desc, sql, inArray } from "drizzle-orm";
 import { createRouter, adminQuery, anyRoleQuery, publicQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { tenders, bids, barredVendors, tenderAssignments, agentDownloads, vendorGroupMemberships, users, activityLogs } from "@db/schema";
+import { tenders, bids, barredVendors, tenderAssignments, agentDownloads, vendorGroupMemberships, users, activityLogs, notifications } from "@db/schema";
 import { sendEmail, buildHtmlEmail } from "./lib/email";
 
 export const tenderRouter = createRouter({
@@ -150,7 +150,7 @@ export const tenderRouter = createRouter({
         
         if (memberships.length > 0) {
           const vendors = await db
-            .select({ email: users.email })
+            .select({ id: users.id, email: users.email })
             .from(users)
             .where(inArray(users.id, memberships.map((m) => m.vendorId)));
             
@@ -175,6 +175,16 @@ export const tenderRouter = createRouter({
               text: plainText,
               html: htmlText,
             });
+
+            // Fire DB notifications for vendors
+            const notificationValues = vendors.map(v => ({
+              userId: v.id,
+              title: "New Tender Released",
+              message: `A new tender "${input.title}" has been published and released to your vendor group.`,
+              type: "tender",
+              link: "/vendor/tenders",
+            }));
+            await db.insert(notifications).values(notificationValues);
           }
         }
       }
@@ -250,7 +260,7 @@ export const tenderRouter = createRouter({
         
         if (memberships.length > 0) {
           const vendorsList = await db
-            .select({ email: users.email })
+            .select({ id: users.id, email: users.email })
             .from(users)
             .where(inArray(users.id, memberships.map((m) => m.vendorId)));
             
@@ -277,6 +287,16 @@ export const tenderRouter = createRouter({
               text: plainText,
               html: htmlText,
             });
+
+            // Fire DB notifications for vendors
+            const notificationValues = vendorsList.map(v => ({
+              userId: v.id,
+              title: "Tender Update",
+              message: `A tender "${title}" has been published and released to your vendor group.`,
+              type: "tender",
+              link: "/vendor/tenders",
+            }));
+            await db.insert(notifications).values(notificationValues);
           }
         }
       }

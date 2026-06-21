@@ -7,6 +7,7 @@ import {
   barredVendors,
   tenderAssignments,
   activityLogs,
+  notifications,
 } from "./schema";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -16,6 +17,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   }),
   bids: many(bids),
   activityLogs: many(activityLogs),
+  notifications: many(notifications),
 }));
 
 export const vendorProfilesRelations = relations(vendorProfiles, ({ one, many }) => ({
@@ -70,6 +72,13 @@ export const tenderAssignmentsRelations = relations(tenderAssignments, ({ one })
 export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
   user: one(users, {
     fields: [activityLogs.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
     references: [users.id],
   }),
 }));

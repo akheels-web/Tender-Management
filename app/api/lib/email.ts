@@ -40,7 +40,7 @@ export function buildHtmlEmail(title: string, contentHtml: string): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1>TCT OptiBid</h1>
+      <h1>${title} | TCT OptiBid</h1>
     </div>
     <div class="content">
       ${contentHtml}

@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import ResetPassword from "./pages/ResetPassword";
 import DashboardLayout from "./components/DashboardLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import TendersPage from "./pages/admin/TendersPage";
@@ -23,6 +24,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Dashboard Routes */}
       <Route element={<DashboardLayout />}>

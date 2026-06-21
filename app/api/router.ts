@@ -1,6 +1,7 @@
 import { authRouter } from "./auth-router";
 import { tenderRouter } from "./tender-router";
 import { bidRouter } from "./bid-router";
+import { notificationRouter } from "./notification-router";
 import { vendorRouter } from "./vendor-router";
 import { agentRouter } from "./agent-router";
 import { superadminRouter } from "./superadmin-router";
@@ -18,6 +19,7 @@ export const appRouter = createRouter({
   superadmin: superadminRouter,
   dashboard: dashboardRouter,
   vendorGroup: vendorGroupRouter,
+  notification: notificationRouter,
 });
 
 export type AppRouter = typeof appRouter;
