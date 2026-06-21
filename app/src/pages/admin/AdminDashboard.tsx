@@ -5,8 +5,13 @@ import {
   Users,
   TrendingUp,
   Clock,
+  Download,
+  Activity,
+  ShieldAlert,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { cn, formatActionName, handleDownloadLogs } from "@/lib/utils";
 import {
   BarChart,
   Bar,
@@ -22,8 +27,17 @@ import {
 
 const COLORS = ["#22D3EE", "#E5FF5C", "#FF3B5C", "#3B82F6", "#F59E0B"];
 
+const BID_COLORS: Record<string, string> = {
+  SUBMITTED: "#3B82F6",
+  WITHDRAWN: "#F59E0B",
+  EVALUATING: "#8B5CF6",
+  ACCEPTED: "#10B981",
+  REJECTED: "#EF4444",
+};
+
 export default function AdminDashboard() {
   const { data: stats } = trpc.dashboard.adminStats.useQuery();
+  const { data: logs, isLoading: logsLoading } = trpc.dashboard.adminActivityLogs.useQuery({ limit: 50 });
 
   const statCards = [
     {
@@ -135,8 +149,8 @@ export default function AdminDashboard() {
                   paddingAngle={4}
                   dataKey="value"
                 >
-                  {bidStatusData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  {bidStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={BID_COLORS[entry.name] || COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -146,6 +160,8 @@ export default function AdminDashboard() {
                     borderRadius: "8px",
                     color: "#fff",
                   }}
+                  itemStyle={{ color: "#fff" }}
+                  labelStyle={{ color: "#fff" }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -155,7 +171,7 @@ export default function AdminDashboard() {
               <div key={entry.name} className="flex items-center gap-1.5">
                 <div
                   className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  style={{ backgroundColor: BID_COLORS[entry.name] || COLORS[index % COLORS.length] }}
                 />
                 <span className="text-xs text-slate-600">{entry.name}</span>
               </div>
@@ -179,8 +195,17 @@ export default function AdminDashboard() {
                     borderRadius: "8px",
                     color: "#fff",
                   }}
+                  itemStyle={{ color: "#fff" }}
+                  cursor={{ fill: "rgba(0,0,0,0.05)" }}
                 />
-                <Bar dataKey="count" fill="#22D3EE" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                  {tenderStatusData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.name === "Open" ? "#3B82F6" : entry.name === "Closed" ? "#F59E0B" : entry.name === "Awarded" ? "#10B981" : "#22D3EE"} 
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -188,31 +213,80 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5">
-        <h3 className="text-slate-900 font-medium mb-4">Recent Activity</h3>
-        <div className="space-y-3">
-          {stats?.recentActivity?.length === 0 && (
-            <p className="text-slate-500 text-sm">No recent activity</p>
-          )}
-          {stats?.recentActivity?.map((activity) => (
-            <div
-              key={activity.id}
-              className="flex items-center gap-3 py-2.5 border-b border-white/[0.04] last:border-0"
-            >
-              <div className="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
-                <Clock className="w-4 h-4 text-cyan-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-800">{activity.action}</p>
-                <p className="text-xs text-slate-500">{activity.details}</p>
-              </div>
-              <span className="text-xs text-slate-600 flex-shrink-0">
-                {activity.createdAt
-                  ? new Date(activity.createdAt).toLocaleDateString()
-                  : ""}
-              </span>
-            </div>
-          ))}
+      {/* Activity Logs Table */}
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="w-5 h-5 text-amber-400" />
+            <h2 className="text-lg font-medium text-slate-900">System Activity Logs</h2>
+          </div>
+          <Button
+            onClick={() => handleDownloadLogs(logs || [], "admin_activity_logs.csv")}
+            variant="outline"
+            className="gap-2 border-slate-200 h-9"
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </Button>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="bg-white/[0.02] text-slate-600 font-medium">
+              <tr>
+                <th className="px-6 py-4">Timestamp</th>
+                <th className="px-6 py-4">Actor</th>
+                <th className="px-6 py-4">Action</th>
+                <th className="px-6 py-4">Entity</th>
+                <th className="px-6 py-4">Details</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.06]">
+              {logsLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto" />
+                  </td>
+                </tr>
+              ) : logs?.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                    <Activity className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                    No activity logs found.
+                  </td>
+                </tr>
+              ) : (
+                logs?.map((log) => (
+                  <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {format(new Date(log.createdAt), "MMM d, yyyy HH:mm")}
+                    </td>
+                    <td className="px-6 py-4">
+                      {log.user ? (
+                        <div>
+                          <p className="text-slate-900 font-medium">{log.user.name}</p>
+                          <p className="text-xs text-slate-500">{log.user.email} <span className="uppercase text-[10px] ml-1 px-1.5 py-0.5 rounded bg-slate-100">{log.user.role}</span></p>
+                        </div>
+                      ) : (
+                        <span className="text-slate-500">System</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 border border-slate-200 text-slate-700">
+                        {formatActionName(log.action)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {log.entityType} {log.entityId && `#${log.entityId}`}
+                    </td>
+                    <td className="px-6 py-4 max-w-md truncate text-slate-600" title={log.details || ""}>
+                      {log.details || "-"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

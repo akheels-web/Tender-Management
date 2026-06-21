@@ -118,6 +118,26 @@ export const dashboardRouter = createRouter({
       .limit(20);
   }),
 
+  // ── Admin Activity Logs ──
+  adminActivityLogs: adminQuery
+    .input(z.object({ limit: z.number().optional() }).optional())
+    .query(async ({ input }) => {
+      const db = getDb();
+      return db.query.activityLogs.findMany({
+        orderBy: (logs, { desc }) => [desc(logs.createdAt)],
+        limit: input?.limit ?? 50,
+        with: {
+          user: {
+            columns: {
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      });
+    }),
+
   // ── Log activity ──
   logActivity: adminQuery
     .input(

@@ -105,7 +105,7 @@ export default function Sidebar({ role }: SidebarProps) {
           <img src="/nfc_logo.svg" alt="National Finance" className="h-10" />
           <div className="text-center">
             <h1 className="text-slate-800 font-semibold text-lg leading-tight mt-2">
-              Tender Portal
+              TCT OptiBid
             </h1>
             <p className={cn("text-xs font-semibold uppercase tracking-wider mt-1", getRoleColor())}>
               {getRoleLabel()}

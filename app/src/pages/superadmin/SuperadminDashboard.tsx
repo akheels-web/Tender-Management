@@ -6,8 +6,11 @@ import {
   Users, 
   Gavel, 
   ShieldAlert,
-  Shield
+  Shield,
+  Download
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatActionName, handleDownloadLogs } from "@/lib/utils";
 
 export default function SuperadminDashboard() {
   const { data: stats, isLoading: statsLoading } = trpc.superadmin.getStats.useQuery();
@@ -74,14 +77,24 @@ export default function SuperadminDashboard() {
 
       {/* Activity Logs */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200 flex items-center gap-3">
-          <ShieldAlert className="w-5 h-5 text-amber-400" />
-          <h2 className="text-lg font-medium text-slate-900">System Activity Logs</h2>
+        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="w-5 h-5 text-amber-400" />
+            <h2 className="text-lg font-medium text-slate-900">System Activity Logs</h2>
+          </div>
+          <Button
+            onClick={() => handleDownloadLogs(logs || [], "superadmin_activity_logs.csv")}
+            variant="outline"
+            className="gap-2 border-slate-200 h-9"
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </Button>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-700">
-            <thead className="bg-white/[0.02] text-slate-600 font-medium">
+            <thead className="bg-slate-50 text-slate-600 font-medium">
               <tr>
                 <th className="px-6 py-4">Timestamp</th>
                 <th className="px-6 py-4">Actor</th>
@@ -90,7 +103,7 @@ export default function SuperadminDashboard() {
                 <th className="px-6 py-4">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06]">
+            <tbody className="divide-y divide-slate-100">
               {logsLoading ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
@@ -106,7 +119,7 @@ export default function SuperadminDashboard() {
                 </tr>
               ) : (
                 logs?.map((log) => (
-                  <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={log.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       {format(new Date(log.createdAt), "MMM d, yyyy HH:mm")}
                     </td>
@@ -122,7 +135,7 @@ export default function SuperadminDashboard() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 border border-slate-200 text-slate-700">
-                        {log.action}
+                        {formatActionName(log.action)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
