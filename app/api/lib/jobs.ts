@@ -1,7 +1,7 @@
 import { getDb } from "../queries/connection";
 import { tenders, users } from "@db/schema";
 import { eq, and, lte } from "drizzle-orm";
-import { sendEmail } from "./email";
+import { sendEmail, buildHtmlEmail } from "./email";
 
 let pollingInterval: NodeJS.Timeout | null = null;
 
@@ -48,10 +48,24 @@ export function startBackgroundJobs() {
             // In a real prod environment, add `notificationSent` to `tenders` schema.
             // For now, we only send if `unlockedAt` is null. Wait, if it's locked, `unlockedAt` is probably null.
             // Let's just send the email and rely on the admin to unlock it.
+            const plainText = `The deadline for tender "${tender.title}" has passed.\n\nPlease log in to the admin portal and unlock this tender so that the agents and vendors can proceed.`;
+            const htmlText = buildHtmlEmail(
+              "Action Required",
+              `<h2>Action Required: Unlock Tender</h2>
+              <p>The closing deadline for the following tender has passed, and it is currently waiting to be unlocked.</p>
+              <div class="highlight-box">
+                <p style="margin-top:0;"><strong>Tender Details:</strong></p>
+                <p style="margin-bottom:0;"><strong>Title:</strong> ${tender.title}<br/><strong>ID:</strong> ${tender.tenderId}</p>
+              </div>
+              <p>Please log in to the administrative portal to initiate the dual-admin unlock process so that agents and vendors can proceed.</p>
+              <a href="https://tctoptibid.local/login" class="button">Log In to Portal</a>`
+            );
+
             await sendEmail({
               to: adminEmails,
               subject: `Action Required: Unlock Tender ${tender.tenderId}`,
-              text: `The deadline for tender "${tender.title}" has passed.\n\nPlease log in to the admin portal and unlock this tender so that the agents and vendors can proceed.`,
+              text: plainText,
+              html: htmlText,
             });
           }
         }

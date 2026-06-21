@@ -3,7 +3,7 @@ import { eq, and, like, gte, lte, desc, sql, inArray } from "drizzle-orm";
 import { createRouter, adminQuery, anyRoleQuery, publicQuery, agentQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { tenders, bids, barredVendors, tenderAssignments, agentDownloads, vendorGroupMemberships, users, activityLogs } from "@db/schema";
-import { sendEmail } from "./lib/email";
+import { sendEmail, buildHtmlEmail } from "./lib/email";
 
 export const tenderRouter = createRouter({
   // ── List tenders (public) ──
@@ -156,10 +156,24 @@ export const tenderRouter = createRouter({
             
           const emails = vendors.map(v => v.email);
           if (emails.length > 0) {
+            const plainText = `A new tender "${input.title}" has been published and released to your vendor group.\nClosing Date: ${new Date(input.closingDate).toDateString()}\n\nLog in to the portal to view the details and apply.`;
+            const htmlText = buildHtmlEmail(
+              "Tender Published",
+              `<h2>New Tender Published</h2>
+              <p>A new tender has been published and released to your vendor group.</p>
+              <div class="highlight-box">
+                <p style="margin-top:0;"><strong>Tender Details:</strong></p>
+                <p style="margin-bottom:0;"><strong>Title:</strong> ${input.title}<br/><strong>Closing Date:</strong> ${new Date(input.closingDate).toDateString()}</p>
+              </div>
+              <p>Log in to the portal to view the full details, download the documentation, and submit your bid.</p>
+              <a href="https://tctoptibid.local/login" class="button">Log In to Portal</a>`
+            );
+
             await sendEmail({
               to: emails,
               subject: `New Tender Released: ${input.title}`,
-              text: `A new tender "${input.title}" has been released to your vendor group.\nClosing Date: ${new Date(input.closingDate).toDateString()}\n\nLog in to the portal to view the details and apply.`,
+              text: plainText,
+              html: htmlText,
             });
           }
         }
@@ -242,10 +256,26 @@ export const tenderRouter = createRouter({
             
           const emails = vendorsList.map(v => v.email);
           if (emails.length > 0) {
+            const title = data.title || existingTender.title;
+            const closeDate = new Date(updateData.closingDate || existingTender.closingDate).toDateString();
+            const plainText = `A tender "${title}" has been published and released to your vendor group.\nClosing Date: ${closeDate}\n\nLog in to the portal to view the details and apply.`;
+            const htmlText = buildHtmlEmail(
+              "Tender Published",
+              `<h2>Tender Update</h2>
+              <p>A tender has been published and released to your vendor group.</p>
+              <div class="highlight-box">
+                <p style="margin-top:0;"><strong>Tender Details:</strong></p>
+                <p style="margin-bottom:0;"><strong>Title:</strong> ${title}<br/><strong>Closing Date:</strong> ${closeDate}</p>
+              </div>
+              <p>Log in to the portal to view the details, download the documentation, and submit your bid.</p>
+              <a href="https://tctoptibid.local/login" class="button">Log In to Portal</a>`
+            );
+
             await sendEmail({
               to: emails,
-              subject: `Tender Update: ${data.title || existingTender.title}`,
-              text: `A tender "${data.title || existingTender.title}" has been published and released to your vendor group.\nClosing Date: ${new Date(updateData.closingDate || existingTender.closingDate).toDateString()}\n\nLog in to the portal to view the details and apply.`,
+              subject: `Tender Update: ${title}`,
+              text: plainText,
+              html: htmlText,
             });
           }
         }
@@ -310,10 +340,27 @@ export const tenderRouter = createRouter({
       await db.update(users).set({ unlockOtp: pin, unlockOtpExpiry: expiry }).where(eq(users.id, ctx.user.id));
 
       if (ctx.user.email) {
+        const plainText = `Your one-time PIN to unlock tender "${tender.title}" is: ${pin}\n\nThis PIN expires in 15 minutes.`;
+        const htmlText = buildHtmlEmail(
+          "Tender Unlock PIN",
+          `<h2>Tender Unlock Authorization</h2>
+          <p>You have requested to authorize the unlocking of a tender.</p>
+          <div class="highlight-box">
+            <p style="margin-top:0;"><strong>Tender Details:</strong></p>
+            <p style="margin-bottom:0;"><strong>Title:</strong> ${tender.title}</p>
+          </div>
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; text-align: center; margin: 24px 0;">
+            <p style="margin: 0 0 12px 0; color: #64748b; font-size: 14px;">YOUR ONE-TIME PIN</p>
+            <h1 style="margin: 0; color: #0f172a; font-size: 36px; letter-spacing: 8px;">${pin}</h1>
+          </div>
+          <p style="color: #ef4444; font-size: 13px;">This PIN will expire in exactly 15 minutes. If you did not request this, please ignore this email.</p>`
+        );
+
         await sendEmail({
           to: ctx.user.email,
-          subject: "Tender Unlock PIN",
-          text: `Your one-time PIN to unlock tender "${tender.title}" is: ${pin}\n\nThis PIN expires in 15 minutes.`,
+          subject: `Tender Unlock PIN: ${tender.title}`,
+          text: plainText,
+          html: htmlText,
         });
       }
 

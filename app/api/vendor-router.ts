@@ -5,7 +5,7 @@ import { getDb } from "./queries/connection";
 import { users, vendorProfiles, barredVendors, bids, tenderAssignments, vendorGroupMemberships } from "@db/schema";
 import { hashPassword } from "./lib/auth";
 import { Errors } from "@contracts/errors";
-import { sendEmail } from "./lib/email";
+import { sendEmail, buildHtmlEmail } from "./lib/email";
 
 export const vendorRouter = createRouter({
   list: agentQuery
@@ -114,10 +114,26 @@ export const vendorRouter = createRouter({
       }
 
       // Send welcome email with credentials
+      const plainText = `Hello ${input.name},\n\nYour ${input.role} account for TCT OptiBid has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${input.email}\nPassword: ${input.password}\n\nPlease log in and update your password and profile.\n\nBest regards,\nThe TCT OptiBid Team`;
+      const htmlText = buildHtmlEmail(
+        "Account Created",
+        `<h2>Welcome to TCT OptiBid</h2>
+        <p>Hello <strong>${input.name}</strong>,</p>
+        <p>Your ${input.role} account has been successfully created and provisioned by our administrative team.</p>
+        <div class="highlight-box">
+          <p style="margin-top:0;"><strong>Your Login Credentials:</strong></p>
+          <p style="margin-bottom:0;"><strong>Email:</strong> ${input.email}<br/><strong>Password:</strong> ${input.password}</p>
+        </div>
+        <p>For your security, please log in immediately to update your password and complete your profile setup.</p>
+        <a href="https://tctoptibid.local/login" class="button">Log In to Portal</a>
+        <p style="margin-top: 24px;">Best regards,<br/><strong>The TCT OptiBid Team</strong></p>`
+      );
+
       await sendEmail({
         to: input.email,
-        subject: `Welcome to ProTender - ${input.role === "agent" ? "Agent" : "Vendor"} Account Created`,
-        text: `Hello ${input.name},\n\nYour ${input.role} account for ProTender has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${input.email}\nPassword: ${input.password}\n\nPlease log in and update your password.\n\nBest regards,\nThe ProTender Team`,
+        subject: `Welcome to TCT OptiBid - ${input.role === "agent" ? "Agent" : "Vendor"} Account Created`,
+        text: plainText,
+        html: htmlText,
       });
 
       return { success: true, userId };
@@ -166,10 +182,26 @@ export const vendorRouter = createRouter({
         });
 
         try {
+          const plainText = `Hello ${vendor.name},\n\nYour vendor account for TCT OptiBid has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${vendor.email}\nPassword: ${vendor.password}\n\nPlease log in and update your password and company profile.\n\nBest regards,\nThe TCT OptiBid Team`;
+          const htmlText = buildHtmlEmail(
+            "Account Created",
+            `<h2>Welcome to TCT OptiBid</h2>
+            <p>Hello <strong>${vendor.name}</strong>,</p>
+            <p>Your vendor account has been successfully created and provisioned by our administrative team.</p>
+            <div class="highlight-box">
+              <p style="margin-top:0;"><strong>Your Login Credentials:</strong></p>
+              <p style="margin-bottom:0;"><strong>Email:</strong> ${vendor.email}<br/><strong>Password:</strong> ${vendor.password}</p>
+            </div>
+            <p>For your security, please log in immediately to update your password and complete your company profile setup.</p>
+            <a href="https://tctoptibid.local/login" class="button">Log In to Portal</a>
+            <p style="margin-top: 24px;">Best regards,<br/><strong>The TCT OptiBid Team</strong></p>`
+          );
+
           await sendEmail({
             to: vendor.email,
-            subject: `Welcome to ProTender - Vendor Account Created`,
-            text: `Hello ${vendor.name},\n\nYour vendor account for ProTender has been successfully created by our team.\n\nHere are your login credentials:\nEmail: ${vendor.email}\nPassword: ${vendor.password}\n\nPlease log in and update your password.\n\nBest regards,\nThe ProTender Team`,
+            subject: `Welcome to TCT OptiBid - Vendor Account Created`,
+            text: plainText,
+            html: htmlText,
           });
         } catch (e) {
           console.error("Failed to send email to", vendor.email, e);
