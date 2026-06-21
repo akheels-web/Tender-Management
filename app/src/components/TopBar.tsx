@@ -26,8 +26,8 @@ export default function TopBar({ user }: TopBarProps) {
   };
 
   const breadcrumb = getBreadcrumb();
-  const roleColor = user.role === "admin" ? "bg-[#F9A01B]/10 text-[#F9A01B]" : user.role === "agent" ? "bg-[#F9A01B]/10 text-[#F9A01B]" : "bg-[#000097]/10 text-[#000097]";
-  const roleLabel = user.role === "admin" ? "Administrator" : user.role === "agent" ? "Agent" : "Vendor";
+  const roleColor = user.role === "superadmin" ? "bg-purple-500/10 text-purple-600" : user.role === "admin" || user.role === "agent" ? "bg-[#F9A01B]/10 text-[#F9A01B]" : "bg-[#000097]/10 text-[#000097]";
+  const roleLabel = user.role === "superadmin" ? "Chief Auditor" : user.role === "admin" ? "Administrator" : user.role === "agent" ? "Agent" : "Vendor";
 
   return (
     <header className="h-[60px] bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-40 shadow-sm">
