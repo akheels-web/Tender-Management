@@ -7,6 +7,7 @@ import {
   UserX,
   Ban,
   Mail,
+  Building2,
   Phone,
   AlertTriangle,
   Trash2,

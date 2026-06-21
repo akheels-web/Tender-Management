@@ -135,7 +135,7 @@ export const vendorRouter = createRouter({
         })
       )
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       const db = getDb();
       let createdCount = 0;
       let skippedCount = 0;

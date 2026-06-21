@@ -201,7 +201,7 @@ export const tenderRouter = createRouter({
         lockReason: z.string().nullable().optional(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = getDb();
       const { id, ...data } = input;
       const updateData: any = { ...data };
@@ -263,7 +263,7 @@ export const tenderRouter = createRouter({
   // ── Delete tender (admin) ──
   delete: adminQuery
     .input(z.object({ id: z.number() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = getDb();
       await db.delete(bids).where(eq(bids.tenderId, input.id));
       await db.delete(barredVendors).where(eq(barredVendors.tenderId, input.id));
@@ -371,7 +371,7 @@ export const tenderRouter = createRouter({
   // ── Lock tender ──
   lock: adminQuery
     .input(z.object({ id: z.number() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = getDb();
       const tender = await db.select().from(tenders).where(eq(tenders.id, input.id)).limit(1).then(res => res[0]);
       if (!tender) return { success: false };

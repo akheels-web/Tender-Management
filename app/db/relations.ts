@@ -66,3 +66,10 @@ export const tenderAssignmentsRelations = relations(tenderAssignments, ({ one })
     references: [users.id],
   }),
 }));
+
+export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
+  user: one(users, {
+    fields: [activityLogs.userId],
+    references: [users.id],
+  }),
+}));

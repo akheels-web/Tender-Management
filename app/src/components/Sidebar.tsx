@@ -4,7 +4,6 @@ import {
   FileText,
   Users,
   Gavel,
-  Shield,
   UserCircle,
   LogOut,
   Search,
