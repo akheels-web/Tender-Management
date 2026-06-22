@@ -353,6 +353,11 @@ export const tenderRouter = createRouter({
 
       if (!tender.isLocked) return { success: false, message: "Tender is already unlocked" };
 
+      const currentUser = await db.select().from(users).where(eq(users.id, ctx.user.id)).limit(1).then(res => res[0]);
+      if (!currentUser?.canUnlockTenders) {
+        return { success: false, message: "You are not authorized to unlock tenders." };
+      }
+
       const pin = Math.floor(1000 + Math.random() * 9000).toString(); // 4 digit PIN
       const expiry = new Date();
       expiry.setMinutes(expiry.getMinutes() + 15);
@@ -409,6 +414,10 @@ export const tenderRouter = createRouter({
       }
 
       const currentUser = await db.select().from(users).where(eq(users.id, ctx.user.id)).limit(1).then(res => res[0]);
+
+      if (!currentUser?.canUnlockTenders) {
+        return { success: false, message: "You are not authorized to unlock tenders." };
+      }
 
       if (!currentUser?.unlockOtp || currentUser.unlockOtp !== input.pin) {
         return { success: false, message: "Incorrect or expired PIN" };

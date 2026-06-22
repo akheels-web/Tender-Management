@@ -44,6 +44,7 @@ export const superadminRouter = createRouter({
         name: users.name,
         email: users.email,
         role: users.role,
+        canUnlockTenders: users.canUnlockTenders,
         createdAt: users.createdAt,
       })
       .from(users)
@@ -56,6 +57,7 @@ export const superadminRouter = createRouter({
       name: z.string(),
       email: z.string().email(),
       role: z.enum(["admin", "agent"]),
+      canUnlockTenders: z.boolean().optional(),
       password: z.string().min(6),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -69,6 +71,7 @@ export const superadminRouter = createRouter({
         name: input.name,
         email: input.email,
         role: input.role as any,
+        canUnlockTenders: input.canUnlockTenders || false,
         passwordHash: hashPassword(input.password),
       });
 
@@ -89,6 +92,7 @@ export const superadminRouter = createRouter({
       name: z.string(),
       email: z.string().email(),
       role: z.enum(["admin", "agent"]),
+      canUnlockTenders: z.boolean().optional(),
       password: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -98,6 +102,10 @@ export const superadminRouter = createRouter({
         email: input.email,
         role: input.role,
       };
+
+      if (input.canUnlockTenders !== undefined) {
+        updates.canUnlockTenders = input.canUnlockTenders;
+      }
 
       if (input.password) {
         updates.passwordHash = hashPassword(input.password);

@@ -60,6 +60,7 @@ export default function SuperadminUsersPage() {
       email: formData.get("email") as string,
       role: formData.get("role") as "admin" | "agent",
       password: formData.get("password") as string,
+      canUnlockTenders: formData.get("canUnlockTenders") === "on",
     });
   };
 
@@ -72,6 +73,7 @@ export default function SuperadminUsersPage() {
       email: formData.get("email") as string,
       role: formData.get("role") as "admin" | "agent",
       password: (formData.get("password") as string) || undefined,
+      canUnlockTenders: formData.get("canUnlockTenders") === "on",
     });
   };
 
@@ -103,6 +105,7 @@ export default function SuperadminUsersPage() {
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Role</th>
+                <th className="py-3 px-4">Permissions</th>
                 <th className="py-3 px-4">Joined</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
@@ -133,6 +136,13 @@ export default function SuperadminUsersPage() {
                         {user.role === "admin" ? <Shield className="w-3 h-3" /> : <Users className="w-3 h-3" />}
                         {user.role === "admin" ? "Administrator" : "Agent"}
                       </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      {user.canUnlockTenders ? (
+                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">Can Unlock Tenders</span>
+                      ) : (
+                        <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">Standard</span>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-slate-500">
                       {new Date(user.createdAt!).toLocaleDateString()}
@@ -200,6 +210,10 @@ export default function SuperadminUsersPage() {
               <Label>Password</Label>
               <Input type="password" name="password" required minLength={6} className="bg-slate-50 border-slate-200" />
             </div>
+            <div className="flex items-center gap-2 mt-4">
+              <input type="checkbox" id="create-unlock" name="canUnlockTenders" className="w-4 h-4 rounded border-slate-300 text-[#000097] focus:ring-[#000097]" />
+              <Label htmlFor="create-unlock" className="font-normal">Allow unlocking tenders (Admins only)</Label>
+            </div>
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={() => setShowCreate(false)}>Cancel</Button>
               <Button type="submit" disabled={createMutation.isPending} className="bg-[#000097] text-white hover:bg-[#000066]">
@@ -240,6 +254,10 @@ export default function SuperadminUsersPage() {
             <div className="space-y-2">
               <Label>New Password (Optional)</Label>
               <Input type="password" name="password" minLength={6} placeholder="Leave blank to keep current" className="bg-slate-50 border-slate-200" />
+            </div>
+            <div className="flex items-center gap-2 mt-4">
+              <input type="checkbox" id="edit-unlock" name="canUnlockTenders" defaultChecked={selectedUser?.canUnlockTenders} className="w-4 h-4 rounded border-slate-300 text-[#000097] focus:ring-[#000097]" />
+              <Label htmlFor="edit-unlock" className="font-normal">Allow unlocking tenders (Admins only)</Label>
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="ghost" onClick={() => setShowEdit(false)}>Cancel</Button>

@@ -20,6 +20,7 @@ export const users = mysqlTable("users", {
     .default("vendor")
     .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  canUnlockTenders: boolean("canUnlockTenders").default(false).notNull(),
   unlockOtp: varchar("unlockOtp", { length: 4 }),
   unlockOtpExpiry: timestamp("unlockOtpExpiry"),
   updatedAt: timestamp("updatedAt")
